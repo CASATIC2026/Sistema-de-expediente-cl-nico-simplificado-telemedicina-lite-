@@ -4,7 +4,6 @@ on:
     paths:
       - 'frontend/**'
       - 'backend/**'
-
 jobs:
   deploy-frontend:
     runs-on: ubuntu-latest
