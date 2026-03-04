@@ -1,7 +1,33 @@
+name: Development
+
+on:
+  push:
+    paths:
+      - 'frontend/**'
+      - 'backend/**'
+
 jobs:
+  deploy-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build frontend
+        run: |
+          cd frontend
+          npm install
+          npm run build
+
+      - name: Deploy frontend Docker
+        run: |
+          cd frontend
+          docker build -t frontend .
+          docker run -d -p 80:80 frontend
+
   deploy-backend:
     runs-on: ubuntu-latest
-    needs: deploy-frontend  # espera que el frontend esté listo
+    needs: deploy-frontend   # espera que frontend esté listo
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -10,7 +36,7 @@ jobs:
         run: |
           cd backend
           npm install
-          
+
       - name: Deploy backend Docker
         run: |
           cd backend
