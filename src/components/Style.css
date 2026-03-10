@@ -1,0 +1,81 @@
+body{
+  font-family: 'Roboto';
+  padding-top: 50px;
+  display:flex;
+  margin-top: 20px;
+  place-items: center;
+  justify-content: center;
+  background: url("img/login.jpg");
+}
+.tarjetaUsuario {
+    position: center;
+    width: 500px;
+    padding: 30px;
+    background: linear-gradient(700deg, #51A2FF, #74D4FF, #51A2FF);
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.formulario input{
+  width: 100%;
+  padding: 10px 10px;
+  border-radius: 10px;
+  border: 1px solid black;
+  outline: none;
+  font-size: 16px;
+  transition: 0.2s;
+}
+
+#OP{
+  width: 100%;
+  padding: 10px 10px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  outline: none;
+  font-size: 16px;
+  transition: 0.2s;
+}
+
+.botonCerrar{
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    color: red;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+.botonCerrar:hover{
+  background-color: rgba(0, 0, 0, 0.08);
+  color: darkred;
+
+}
+
+
+.botonEnviar{
+  width: 100%;
+  color: rgb(255, 255, 255);
+  background-color: rgb(16, 16, 17);
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  border: none;
+  font-size: 16px;
+  transition: 0.2s;
+}
+
+.botonEnviar:hover{
+  background-color: rgb(255, 255, 255)#2563eb;
+    background-color: rgb(173, 135, 235) (255, 255, 255);width: 100%;
+  color: rgb(255, 255, 255);
+  background-color: rgb(16, 16, 17);
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  border: none;
+  font-size: 16px;
+  transition: 0.2s;
+}
