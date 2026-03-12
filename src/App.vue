@@ -6,7 +6,7 @@
 //import miCitaUsuario from './components/miCitaUsuario.vue';
 
 
-import pantallaPrincipal from './views/pantallaPrincipal.vue';
+//import pantallaPrincipal from './views/pantallaPrincipal.vue';
 //import Dashboardpaciente from './components/Dashboardpaciente.vue';
 //import tarjetaCita from './components/tarjetaCita.vue';
 //import piePagina from './components/piePgaina.vue'; 
@@ -17,13 +17,13 @@ import pantallaPrincipal from './views/pantallaPrincipal.vue';
 
 
 <template>
-<div>
+
     <!--<Historial />-->
 
   
     <!--<CrearHistorial/>-->
 
-   <pantallaPrincipal />
+   
    <!--<Dashboardpaciente />-->
     <!-- <miCitaUsuario /> -->
 
@@ -31,14 +31,7 @@ import pantallaPrincipal from './views/pantallaPrincipal.vue';
     <!--<tarjetaCita />-->
     <!-- <piePagina /> -->
 
-
-
-</div>
-
-
-    
-  
-
+    <router-view />
 
 </template>
 

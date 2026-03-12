@@ -95,11 +95,11 @@ const enviarFormulario = async () => {
               class="bg-white/5 border border-white/10 p-3.5 rounded-2xl outline-none text-white focus:ring-2 focus:ring-cyan-500/50 focus:bg-white/10 transition-all">
           </div>
 
-          <!--<div class="flex flex-col gap-2">
+          --<div class="flex flex-col gap-2">
             <label class="text-[11px] font-bold uppercase tracking-widest text-slate-400 ml-1">N° DUI</label>
             <input type="text" v-model="form.dui" required placeholder="00000000-0"
               class="bg-white/5 border border-white/10 p-3.5 rounded-2xl outline-none text-white placeholder:text-slate-600 focus:ring-2 focus:ring-cyan-500/50 focus:bg-white/10 transition-all">
-          </div>-->
+          </div>
         </div>
 
 

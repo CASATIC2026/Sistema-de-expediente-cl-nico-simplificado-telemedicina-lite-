@@ -4,9 +4,12 @@ import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import esLocale from '@fullcalendar/core/locales/es' // Para asegurar el idioma
-import cuentaUsuario from './cuentaUsuario.vue'
-import crearCita from './crearCita.vue'
-import Historial from './Historial.vue'
+
+import configuracionCuenta from '../components/configuracionCuenta.vue'
+import tarjetaAgendarCitas from '../components/tarjetaAgendarCitas.vue'
+import verHistorial from '../components/verHistorial.vue'
+import tarjetaVerMisCitas from '../components/tarjetaVerMisCitas.vue'
+
 
 const calendarOptions = ref({
   plugins: [dayGridPlugin, interactionPlugin],
@@ -79,6 +82,11 @@ let accederHistoarialActivo  = () => {
    accederHistorial.value = !accederHistorial.value;
 }
 
+let accederVerMisCitas = ref (false);
+let accderVerMisCitasActivo = () =>{
+  accederVerMisCitas.value = !accederVerMisCitas.value
+}
+
 
 
 </script>
@@ -100,7 +108,7 @@ let accederHistoarialActivo  = () => {
           <span class="text-lg">📅+</span> <span class="hidden md:inline">Agendar cita</span>
         </button>
         
-        <button class="flex items-center gap-3 px-4 py-3 rounded-lg w-auto md:w-full text-left transition-all bg-blue-600 text-white font-semibold shadow-md">
+        <button @click="accderVerMisCitasActivo" class="flex items-center gap-3 px-4 py-3 rounded-lg w-auto md:w-full text-left transition-all bg-blue-600 text-white font-semibold shadow-md">
           <span class="text-lg">👁️..</span> <span class="hidden md:inline">Ver mis citas</span>
         </button>
         
@@ -136,15 +144,15 @@ let accederHistoarialActivo  = () => {
       </section>
 
       <div v-if="mostrarInformacion" class="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" @click.self="informacionActiva">
-        <cuentaUsuario @cerrar="mostrarInformacion = false" />
+        <configuracionCuenta @cerrar="mostrarInformacion = false" />
       </div>
 
       <div v-if="accederCita" class="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" @click.self="accederCitaActiva">
-        <crearCita @cerrar="accederCita = false" />
+        <tarjetaAgendarCitas @cerrar="accederCita = false" />
       </div>
 
       <div v-if="accederHistorial" class="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" @click.self="accederHistoarialActivo">
-        <Historial @cerrar="accederHistorial = false" />
+        <verHistorial @cerrar="accederHistorial = false" />
       </div>
 
     </main>

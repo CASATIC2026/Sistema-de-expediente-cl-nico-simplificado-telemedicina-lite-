@@ -1,10 +1,12 @@
 <script setup>
+import { useRouter } from 'vue-router';
+import { reactive } from 'vue';
 import { ref } from 'vue'; 
+const router = useRouter();
 const emit = defineEmits(['abrirRegistro']);
 
 
 // 1. Definimos el evento para avisar a la Vista Principal que debe abrir el modal de registro
-
 
 
 
@@ -20,8 +22,14 @@ const loginData = ref({
 });
 
 const handleLogin = () => {
-  console.log("Intentando iniciar sesión con:", loginData.value);
-  // Aquí iría tu fetch a la API de login
+ if (loginData.value.email === 'admin@test.com') {
+    router.push('/dashboardPaciente')
+  } else if (loginData.value.email === 'doctor@test.com') {
+    router.push('/dashboardPaciente')
+  } else {
+    // Por defecto, cualquier otro login va a paciente
+    router.push('/dashboardPaciente')
+  }
 };
 </script>
 
@@ -29,7 +37,7 @@ const handleLogin = () => {
   <div class="w-full max-w-md p-4 md:p-8 text-white">
     
     <div class="mb-8">
-      <h3 class="text-2xl font-bold uppercase tracking-wide">Ingresa a tu Salud Digital</h3>
+      <h3 class="text-2xl font-bold uppercase tracking-wide">Iniciar sesión</h3>
       <p class="text-xs text-white/50 mt-1 uppercase tracking-widest">Acceso para pacientes</p>
     </div>
 
@@ -68,9 +76,7 @@ const handleLogin = () => {
           class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:bg-white/10 transition-all placeholder:text-white/20"
           placeholder="********"
         >
-        <div class="text-right mt-2">
-          <a href="#" class="text-[11px] text-white/40 hover:text-cyan-400 transition-colors">¿Olvidaste tu contraseña?</a>
-        </div>
+        
       </div>
 
       <button 
@@ -82,7 +88,7 @@ const handleLogin = () => {
 
       <div class="flex items-center gap-4 my-6 opacity-20">
         <div class="h-[1px] bg-white flex-grow"></div>
-        <span class="text-[10px] uppercase font-bold">O</span>
+        <span class="text-[10px] uppercase font-bold">Pónte en contacto para + información</span>
         <div class="h-[1px] bg-white flex-grow"></div>
       </div>
 

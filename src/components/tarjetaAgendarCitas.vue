@@ -5,7 +5,7 @@ const emit = defineEmits(['cerrar']);
 const props = defineProps({
   esSecretaria: {
     type: Boolean,
-    default: false
+    default: true
   }
 });
 

@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import loginGeneral from '../components/loginGeneral.vue';
 import formularioRegistro from '../components/formularioRegistro.vue';
+import router from '../router';
 
 
 const llamarRegistro = ref(false);
@@ -26,11 +27,8 @@ const cerrarRegistro = () => {
       <div class="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-between relative z-10">
         
         <nav class="flex flex-wrap gap-4 text-[10px] md:text-xs font-bold text-white/60 uppercase tracking-widest">
-          <a href="#" class="hover:text-cyan-400 transition-colors">Empresa</a>
-          <a href="#" class="hover:text-cyan-400 transition-colors">Contacto</a>
-          <a href="#" class="hover:text-cyan-400 transition-colors">Ayuda</a>
-          <a href="#" class="hover:text-cyan-400 transition-colors">Servicios</a>
-          <a href="#" class="hover:text-cyan-400 transition-colors">Blog</a>
+          <router-link to="/preguntasFrecuentes" class="hover:text-cyan-400 transition-colors">Preguntas Frecuentes</router-link>
+          
         </nav>
 
         <div class="py-12 text-center md:text-left">
@@ -55,8 +53,9 @@ const cerrarRegistro = () => {
         </div>
 
         <div class="text-[10px] text-white/30 flex gap-4">
-          <a href="#">Aviso de Privacidad</a>
-          <a href="#">Términos y Condiciones</a>
+          <router-link to="/privacidad" class="hover:text-cyan-400 transition-colors">Política de Privacidad</router-link>
+          <router-link to="/terminos" class="hover:text-cyan-400 transition-colors">Términos de Uso</router-link>
+          
         </div>
       </div>
 
@@ -71,7 +70,7 @@ const cerrarRegistro = () => {
        
 
 
-        <div class="absolute bottom-8 right-12 text-[10px] text-white/30">
+        <div class="absolute bottom-8 center-12 text-[10px] text-white/30">
           © 2025-2026 Mi Salud Digital - Todos los derechos reservados.
         </div>
       </div>
