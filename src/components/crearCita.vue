@@ -1,7 +1,7 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
+const emit = defineEmits(['cerrar']);
 
-// PROPS: Para controlar si es vista de Paciente o Secretaria
 const props = defineProps({
   esSecretaria: {
     type: Boolean,
@@ -9,30 +9,27 @@ const props = defineProps({
   }
 });
 
-// ESTADO DEL FORMULARIO
-const textoBusqueda = ref(''); // Lo que escribe la secretaria (DUI)
-const pacienteSeleccionado = ref(null); // Objeto del paciente encontrado
+const textoBusqueda = ref('');
+const pacienteSeleccionado = ref(null);
 
 const form = ref({
-  pacienteID: '', // ID real que irá a la base de datos
+  pacienteID: '',
   doctorID: '',
   fecha: '',
   hora: '',
+  tipo: '',
+  motivo: '',
   estado: 'Pendiente'
 });
 
-// SIMULACIÓN DE BASE DE DATOS (Sustituir por llamada a API)
 const listaPacientes = ref([
   { id: 10, nombre: "Paciente x , apellido y", dui: "100000001" },
   { id: 25, nombre: "Paciente y, Apellido y", dui: "200000002" },
   { id: 42, nombre: "Paciente z, Apellido z", dui: "300000003" }
 ]);
 
-// LÓGICA PARA VINCULAR EL DUI CON EL ID
 const vincularPaciente = () => {
-  // Buscamos en la lista el paciente que coincida con el DUI escrito
   const encontrado = listaPacientes.value.find(p => p.dui === textoBusqueda.value);
-  
   if (encontrado) {
     form.value.pacienteID = encontrado.id;
     pacienteSeleccionado.value = encontrado;
@@ -43,143 +40,127 @@ const vincularPaciente = () => {
 };
 
 const guardarCita = () => {
-  // Validación extra antes de enviar
   if (props.esSecretaria && !form.value.pacienteID) {
     alert("Por favor, seleccione un paciente válido de la lista.");
     return;
   }
-  
   console.log("Enviando a la DB:", form.value);
   alert("¡Cita agendada con éxito!");
 };
 </script>
 
 <template>
-  <div class="contenedorCitas">
-    <button type="button" class="botonCerrar">&times;</button>
+  <div class="fixed inset-0 z-[99998] flex items-center justify-center bg-cyan-900/60 backdrop-blur-sm p-4" @click.self="emit('cerrar')">
     
-    <p class="titulo">
-      <strong>{{ esSecretaria ? 'Panel Administrativo: Agendar Cita' : 'Complete los campos para agendar su cita' }}</strong>
-    </p>
-
-    <form @submit.prevent="guardarCita">
+    <div class="relative w-full max-w-lg bg-gradient-to-br from-[#024047] to-[#04c4c4] rounded-2xl shadow-2xl p-6 md:p-8 overflow-y-auto max-h-[95vh] animate-in fade-in zoom-in duration-200">
       
-      <!-- SECCIÓN EXCLUSIVA SECRETARIA: Buscador por DUI -->
-      <div v-if="esSecretaria" class="campoCitas">
-        <label for="pacienteBusqueda">Buscar paciente por su DUI</label>
-        <input 
-          list="pacientesSugeridos" 
-          id="pacienteBusqueda" 
-          v-model="textoBusqueda"
-          @change="vincularPaciente"
-          placeholder="Ingrese un N° identificación (DUI)..."
-          class="input-control"
-          required
-        >
-        <datalist id="pacientesSugeridos">
-          <option v-for="p in listaPacientes" :key="p.id" :value="p.dui">
-            {{ p.nombre }}
-          </option>
-        </datalist>
-        
-        <!-- Feedback para la secretaria -->
-        <span v-if="pacienteSeleccionado" class="msj-exito">
-          ✅ Seleccionado: {{ pacienteSeleccionado.nombre }}
-        </span>
-        <span v-else-if="textoBusqueda" class="msj-error">
-          ❌ Paciente no encontrado
-        </span>
-
-        <input type="hidden" v-model="form.pacienteID">
-      </div>
-
-      <!-- SECCIÓN COMÚN: Doctor -->
-      <div class="campoCitas">
-        <label for="doctorID">Doctor disponible</label>
-        <select v-model="form.doctorID" id="doctorID" class="input-control" required>
-          <option value="" disabled>--Seleccione un doctor--</option>
-          <option value="1">Doctor abcde efghihk</option>
-          <option value="2">Dra. aeiou aeiou</option>
-        </select>
-      </div>
-
-      <!-- SECCIÓN COMÚN: Fecha -->
-      <div class="campoCitas">
-        <label for="fecha">Selecionar una fecha</label>
-        <input type="date" v-model="form.fecha" id="fecha" class="input-control" required>
-      </div>
-
-      <!-- SECCIÓN COMÚN: Hora -->
-      <div class="campoCitas">
-        <label for="hora">Seleccionar una horario </label>
-        <select v-model="form.hora" id="hora" class="input-control" required>
-          <option value="" disabled>---Horario disponible---</option>
-          <option value="08:00">08:30-9:00 AM</option>
-          <option value="09:00">09:00-9:30 AM</option>
-          <option value="10:00">9:30-10:00 AM</option>
-          <option value="10:00">10:00-10:30 AM</option>
-        </select>
-      </div>
-
-       <div class="campoCitas">
-        <label for="motivo">Motivo de la consulta</label>
-        <input type="text" v-model="form.motivo" id="motivo" class="input-control" required>
-      </div>
-
-      <button type="submit" class="btn-enviar">
-        {{ esSecretaria ? 'Registrar Cita' : 'Generar mi cita' }}
+      <button 
+        type="button" 
+        class="absolute top-4 right-4 text-white/70 hover:text-white text-3xl leading-none transition-colors"
+        @click="emit('cerrar')"
+      >
+        &times;
       </button>
+      
+      <header class="mb-6 pr-6">
+        <h2 class="text-white text-xl md:text-2xl font-bold leading-tight">
+          {{ esSecretaria ? 'Panel Administrativo: Agendar Cita' : 'Complete los campos para agendar su cita' }}
+        </h2>
+      </header>
 
-    </form>
+      <form @submit.prevent="guardarCita" class="space-y-5">
+        
+        <div v-if="esSecretaria" class="flex flex-col space-y-2">
+          <label for="pacienteBusqueda" class="text-sm font-semibold text-white/90">Buscar paciente por su DUI</label>
+          <input 
+            list="pacientesSugeridos" 
+            id="pacienteBusqueda" 
+            v-model="textoBusqueda"
+            @change="vincularPaciente"
+            placeholder="Ingrese un N° identificación (DUI)..."
+            class="w-full p-3 rounded-lg border-none bg-white text-slate-800 focus:ring-2 focus:ring-cyan-300 outline-none transition-all text-base"
+            required
+          >
+          <datalist id="pacientesSugeridos">
+            <option v-for="p in listaPacientes" :key="p.id" :value="p.dui">
+              {{ p.nombre }}
+            </option>
+          </datalist>
+          
+          <div class="min-h-[20px]">
+            <span v-if="pacienteSeleccionado" class="text-emerald-300 text-xs font-bold flex items-center gap-1">
+              ✅ Seleccionado: {{ pacienteSeleccionado.nombre }}
+            </span>
+            <span v-else-if="textoBusqueda" class="text-rose-300 text-xs font-bold flex items-center gap-1">
+              ❌ Paciente no encontrado
+            </span>
+          </div>
+          <input type="hidden" v-model="form.pacienteID">
+        </div>
+
+        <div class="flex flex-col space-y-2">
+          <label for="doctorID" class="text-sm font-semibold text-white/90">Doctor disponible</label>
+          <select v-model="form.doctorID" id="doctorID" class="w-full p-3 rounded-lg border-none bg-white text-slate-800 focus:ring-2 focus:ring-cyan-300 outline-none appearance-none cursor-pointer" required>
+            <option value="" disabled>-- Seleccione un doctor --</option>
+            <option value="1">Doctor abcde efghihk</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="flex flex-col space-y-2">
+            <label for="fecha" class="text-sm font-semibold text-white/90">Seleccionar fecha</label>
+            <input type="date" v-model="form.fecha" id="fecha" class="w-full p-3 rounded-lg border-none bg-white text-slate-800 focus:ring-2 focus:ring-cyan-300 outline-none" required>
+          </div>
+
+          <div class="flex flex-col space-y-2">
+            <label for="hora" class="text-sm font-semibold text-white/90">Seleccionar horario</label>
+            <select v-model="form.hora" id="hora" class="w-full p-3 rounded-lg border-none bg-white text-slate-800 focus:ring-2 focus:ring-cyan-300 outline-none appearance-none cursor-pointer" required>
+              <option value="" disabled>--- Horarios ---</option>
+              <option value="08:30">08:30-9:00 AM</option>
+              <option value="09:00">09:00-9:30 AM</option>
+              <option value="09:30">9:30-10:00 AM</option>
+              <option value="10:00">10:00-10:30 AM</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="flex flex-col space-y-2">
+          <label for="tipo" class="text-sm font-semibold text-white/90">Tipo de consulta</label>
+          <select v-model="form.tipo" id="tipo" class="w-full p-3 rounded-lg border-none bg-white text-slate-800 focus:ring-2 focus:ring-cyan-300 outline-none appearance-none cursor-pointer" required>
+            <option value="" disabled>--- Seleccionar ---</option>
+            <option value="primera">Primera vez</option>
+            <option value="seguimiento">Consulta de seguimiento</option>
+          </select>
+        </div>
+
+        <div class="flex flex-col space-y-2">
+          <label for="motivo" class="text-sm font-semibold text-white/90">Motivo de la consulta</label>
+          <textarea 
+            v-model="form.motivo" 
+            id="motivo" 
+            rows="2"
+            placeholder="Breve descripción..."
+            class="w-full p-3 rounded-lg border-none bg-white text-slate-800 focus:ring-2 focus:ring-cyan-300 outline-none resize-none"
+            required
+          ></textarea>
+        </div>
+
+        <button 
+          type="submit" 
+          class="w-full mt-4 p-4 bg-cyan-500 hover:bg-cyan-400 text-white font-bold rounded-xl shadow-lg shadow-cyan-950/20 transform active:scale-95 transition-all"
+        >
+          {{ esSecretaria ? 'Registrar Cita en el Sistema' : 'Generar mi cita médica' }}
+        </button>
+
+      </form>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.contenedorCitas {
-  max-width: 450px;
-  margin: 20px auto;
-  padding: 25px;
-  background: linear-gradient(60deg, rgb(2, 64, 71) 20%,  rgb(4, 196, 196));
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-  font-family: sans-serif;
-}
-
-.titulo { color: #2c3e50; margin-bottom: 20px; text-align: center; }
-
-.campoCitas { margin-bottom: 18px; display: flex; flex-direction: column; }
-
-.campoCitas label { font-size: 0.9rem; font-weight: 600; margin-bottom: 6px; color: #ffffff; }
-
-.input-control {
-  padding: 10px;
-  border: 1px solid #dcdfe6;
-  border-radius: 6px;
-  font-size: 1rem;
-}
-
-.btn-enviar {
-  width: 100%;
-  padding: 12px;
-  background-color: #409eff;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-weight: bold;
+/* Estilizamos el calendario y select para que se vean mejor en móviles */
+input[type="date"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
-  transition: 0.3s;
-}
-
-.btn-enviar:hover { background-color: #66b1ff; }
-
-.msj-exito { color: #67c23a; font-size: 0.8rem; margin-top: 5px; }
-.msj-error { color: #f56c6c; font-size: 0.8rem; margin-top: 5px; }
-
-.botonCerrar {
-  float: right;
-  border: none;
-  background: transparent;
-  font-size: 20px;
-  cursor: pointer;
+  filter: invert(0.5);
 }
 </style>

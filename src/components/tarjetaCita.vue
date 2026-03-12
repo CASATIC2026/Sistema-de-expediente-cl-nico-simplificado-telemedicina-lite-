@@ -2,14 +2,54 @@
 import { ref, computed } from 'vue'
 
 const pestañaActiva = ref('pendientes')
-const emit = defineEmits(['close']) // Para cerrar el componente desde el padre
+const emit = defineEmits(['close'])
 
 const citas = ref([
-  { id: 1, doctor: "Dr. García", especialidad: "Cardiología", fecha: "15 Mar", hora: "10:00 AM", estado: "pendientes" },
-  { id: 2, doctor: "Dra. López", especialidad: "Pediatría", fecha: "18 Mar", hora: "02:30 PM", estado: "pendientes" },
-  { id: 2, doctor: "Dra. López", especialidad: "Pediatría", fecha: "18 Mar", hora: "02:30 PM", estado: "pendientes" },
-  { id: 2, doctor: "Dra. López", especialidad: "Pediatría", fecha: "18 Mar", hora: "02:30 PM", estado: "pendientes" },
-  { id: 3, doctor: "Dr. Martínez", especialidad: "Médico General", fecha: "05 Mar", hora: "09:00 AM", estado: "finalizadas" }
+  { 
+    id: 1, 
+    doctor: "Dr. García", 
+    especialidad: "Cardiología", 
+    fecha: "15 Mar", 
+    hora: "10:00 AM", 
+    estado: "pendientes",
+    link: "https://meet.google.com/abc-defg-hij" 
+  },
+  { 
+    id: 2, 
+    doctor: "Dra. López", 
+    especialidad: "Pediatría", 
+    fecha: "18 Mar", 
+    hora: "02:30 PM", 
+    estado: "pendientes",
+    link: "https://zoom.us/j/123456789"
+  },
+  { 
+    id: 3, 
+    doctor: "Dra. López", 
+    especialidad: "Pediatría", 
+    fecha: "17 Mar", 
+    hora: "02:30 PM", 
+    estado: "pendientes",
+    link: "https://zoom.us/j/123456789"
+  },
+  { 
+    id: 3, 
+    doctor: "Dra. López", 
+    especialidad: "Pediatría", 
+    fecha: "19 Mar", 
+    hora: "02:50 PM", 
+    estado: "pendientes",
+    link: "https://zoom.us/j/123456789"
+  },
+  { 
+    id: 4, 
+    doctor: "Dr. Martínez", 
+    especialidad: "Médico General", 
+    fecha: "05 Mar", 
+    hora: "09:00 AM", 
+    estado: "finalizadas",
+    link: null 
+  }
 ])
 
 const citasFiltradas = computed(() => {
@@ -24,13 +64,12 @@ const cancelarCita = (id) => {
 }
 </script>
 
-
 <template>
   <div class="sombraContenedor" @click.self="$emit('close')">
     <div class="tarjetaPrincipal">
       <header class="header-modal">
         <button class="btn-regresar" @click="$emit('close')">
-          <span class="icon">←</span>Regresar
+          <span class="icon">←</span> Regresar
         </button>
         <h3>Mis Citas Médicas</h3>
       </header>
@@ -67,6 +106,17 @@ const cancelarCita = (id) => {
               </div>
             </div>
 
+            <div v-if="pestañaActiva === 'pendientes' && cita.link" class="video-container">
+              <a :href="cita.link" target="_blank" class="btn-video">
+                <span class="video-icon">📹</span>
+                <div class="video-text">
+                  <strong>Unirse a la videollamada</strong>
+                  <span>Link de la reunión virtual</span>
+                </div>
+                <span class="arrow-icon">→</span>
+              </a>
+            </div>
+
             <footer class="cita-footer">
               <button 
                 v-if="pestañaActiva === 'pendientes'" 
@@ -92,26 +142,25 @@ const cancelarCita = (id) => {
 </template>
 
 <style scoped>
-/* 1. CONTENEDOR DE FONDO (OVERLAY) */
+/* 1. CONTENEDOR DE FONDO */
 .sombraContenedor {
   position: fixed;
   inset: 0;
-  background-color: rgba(15, 23, 42, 0.6); /* Azul oscuro traslúcido */
-  backdrop-filter: blur(6px); /* Desenfoque del fondo */
+  background-color: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(6px);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
   padding: 1rem;
-  transition: all 0.3s ease;
 }
 
-/* 2. TARJETA PRINCIPAL (MODAL) */
+/* 2. TARJETA PRINCIPAL */
 .tarjetaPrincipal {
   background: #f8fafc;
   width: 100%;
-  max-width: 480px; /* Tamaño ideal para escritorio */
-  max-height: 85vh; /* Evita que se salga de la pantalla verticalmente */
+  max-width: 480px;
+  max-height: 85vh;
   border-radius: 24px;
   overflow: hidden;
   display: flex;
@@ -132,12 +181,7 @@ const cancelarCita = (id) => {
   border-bottom: 1px solid #e2e8f0;
 }
 
-h3 { 
-  margin: 10px 0 0; 
-  color: #1e293b; 
-  font-size: 1.25rem; 
-  font-weight: 700;
-}
+h3 { margin: 10px 0 0; color: #1e293b; font-size: 1.25rem; font-weight: 700; }
 
 .btn-regresar {
   border: none;
@@ -148,15 +192,9 @@ h3 {
   font-weight: 600;
   cursor: pointer;
   font-size: 0.85rem;
-  transition: 0.2s;
 }
 
-.btn-regresar:hover {
-  background: #e2e8f0;
-  color: #1e293b;
-}
-
-/* 4. NAVEGACIÓN (TABS) */
+/* 4. TABS */
 .tabs-navegacion {
   display: flex;
   background: #e2e8f0;
@@ -176,7 +214,6 @@ h3 {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-size: 0.9rem;
 }
 
 .tab-btn.activa {
@@ -185,12 +222,10 @@ h3 {
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-/* 5. LISTADO DE CITAS */
+/* 5. LISTADO Y CARDS */
 .listado-citas {
   padding: 0 24px 24px;
-  overflow-y: auto; /* Scroll interno si hay muchas citas */
-  scrollbar-width: thin;
-  scrollbar-color: #cbd5e1 transparent;
+  overflow-y: auto;
 }
 
 .cita-card {
@@ -199,11 +234,6 @@ h3 {
   padding: 18px;
   margin-bottom: 16px;
   border: 1px solid #e2e8f0;
-  transition: transform 0.2s;
-}
-
-.cita-card:hover {
-  border-color: #bfdbfe;
 }
 
 .cita-header {
@@ -223,10 +253,9 @@ h3 {
   align-items: center;
   justify-content: center;
   font-weight: 800;
-  font-size: 1.1rem;
 }
 
-.info strong { display: block; color: #1e293b; font-size: 1rem; }
+.info strong { display: block; color: #1e293b; }
 .especialidad { font-size: 0.85rem; color: #64748b; }
 
 .cita-detalles {
@@ -236,84 +265,92 @@ h3 {
   padding: 12px;
   border-radius: 12px;
   font-size: 0.85rem;
-  gap: 8px;
 }
 
-.label { color: #94a3b8; font-weight: 500; margin-right: 4px; }
+.label { color: #94a3b8; font-weight: 500; }
 
-.cita-footer {
+/* 6. SECCIÓN VIDEOLLAMADA */
+.video-container {
   margin-top: 14px;
-  display: flex;
-  gap: 10px;
 }
 
-/* 6. BOTONES Y ESTADOS */
+.btn-video {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f0f7ff;
+  border: 1.5px solid #dbeafe;
+  padding: 12px;
+  border-radius: 14px;
+  text-decoration: none;
+  transition: transform 0.2s;
+}
+
+.btn-video:hover {
+  background: #e0efff;
+  transform: translateY(-2px);
+}
+
+.video-icon {
+  font-size: 1.3rem;
+  background: white;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+}
+
+.video-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.video-text strong { color: #2563eb; font-size: 0.85rem; }
+.video-text span { color: #60a5fa; font-size: 0.7rem; }
+
+.arrow-icon { color: #2563eb; font-weight: bold; }
+
+/* 7. FOOTER Y BOTONES */
+.cita-footer { margin-top: 14px; }
+
 .btn-cancelar {
   width: 100%;
-  padding: 12px;
+  padding: 10px;
   border-radius: 12px;
   border: 1.5px solid #fee2e2;
-  background: #fff;
+  background: white;
   color: #ef4444;
   font-weight: 700;
   cursor: pointer;
-  transition: 0.2s;
-}
-
-.btn-cancelar:hover {
-  background: #ef4444;
-  color: white;
-  border-color: #ef4444;
 }
 
 .status-badge {
+  display: block;
   width: 100%;
   text-align: center;
   padding: 8px;
   border-radius: 10px;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .status-badge.finalizadas { background: #dcfce7; color: #16a34a; }
 .status-badge.canceladas { background: #f1f5f9; color: #64748b; }
 
-.mensaje-vacio {
-  text-align: center;
-  padding: 50px 20px;
-  color: #94a3b8;
-}
+.mensaje-vacio { text-align: center; padding: 40px 0; color: #94a3b8; }
 
-.icon-vacio { font-size: 3.5rem; margin-bottom: 10px; display: block; }
-
-/* 7. AJUSTES RESPONSIVOS (MÓVILES) */
-
+/* 8. RESPONSIVO */
 @media (max-width: 480px) {
   .tarjetaPrincipal {
-    max-height: 92vh;
-    border-radius: 20px 20px 0 0; /* Estilo bottom-sheet */
-    align-self: flex-end; /* Se pega abajo para fácil acceso con el pulgar */
-    margin: 0;
+    max-height: 90vh;
+    border-radius: 24px 24px 0 0;
+    align-self: flex-end;
   }
-
-  .header-modal { padding: 16px 20px; }
-  
-  .tabs-navegacion { margin: 12px 20px; }
-
-  .listado-citas { padding: 0 20px 20px; }
-
-  .cita-detalles {
-    grid-template-columns: 1fr; /* Una sola columna para que no se amontone */
-    gap: 4px;
-  }
-}
-
-/* Para teléfonos muy pequeños */
-@media (max-width: 360px) {
-  h3 { font-size: 1.1rem; }
-  .tab-btn { font-size: 0.8rem; padding: 8px 4px; }
-  .avatar { width: 36px; height: 36px; }
+  .cita-detalles { grid-template-columns: 1fr; gap: 4px; }
+  .btn-video { padding: 10px; }
 }
 </style>
