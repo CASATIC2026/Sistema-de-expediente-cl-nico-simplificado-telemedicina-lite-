@@ -39,5 +39,9 @@ namespace TelMedAPI.Models
 
         [ForeignKey("DoctorId")]
         public Usuario? Doctor { get; set; }
+
+        //Videollamada
+        [Column("link_reunion")]
+        public string? LinkReunion { get; set; }
     }
 }

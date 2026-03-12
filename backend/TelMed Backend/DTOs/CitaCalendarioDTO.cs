@@ -11,5 +11,6 @@ namespace TelMedAPI.DTOs
         public string PacienteNombreCompleto { get; set; } = string.Empty;
         public string TipoConsulta { get; set; } = string.Empty;
         public int PacienteId { get; set; }
+        public string? LinkReunion { get; set; }
     }
 }

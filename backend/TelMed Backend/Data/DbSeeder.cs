@@ -85,21 +85,21 @@ namespace TelMedAPI.Data
                 return;
 
             var baseDate = DateTimeOffset.UtcNow;
-
+            // Generar citas
             var citas = new List<Cita>
-            {
-                new Cita {PacienteId = pacientes[0].Id, DoctorId = doctor.Id, FechaInicio = baseDate.AddHours(8), FechaFin = baseDate.AddHours(9), Motivo="Chequeo", TipoConsulta="General", Estado=CitaEstados.Pendiente},
-                new Cita {PacienteId = pacientes[1].Id, DoctorId = doctor.Id, FechaInicio = baseDate.AddHours(9), FechaFin = baseDate.AddHours(10), Motivo="Dolor cabeza", TipoConsulta="General", Estado=CitaEstados.Pendiente},
-                new Cita {PacienteId = pacientes[2].Id, DoctorId = doctor.Id, FechaInicio = baseDate.AddHours(10), FechaFin = baseDate.AddHours(11), Motivo="Consulta", TipoConsulta="General", Estado=CitaEstados.Confirmada},
-                new Cita {PacienteId = pacientes[3].Id, DoctorId = doctor.Id, FechaInicio = baseDate.AddHours(11), FechaFin = baseDate.AddHours(12), Motivo="Chequeo", TipoConsulta="General", Estado=CitaEstados.Cancelada},
-                new Cita {PacienteId = pacientes[4].Id, DoctorId = doctor.Id, FechaInicio = baseDate.AddHours(12), FechaFin = baseDate.AddHours(13), Motivo="Dolor estomacal", TipoConsulta="General", Estado=CitaEstados.Pendiente},
+        {
+            new Cita {PacienteId = pacientes[0].Id, DoctorId = doctor.Id, FechaInicio = baseDate.AddDays(1).AddHours(9), FechaFin = baseDate.AddDays(1).AddHours(10), Motivo="Chequeo", TipoConsulta="General", Estado=CitaEstados.Pendiente},
+            new Cita {PacienteId = pacientes[1].Id, DoctorId = doctor.Id, FechaInicio = baseDate.AddDays(1).AddHours(10), FechaFin = baseDate.AddDays(1).AddHours(11), Motivo="Dolor cabeza", TipoConsulta="General", Estado=CitaEstados.Pendiente},
+            new Cita {PacienteId = pacientes[2].Id, DoctorId = doctor.Id, FechaInicio = baseDate.AddDays(2).AddHours(11), FechaFin = baseDate.AddDays(2).AddHours(12), Motivo="Consulta", TipoConsulta="General", Estado=CitaEstados.Confirmada},
+            new Cita {PacienteId = pacientes[3].Id, DoctorId = doctor.Id, FechaInicio = baseDate.AddDays(3).AddHours(14), FechaFin = baseDate.AddDays(3).AddHours(15), Motivo="Chequeo", TipoConsulta="General", Estado=CitaEstados.Cancelada},
+            new Cita {PacienteId = pacientes[4].Id, DoctorId = doctor.Id, FechaInicio = baseDate.AddDays(4).AddHours(9), FechaFin = baseDate.AddDays(4).AddHours(10), Motivo="Dolor estomacal", TipoConsulta="General", Estado=CitaEstados.Pendiente},
 
-                new Cita {PacienteId = pacientes[0].Id, DoctorId = doctor.Id, FechaInicio = baseDate.AddDays(1).AddHours(8), FechaFin = baseDate.AddDays(1).AddHours(9), Motivo="Control", TipoConsulta="General", Estado=CitaEstados.Pendiente},
-                new Cita {PacienteId = pacientes[1].Id, DoctorId = doctor.Id, FechaInicio = baseDate.AddDays(1).AddHours(9), FechaFin = baseDate.AddDays(1).AddHours(10), Motivo="Chequeo", TipoConsulta="General", Estado=CitaEstados.Pendiente},
-                new Cita {PacienteId = pacientes[2].Id, DoctorId = doctor.Id, FechaInicio = baseDate.AddDays(1).AddHours(10), FechaFin = baseDate.AddDays(1).AddHours(11), Motivo="Consulta", TipoConsulta="General", Estado=CitaEstados.Confirmada},
-                new Cita {PacienteId = pacientes[3].Id, DoctorId = doctor.Id, FechaInicio = baseDate.AddDays(2).AddHours(11), FechaFin = baseDate.AddDays(2).AddHours(12), Motivo="Dolor muscular", TipoConsulta="General", Estado=CitaEstados.Pendiente},
-                new Cita {PacienteId = pacientes[4].Id, DoctorId = doctor.Id, FechaInicio = baseDate.AddDays(2).AddHours(12), FechaFin = baseDate.AddDays(2).AddHours(13), Motivo="Chequeo", TipoConsulta="General", Estado=CitaEstados.Pendiente}
-            };
+            new Cita {PacienteId = pacientes[0].Id, DoctorId = doctor.Id, FechaInicio = baseDate.AddDays(5).AddHours(10), FechaFin = baseDate.AddDays(5).AddHours(11), Motivo="Control", TipoConsulta="General", Estado=CitaEstados.Pendiente},
+            new Cita {PacienteId = pacientes[1].Id, DoctorId = doctor.Id, FechaInicio = baseDate.AddDays(5).AddHours(11), FechaFin = baseDate.AddDays(5).AddHours(12), Motivo="Chequeo", TipoConsulta="General", Estado=CitaEstados.Pendiente},
+            new Cita {PacienteId = pacientes[2].Id, DoctorId = doctor.Id, FechaInicio = baseDate.AddDays(6).AddHours(9), FechaFin = baseDate.AddDays(6).AddHours(10), Motivo="Consulta", TipoConsulta="General", Estado=CitaEstados.Confirmada},
+            new Cita {PacienteId = pacientes[3].Id, DoctorId = doctor.Id, FechaInicio = baseDate.AddDays(6).AddHours(10), FechaFin = baseDate.AddDays(6).AddHours(11), Motivo="Dolor muscular", TipoConsulta="General", Estado=CitaEstados.Pendiente},
+            new Cita {PacienteId = pacientes[4].Id, DoctorId = doctor.Id, FechaInicio = baseDate.AddDays(7).AddHours(14), FechaFin = baseDate.AddDays(7).AddHours(15), Motivo="Chequeo", TipoConsulta="General", Estado=CitaEstados.Pendiente}
+        };
 
             context.Citas.AddRange(citas);
             context.SaveChanges();

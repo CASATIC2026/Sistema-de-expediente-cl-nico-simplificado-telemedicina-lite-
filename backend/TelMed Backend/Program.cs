@@ -119,7 +119,7 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<TelMedAPIContext>();
     
-    db.Database.Migrate();//APlica migraciones pendientes al iniciar la app
+    db.Database.Migrate();//Aplica migraciones pendientes al iniciar la app
     
     if (!db.Usuarios.Any(u => u.Rol == Roles.Admin))
     { //Crea un admin maestro si no existe, con cambio obligatorio de password

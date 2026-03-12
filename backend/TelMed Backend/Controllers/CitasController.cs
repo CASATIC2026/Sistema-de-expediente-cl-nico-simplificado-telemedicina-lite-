@@ -228,7 +228,51 @@ namespace TelMedAPI.Controllers
             _context.Citas.Add(cita);
             await _context.SaveChangesAsync();
 
-            return Ok("Cita creada correctamente.");
+            // generar link de videollamada
+            cita.LinkReunion = $"https://meet.jit.si/telmed-{Guid.NewGuid()}";
+            await _context.SaveChangesAsync();
+
+            var response = new CitaResponseDTO
+            {
+                IdCita = cita.IdCita,
+                FechaInicio = cita.FechaInicio,
+                FechaFin = cita.FechaFin,
+                Motivo = cita.Motivo,
+                TipoConsulta = cita.TipoConsulta,
+                Estado = cita.Estado,
+                LinkReunion = cita.LinkReunion
+            };
+
+                return Ok(response);
+            }
+        // =========================================================
+        // Cita por id
+
+        [Authorize]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetCitaById(int id)
+        {
+            var cita = await _context.Citas
+                .Include(c => c.Paciente)
+                .Where(c => c.IdCita == id)
+                .Select(c => new CitaCalendarDto
+                {
+                    IdCita = c.IdCita,
+                    Titulo = c.Motivo,
+                    Start = c.FechaInicio,
+                    End = c.FechaFin,
+                    Estado = c.Estado,
+                    PacienteNombreCompleto = c.Paciente.Nombre + " " + c.Paciente.Apellido,
+                    TipoConsulta = c.TipoConsulta,
+                    PacienteId = c.PacienteId,
+                    LinkReunion = c.LinkReunion
+                })
+                .FirstOrDefaultAsync();
+
+            if (cita == null)
+                return NotFound();
+
+            return Ok(cita);
         }
 
         // =========================================================
@@ -259,9 +303,9 @@ namespace TelMedAPI.Controllers
         // CONFIRMAR CITA
         [Authorize(Roles = Roles.Admin + "," + Roles.Secretaria)]
         [HttpPut("{id}/confirmar")]
-        public async Task<IActionResult> ConfirmarCita(int IdCita)
+        public async Task<IActionResult> ConfirmarCita(int id)
         {
-            var cita = await _context.Citas.FindAsync(IdCita);
+            var cita = await _context.Citas.FindAsync(id);
 
             if (cita == null)
                 return NotFound("Cita no encontrada.");
@@ -311,6 +355,7 @@ namespace TelMedAPI.Controllers
             return Ok("Cita cancelada correctamente.");
         }
 
+        //Cita Calendario
         [Authorize (Roles = Roles.Admin + "," + Roles.Secretaria)]
         [HttpGet("calendario")]
         public async Task<ActionResult<IEnumerable<CitaCalendarDto>>> GetCitasCalendario()
@@ -321,17 +366,18 @@ namespace TelMedAPI.Controllers
                 {
                     IdCita = c.IdCita,
                     Titulo = c.Motivo,
+                    Motivo = c.Motivo,
                     Start = c.FechaInicio,
                     End = c.FechaFin,
                     Estado = c.Estado,
                     PacienteNombreCompleto = $"{c.Paciente.Nombre} {c.Paciente.Apellido}",
-                    TipoConsulta = c.TipoConsulta
+                    TipoConsulta = c.TipoConsulta,
+                    PacienteId = c.PacienteId,
+                    LinkReunion = c.LinkReunion
                 })
                 .ToListAsync();
-
             return Ok(citas);
 }
-
 
         // =========================================================
         // PDF
