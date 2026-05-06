@@ -28,6 +28,9 @@ Resources/credentials.json
 **/.env.production
 **/dist/
 
+token.json*
+backend/Resources/*.json
+
 # ========================
 # IDEs
 # ========================

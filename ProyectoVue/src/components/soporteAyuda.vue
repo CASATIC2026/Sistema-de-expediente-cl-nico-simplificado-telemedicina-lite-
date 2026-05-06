@@ -80,7 +80,7 @@ const faqsAgrupadas = computed(() => {
             <h3 class="text-xl font-bold text-slate-800">Centro de Ayuda</h3>
             <p class="text-sm text-slate-500 mt-1">Encuentra soluciones rápidas</p>
           </div>
-          <button @click="$emit('cerrar')" class="text-slate-400 hover:text-slate-600 text-3xl p-1 leading-none">
+          <button @click="$emit('cerrar')" class="text-red-400 hover:text-slate-600 text-4xl md:text-5xl lg:text-6xl transition-all p-1 leading-none">
             &times;
           </button>
         </div>

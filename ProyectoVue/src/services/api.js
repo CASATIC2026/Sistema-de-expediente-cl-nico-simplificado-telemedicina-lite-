@@ -161,17 +161,10 @@ export const getPacientesDoctor = async () => {
 }
 
 
-
-
 export const toggleEstadoPaciente = async (id, activo) => {
   const res = await api.put(`/users/${id}/estado`, { activo })
   return res.data
 }
-
-
-
-
-
 
 // ===============================
 // CONSULTA (Videollamada)
@@ -238,10 +231,6 @@ export const resetPassword = async (token, newPassword) => {
 };
 
 
-
-
-
-
 export const register = async (data) => {
   const res = await api.post('/auth/register', data);
   return res.data;
@@ -287,11 +276,6 @@ export const getEstadisticas = async () => {
   const res = await api.get('/users/estadisticas');
   return res.data;
 };
-
-
-
-
-
 
 // ===============================
 // CIERRE DE SESIÓN

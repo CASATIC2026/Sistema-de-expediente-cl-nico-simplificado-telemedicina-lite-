@@ -230,7 +230,7 @@ const verPassword = ref({ actual: false, nueva: false, confirmar: false })
             </button>
           </div>
 
-          <div class="p-5 space-y-4">
+          <div class="p-4 md:p-6 space-y-4">
             <!-- Teléfono -->
             <div class="flex flex-col gap-1">
               <label class="text-[10px] font-black text-slate-400 uppercase">Teléfono</label>
@@ -241,7 +241,7 @@ const verPassword = ref({ actual: false, nueva: false, confirmar: false })
                 v-else
                 v-model="formulario.telefono"
                 type="text"
-                class="w-full px-4 py-3 bg-slate-50 border-2 border-transparent focus:border-cyan-500 rounded-xl outline-none transition-all font-bold text-slate-700 text-sm"
+                class="w-full px-3 py-2.5 md:px-4 md:py-3 bg-slate-50 border-2 border-transparent focus:border-cyan-500 rounded-xl outline-none transition-all font-bold text-slate-700 text-sm"
               />
             </div>
 
@@ -254,14 +254,14 @@ const verPassword = ref({ actual: false, nueva: false, confirmar: false })
             <!-- Dirección -->
             <div class="flex flex-col gap-1">
               <label class="text-[10px] font-black text-slate-400 uppercase">Dirección</label>
-              <div v-if="!editarPerfil" class="text-sm font-bold text-slate-600 italic">
+              <div v-if="!editarPerfil" class="text-sm font-bold text-slate-600 italic break-words">
                 "{{ formulario.direccion || 'No registrada' }}"
               </div>
               <textarea
                 v-else
                 v-model="formulario.direccion"
                 rows="2"
-                class="w-full px-4 py-3 bg-slate-50 border-2 border-transparent focus:border-cyan-500 rounded-xl outline-none transition-all font-bold text-slate-700 text-sm resize-none"
+                class="w-full px-3 py-2.5 md:px-4 md:py-3 bg-slate-50 border-2 border-transparent focus:border-cyan-500 rounded-xl outline-none transition-all font-bold text-slate-700 text-sm resize-none"
               ></textarea>
             </div>
           </div>
@@ -324,9 +324,6 @@ const verPassword = ref({ actual: false, nueva: false, confirmar: false })
                   </div>
                 </div>
 
-
-
-
                 <div class="flex flex-col gap-1">
                   <label class="text-[10px] font-black text-slate-400 uppercase">Contraseña Nueva</label>
                   <!-- Contraseña Nueva -->
@@ -354,13 +351,6 @@ const verPassword = ref({ actual: false, nueva: false, confirmar: false })
                     </button>
                   </div>     
                 </div>
-
-
-
-
-
-
-
 
                 <div class="flex flex-col gap-1">
                   <label class="text-[10px] font-black text-slate-400 uppercase">Confirmar Contraseña Nueva</label>
@@ -390,10 +380,6 @@ const verPassword = ref({ actual: false, nueva: false, confirmar: false })
                   </div>
                 </div>
 
-
-
-
-
                 <div class="flex gap-3 pt-1">
                   <button
                     @click="cancelarCambioPassword"
@@ -420,18 +406,18 @@ const verPassword = ref({ actual: false, nueva: false, confirmar: false })
 
       <!-- ── FOOTER ── -->
       <footer class="px-6 py-4 border-t border-slate-100 bg-white shrink-0">
-        <div v-if="editarPerfil" class="flex items-center gap-3">
+        <div v-if="editarPerfil" class="flex flex-col md:flex-row items-center gap-2 md:gap-3">
           <button
             @click="editarPerfil = false"
             :disabled="cargando"
-            class="flex-1 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-red-500 transition-colors py-3 rounded-xl hover:bg-red-50"
+            class="w-full md:flex-1 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-red-500 transition-colors py-3 rounded-xl hover:bg-red-50"
           >
             Cancelar
           </button>
           <button
             @click="guardarEdicionCambios"
             :disabled="cargando"
-            class="flex-[2] bg-slate-900 hover:bg-blue-600 text-white py-3.5 rounded-xl font-black text-xs uppercase tracking-[0.15em] transition-all shadow-md flex justify-center items-center disabled:opacity-50"
+            class="fw-full md:flex-[2] bg-slate-900 hover:bg-blue-600 text-white py-3.5 rounded-xl font-black text-xs uppercase tracking-[0.15em] transition-all shadow-md flex justify-center items-center disabled:opacity-50"
           >
             <span v-if="!cargando">Guardar Cambios</span>
             <span v-else class="animate-spin border-2 border-white/30 border-t-white rounded-full h-4 w-4"></span>
