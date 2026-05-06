@@ -176,41 +176,38 @@ const guardarCita = async () => {
 
 <template>
   <div
-    class="fixed inset-0 z-[99998] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-md"
+    class="fixed inset-0 z-[99998] flex items-center justify-center p-2 sm:p-4 bg-slate-900/80 backdrop-blur-md"
     @click.self="emit('cerrar')"
   >
-    <div class="relative w-full max-w-lg bg-white rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[95vh]">
+    <div class="relative w-full max-w-lg bg-white rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[98vh] sm:max-h-[95vh]">
 
       <!-- HEADER -->
-      <div class="relative bg-slate-800 px-8 pt-8 pb-7 shrink-0 overflow-hidden">
+      <div class="relative bg-slate-800 px-5 sm:px-8 pt-6 sm:pt-8 pb-5 sm:pb-7 shrink-0 overflow-hidden">
         
-        <!-- Círculos decorativos -->
         <div class="absolute -top-10 -right-10 w-40 h-40 bg-cyan-500/10 rounded-full pointer-events-none"></div>
         <div class="absolute -bottom-6 left-8 w-24 h-24 bg-white/5 rounded-full pointer-events-none"></div>
 
-        <!-- Botón cerrar -->
         <button
           type="button"
           @click="emit('cerrar')"
-          class="absolute top-5 right-5 w-9 h-9 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white/70 hover:text-white transition-all border border-white/15"
+          class="absolute top-4 right-4 sm:top-5 sm:right-5 w-9 h-9 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white/70 hover:text-white transition-all border border-white/15"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
           </svg>
         </button>
 
-        <!-- Ícono + título -->
-        <div class="flex items-center gap-4">
-          <div class="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center shrink-0">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+        <div class="flex items-center gap-3 sm:gap-4 pr-10">
+          <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 sm:w-6 sm:h-6 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
               <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
             </svg>
           </div>
-          <div>
-            <p class="text-cyan-300/90 text-[10px] font-black uppercase tracking-[0.25em] mb-0.5">
+          <div class="min-w-0">
+            <p class="text-cyan-300/90 text-[10px] font-black uppercase tracking-[0.25em] mb-0.5 truncate">
               {{ props.esSecretaria ? 'Panel Administrativo' : 'Telemedicina' }}
             </p>
-            <h2 class="text-cyan-300/30 text-xl font-black leading-tight">
+            <h2 class="text-cyan-300/30 text-lg sm:text-xl font-black leading-tight truncate">
               {{ props.esSecretaria ? 'Agendar cita para paciente' : 'Nueva cita médica' }}
             </h2>
           </div>
@@ -218,24 +215,25 @@ const guardarCita = async () => {
       </div>
 
       <!-- CUERPO -->
-      <div class="flex-1 overflow-y-auto bg-slate-50 px-8 py-7 space-y-6 custom-scrollbar">
+      <div class="flex-1 overflow-y-auto bg-slate-50 px-4 sm:px-8 py-5 sm:py-7 space-y-5 sm:space-y-6 custom-scrollbar">
 
-        <!-- BUSCAR PACIENTE (solo secretaria) -->
-        <div v-if="props.esSecretaria" class="bg-blue-50 border-2 border-blue-100 rounded-2xl p-5 space-y-3">
+        <!-- BUSCAR PACIENTE -->
+        <div v-if="props.esSecretaria" class="bg-blue-50 border-2 border-blue-100 rounded-2xl p-4 sm:p-5 space-y-3">
           <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-500">Buscar paciente por DUI</p>
           
-          <div class="flex gap-2">
+          <!-- ✅ CORREGIDO: flex-wrap para que el botón no se salga -->
+          <div class="flex flex-wrap gap-2">
             <input
               v-model="duiBusqueda"
               type="text"
               placeholder="00000000-0"
-              class="flex-1 px-4 py-3 bg-white border-2 border-slate-200 focus:border-cyan-500 focus:ring-4 focus:ring-cyan-50 rounded-xl text-sm font-semibold text-slate-700 outline-none transition-all"
+              class="flex-1 min-w-0 px-4 py-3 bg-white border-2 border-slate-200 focus:border-cyan-500 focus:ring-4 focus:ring-cyan-50 rounded-xl text-sm font-semibold text-slate-700 outline-none transition-all"
             />
             <button
               type="button"
               :disabled="buscandoPaciente"
               @click="buscarPaciente"
-              class="px-5 py-3 bg-slate-900 hover:bg-cyan-700 disabled:opacity-50 text-white text-sm font-black rounded-xl transition-all flex items-center gap-2 whitespace-nowrap"
+              class="px-4 sm:px-5 py-3 bg-slate-900 hover:bg-cyan-700 disabled:opacity-50 text-white text-sm font-black rounded-xl transition-all flex items-center gap-2 whitespace-nowrap shrink-0"
             >
               <span v-if="buscandoPaciente" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
               <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -245,7 +243,6 @@ const guardarCita = async () => {
             </button>
           </div>
 
-          <!-- Paciente encontrado -->
           <div v-if="pacienteEncontrado" class="flex items-center gap-3 bg-emerald-50 border-2 border-emerald-200 px-4 py-3 rounded-xl">
             <div class="w-9 h-9 rounded-xl bg-emerald-100 flex items-center justify-center text-xs font-black text-emerald-700 shrink-0">
               {{ pacienteEncontrado.nombre?.[0] }}{{ pacienteEncontrado.apellido?.[0] }}
@@ -261,7 +258,6 @@ const guardarCita = async () => {
             </svg>
           </div>
 
-          <!-- Advertencia sin paciente -->
           <p v-if="!pacienteEncontrado" class="text-[11px] font-bold text-amber-600 flex items-center gap-1.5">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
@@ -350,7 +346,7 @@ const guardarCita = async () => {
               :class="form.tipo === 'Primera vez'
                 ? 'bg-slate-900 text-white border-slate-900 shadow-lg'
                 : 'bg-white text-slate-500 border-slate-200 hover:border-cyan-400 hover:text-cyan-600'"
-              class="py-4 px-4 rounded-2xl text-xs font-black border-2 transition-all text-left"
+              class="py-3 sm:py-4 px-3 sm:px-4 rounded-2xl text-xs font-black border-2 transition-all text-left"
             >
               <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -363,7 +359,7 @@ const guardarCita = async () => {
               :class="form.tipo === 'Seguimiento'
                 ? 'bg-slate-900 text-white border-slate-900 shadow-lg'
                 : 'bg-white text-slate-500 border-slate-200 hover:border-cyan-400 hover:text-cyan-600'"
-              class="py-4 px-4 rounded-2xl text-xs font-black border-2 transition-all text-left"
+              class="py-3 sm:py-4 px-3 sm:px-4 rounded-2xl text-xs font-black border-2 transition-all text-left"
             >
               <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
