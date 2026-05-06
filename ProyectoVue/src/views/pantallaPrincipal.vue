@@ -40,7 +40,7 @@ const cerrarRegistro = () => {
         <!-- Nombre de marca -->
         <div class="text-center">
           <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-white tracking-tight">
-            N O V O M E D <span class="text-cyan-400">Lite™</span>
+            TelMed <span class="text-cyan-400">Lite™</span>
           </h1>
           <p class="text-xs text-white/50 tracking-[0.2em] md:tracking-[0.3em] uppercase mt-2">
             NUESTRA PRIORIDAD ES TU SALUD
@@ -61,7 +61,9 @@ const cerrarRegistro = () => {
         <LoginGeneral @abrirRegistro="abrirRegistro" />
 
         <div class="mt-6 md:absolute md:bottom-8 md:mt-0 text-[10px] text-white/30 text-center">
-          ©2026-2027 Telmed&Health lite - Todos los derechos reservados.
+          ©2026 Telmed & Health lite - Todos los derechos reservados.
+        <br />
+          Desarrollado por J3G Team©
         </div>
 
       </div>
