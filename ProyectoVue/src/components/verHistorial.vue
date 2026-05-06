@@ -17,13 +17,6 @@ const loading              = ref(false)
 const error                = ref(null)
 
 
-
-
-
-
-
-
-
 onMounted(async () => {
   loading.value = true
   error.value   = null

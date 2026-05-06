@@ -17,7 +17,7 @@ import tarjetaVerMisCitas from '../components/tarjetaVerMisCitas.vue'
 import soporteAyuda from '@/components/soporteAyuda.vue'
 
 const calendarRef = ref(null)
-const calendarioListo = ref(false) // controla cuándo montar FullCalendar
+const calendarioListo = ref(false) //controla cuándo montar FullCalendar
 const router = useRouter()
 
 // ===============================
@@ -136,7 +136,7 @@ onMounted(async () => {
 
   await nextTick()
 
-  // ✅ Esperar que el contenedor tenga dimensiones reales antes de montar
+  //Esperar que el contenedor tenga dimensiones reales antes de montar
   setTimeout(async () => {
     calendarioListo.value = true
     await nextTick()
@@ -179,7 +179,7 @@ const cerrarSesion = async () => {
           class="w-16 h-16 md:w-32 md:h-32 object-contain mx-auto mb-2 drop-shadow-[0_0_12px_rgba(34,211,238,0.4)]"
         />
         <div class="text-xs md:text-sm font-bold tracking-wider">
-          N O V O M E D<span class="text-cyan-400"> Lite™</span>
+          TelMed <span class="text-cyan-400"> Lite™</span>
         </div>
 
         <div class="text-sm border-t border-white/10 pt-3 md:pt-4">

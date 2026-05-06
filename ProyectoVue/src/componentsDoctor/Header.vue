@@ -1,11 +1,5 @@
-
 //// ESTE COMPONENTE ES  EL ENCABEZADO DEL DASHBOARD DEL DOCTOR
 ///CONTIENE EL BOTÓN PARA VER SU PERFIL Y CONFIGURAR SU CUENTA, ASÍ COMO EL BOTÓN DE CERRAR SESIÓN
-
-
-
-
-
 <script setup>
 import { ref, onMounted } from 'vue'
 import configuracionCuenta from '@/components/configuracionCuenta.vue'

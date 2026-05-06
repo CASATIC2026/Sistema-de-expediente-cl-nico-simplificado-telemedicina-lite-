@@ -11,7 +11,6 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['cerrar'])
-
 const pestañaActiva = ref('Pendiente')
 const filtroBusqueda = ref('')
 const accederHistorial = ref(false)
@@ -141,7 +140,7 @@ const accederHistorialActivo = (id = null) => {
             <h3 class="text-white text-3xl font-black tracking-tight">
               {{ props.esAdmin ? 'Gestión de Consultas' : 'Mis Citas Médicas' }}
             </h3>
-            <p class="text-white font-medium">Administra y supervisa el estado de las videollamadas</p>
+            <p class="text-white font-medium"> {{ props.esAdmin ? 'Administra y supervisa el estado de las videollamadas' : 'Historial de tus citas médicas ' }}</p>
           </div>
         </div>
 
@@ -156,12 +155,12 @@ const accederHistorialActivo = (id = null) => {
         </div>
       </header>
       
-      <nav class="flex bg-slate-800 px-6 py-3 md:mx-10 mt-6 rounded-2xl gap-2 border-2 border-cyan-400">
+      <nav class="flex bg-slate-800 px-2 md:px-6 mx-2 md:mx-10 mt-6 rounded-2xl gap-1 md:gap-2 border-2 border-cyan-400">
         <button 
           v-for="tab in ['Pendiente', 'EnConsulta', 'Cancelada', 'Finalizada']" 
           :key="tab"
           @click="pestañaActiva = tab"
-          class="flex-1 py-3 rounded-xl font-bold text-xs md:text-sm transition-all uppercase tracking-wider"
+          class="flex-1 py-2 md:py-3 rounded-xl font-bold text-[10px] md:text-sm transition-all uppercase tracking-wider"
           :class="pestañaActiva === tab 
             ? 'bg-slate-300 text-slate-900  ring-1 ring-slate-200' 
             : 'text-white hover:bg-slate-200/50'"

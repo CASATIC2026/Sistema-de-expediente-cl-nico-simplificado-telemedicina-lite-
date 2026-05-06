@@ -13,7 +13,7 @@ export const useCitasStore = defineStore('citas', {
       hoy: 0
     },
     cargando: false,
-    usarMocks: false  // ✅ Cambiado a false para conectar el backend
+    usarMocks: false  // Cambiado a false para conectar el backend
   }),
 
   actions: {

@@ -63,18 +63,18 @@ const guardarCambios = async () => {
 </script>
 
 <template>
-  <div class="fixed inset-0 z-[1000] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-2xl overflow-hidden border border-slate-100">
+  <div class="fixed inset-0 z-[1000] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-2 md:p-4">
+    <div class="bg-white rounded-[2rem] md:rounded-[2.5rem] shadow-2xl w-full max-w-2xl overflow-hidden border border-slate-100 flex flex-col max-h-[95vh]">
 
-      <!-- HEADER -->
-      <div class="px-8 py-6 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
+      <!-- HEADER: Ajustado padding en móvil -->
+      <div class="px-5 py-4 md:px-8 md:py-6 bg-slate-50 border-b border-slate-100 flex justify-between items-center shrink-0">
         <div>
-          <h2 class="text-xl font-black text-slate-800 uppercase tracking-tight">Horario del Doctor</h2>
-          <p class="text-xs text-slate-500 font-bold uppercase">
+          <h2 class="text-lg md:text-xl font-black text-slate-800 uppercase tracking-tight">Horario del Doctor</h2>
+          <p class="text-[10px] md:text-xs text-slate-500 font-bold uppercase">
             {{ props.doctor?.nombre }} {{ props.doctor?.apellido }}
           </p>
         </div>
-        <button @click="emit('cerrar')" class="text-slate-400 hover:text-red-500 transition-colors">
+        <button @click="emit('cerrar')" class="text-slate-400 hover:text-red-500 transition-colors p-1">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
           </svg>
@@ -86,10 +86,11 @@ const guardarCambios = async () => {
         Cargando horario...
       </div>
 
-      <!-- DÍAS -->
-      <div v-else class="p-6 max-h-[70vh] overflow-y-auto">
+      <!-- DÍAS: Contenedor con scroll optimizado -->
+      <div v-else class="p-4 md:p-6 overflow-y-auto overscroll-contain">
         <div class="space-y-3">
 
+          <!-- Encabezado visible solo en escritorio -->
           <div class="hidden md:grid grid-cols-4 gap-4 px-6 py-2 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
             <div class="col-span-1">Estado / Día</div>
             <div class="col-span-3 text-center">Rango de Horas (Inicio — Fin)</div>
@@ -99,55 +100,76 @@ const guardarCambios = async () => {
             v-for="dia in disponibilidad"
             :key="dia.diaSemana"
             :class="dia.activo
-              ? 'bg-white border-slate-200'
+              ? 'bg-white border-slate-200 shadow-sm'
               : 'bg-slate-50 border-transparent opacity-60'"
-            class="grid grid-cols-1 md:grid-cols-4 items-center gap-4 p-4 md:px-6 md:py-3 rounded-2xl border-2 transition-all"
+            class="flex flex-col md:grid md:grid-cols-4 items-center gap-3 md:gap-4 p-4 md:px-6 md:py-3 rounded-2xl border-2 transition-all"
           >
-            <div class="flex items-center gap-3">
-              <label class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" v-model="dia.activo" class="sr-only peer">
-                <div class="w-11 h-6 bg-slate-200 peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-              </label>
-              <span class="font-bold text-slate-700">{{ dia.nombre }}</span>
+            <!-- Parte superior: Toggle y Nombre -->
+            <div class="flex items-center justify-between w-full md:w-auto md:col-span-1 gap-3">
+              <div class="flex items-center gap-3">
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" v-model="dia.activo" class="sr-only peer">
+                  <div class="w-11 h-6 bg-slate-200 peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                </label>
+                <span class="font-bold text-slate-700 text-sm md:text-base">{{ dia.nombre }}</span>
+              </div>
+              <!-- Indicador visual de estado solo en móvil -->
+              <span v-if="!dia.activo" class="md:hidden text-[9px] font-black uppercase text-slate-400 bg-slate-100 px-2 py-1 rounded-md">Cerrado</span>
             </div>
 
-            <div class="col-span-3 flex items-center justify-center gap-2">
-              <input
-                type="time"
-                v-model="dia.inicio"
-                :disabled="!dia.activo"
-                class="w-full md:w-32 p-2 rounded-xl border-2 border-slate-100 focus:border-blue-500 outline-none text-sm font-semibold text-slate-600 disabled:bg-slate-100 disabled:cursor-not-allowed transition-all"
-              />
-              <span class="text-slate-400 font-bold">a</span>
-              <input
-                type="time"
-                v-model="dia.fin"
-                :disabled="!dia.activo"
-                class="w-full md:w-32 p-2 rounded-xl border-2 border-slate-100 focus:border-blue-500 outline-none text-sm font-semibold text-slate-600 disabled:bg-slate-100 disabled:cursor-not-allowed transition-all"
-              />
+            <!-- Parte inferior: Inputs de tiempo -->
+            <div class="w-full md:col-span-3 flex items-center justify-between gap-2 md:gap-4">
+              <div class="flex-1 relative">
+                <span class="md:hidden absolute -top-3.5 left-1 text-[9px] font-black text-slate-400 uppercase">Inicio</span>
+                <input
+                  type="time"
+                  v-model="dia.inicio"
+                  :disabled="!dia.activo"
+                  class="w-full p-2.5 md:p-2 rounded-xl border-2 border-slate-100 focus:border-blue-500 outline-none text-sm font-semibold text-slate-600 disabled:bg-slate-100 disabled:cursor-not-allowed transition-all text-center md:text-left"
+                />
+              </div>
+
+              <span class="text-slate-400 font-bold text-xs md:text-base">a</span>
+
+              <div class="flex-1 relative">
+                <span class="md:hidden absolute -top-3.5 left-1 text-[9px] font-black text-slate-400 uppercase">Fin</span>
+                <input
+                  type="time"
+                  v-model="dia.fin"
+                  :disabled="!dia.activo"
+                  class="w-full p-2.5 md:p-2 rounded-xl border-2 border-slate-100 focus:border-blue-500 outline-none text-sm font-semibold text-slate-600 disabled:bg-slate-100 disabled:cursor-not-allowed transition-all text-center md:text-left"
+                />
+              </div>
             </div>
           </div>
         </div>
 
-        <p v-if="errorMsg" class="mt-4 text-sm font-bold text-red-500 text-center">
+        <p v-if="errorMsg" class="mt-4 text-sm font-bold text-red-500 text-center bg-red-50 p-3 rounded-xl border border-red-100">
           ⚠️ {{ errorMsg }}
         </p>
       </div>
 
-      <!-- FOOTER -->
-      <div class="p-8 bg-slate-50 border-t border-slate-100 flex flex-col md:flex-row gap-3">
+      <!-- FOOTER: Botones apilados en móvil para mejor ergonomía -->
+      <div class="p-5 md:p-8 bg-slate-50 border-t border-slate-100 flex flex-col-reverse md:flex-row gap-3 shrink-0">
         <button
           @click="emit('cerrar')"
-          class="flex-1 py-4 bg-white border-2 border-slate-200 text-slate-500 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-slate-100 transition-all"
+          class="w-full md:flex-1 py-3.5 md:py-4 bg-white border-2 border-slate-200 text-slate-500 rounded-2xl text-[10px] md:text-xs font-black uppercase tracking-widest hover:bg-slate-100 transition-all"
         >
           Cancelar
         </button>
         <button
           @click="guardarCambios"
           :disabled="guardando"
-          class="flex-[2] py-4 bg-blue-600 disabled:opacity-50 text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-200 transition-all"
+          class="w-full md:flex-[2] py-3.5 md:py-4 bg-blue-600 disabled:opacity-50 text-white rounded-2xl text-[10px] md:text-xs font-black uppercase tracking-widest hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-200 transition-all flex justify-center items-center"
         >
-          {{ guardando ? 'Guardando...' : 'Actualizar Horario' }}
+          <span v-if="!guardando">Actualizar Horario</span>
+          <span v-else class="flex items-center gap-2">
+            <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Guardando...
+          </span>
         </button>
       </div>
 

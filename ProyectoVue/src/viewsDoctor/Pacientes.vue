@@ -138,17 +138,6 @@ onMounted(cargarPacientes)
           </button>
         </div>
 
-
-
-
-
-
-
-
-
-
-
-
         <!-- BUSCADOR ESTILIZADO -->
         <div class="relative w-full md:w-96 group">
           <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">

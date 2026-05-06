@@ -126,7 +126,7 @@ const descargarPdf = async () => {
     link.click()
     link.remove()
 
-    // Redireción
+    // Redirección
     router.push('/app/Agenda')
 
   } catch (error) {
