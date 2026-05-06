@@ -38,7 +38,7 @@ const citaActual = (cita) => {
           <th class="px-6 py-3 font-semibold">Paciente</th>
           <th class="px-6 py-3 font-semibold">Motivo</th>
           <th class="px-6 py-3 font-semibold text-center">Estado</th>
-          <!-- ✅ Columna Acciones eliminada -->
+          <!-- Columna Acciones eliminada -->
         </tr>
       </thead>
 

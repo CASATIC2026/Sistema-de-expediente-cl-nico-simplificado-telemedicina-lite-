@@ -21,7 +21,7 @@ const statsResumen = ref({ hoy: 0 })
 const statsUsuarios = ref({ totalPacientes: 0, totalDoctores: 0 })
 
 const calendarRef = ref(null)
-const calendarioListo = ref(false) // ✅ controla cuándo montar FullCalendar
+const calendarioListo = ref(false) //controla cuándo montar FullCalendar
 
 // ===============================
 // PERFIL
@@ -42,8 +42,6 @@ const cargarEstadisticas = async () => {
   }
 }
 
-
-
 const cargarPerfil = async () => {
   try {
     const res = await api.get('/Users/me')
@@ -63,7 +61,6 @@ const cargarPerfil = async () => {
     nombreUsuario.value = localStorage.getItem('user_name') || 'Admin'
   }
 }
-
 // ===============================
 // ASPECT RATIO DINÁMICO
 const getAspectRatio = () => window.innerWidth < 768 ? 1.0 : 2.25
@@ -77,7 +74,6 @@ const actualizarAspectRatio = () => {
     calendarRef.value?.getApi()?.updateSize()
   })
 }
-
 // ===============================
 // CALENDARIO CONFIG
 const calendarOptions = ref({
@@ -104,7 +100,7 @@ const calendarOptions = ref({
 })
 
 // ===============================
-// CARGAR CITAS
+//CARGAR CITAS
 const cargarCitas = async () => {
   try {
     const citas = await getCalendario()
@@ -120,13 +116,13 @@ const cargarCitas = async () => {
       }
     }))
 
-    // ✅ Reemplaza objeto entero para que Vue detecte el cambio
+    //Reemplaza objeto entero para que Vue detecte el cambio
     calendarOptions.value = {
       ...calendarOptions.value,
       events: eventos
     }
 
-    // ✅ Fuerza recarga via API interna de FullCalendar
+    //Fuerza recarga via API interna de FullCalendar
     await nextTick()
     const calApi = calendarRef.value?.getApi()
     if (calApi) {
@@ -140,7 +136,7 @@ const cargarCitas = async () => {
 }
 
 // ===============================
-// LIFECYCLE
+//LIFECYCLE
 onMounted(async () => {
   await Promise.all([
     cargarPerfil(),
@@ -150,7 +146,7 @@ onMounted(async () => {
 
   await nextTick()
 
-  // ✅ Esperar que el contenedor tenga dimensiones reales antes de montar
+  //Esperar que el contenedor tenga dimensiones reales antes de montar
   setTimeout(async () => {
     calendarioListo.value = true
     await nextTick()

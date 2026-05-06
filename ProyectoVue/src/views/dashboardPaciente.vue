@@ -17,7 +17,7 @@ import tarjetaVerMisCitas from '../components/tarjetaVerMisCitas.vue'
 import soporteAyuda from '@/components/soporteAyuda.vue'
 
 const calendarRef = ref(null)
-const calendarioListo = ref(false) // controla cuándo montar FullCalendar
+const calendarioListo = ref(false) //controla cuándo montar FullCalendar
 const router = useRouter()
 
 // ===============================
@@ -136,7 +136,7 @@ onMounted(async () => {
 
   await nextTick()
 
-  // ✅ Esperar que el contenedor tenga dimensiones reales antes de montar
+  //Esperar que el contenedor tenga dimensiones reales antes de montar
   setTimeout(async () => {
     calendarioListo.value = true
     await nextTick()

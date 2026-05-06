@@ -15,7 +15,7 @@ const pacienteEncontrado = ref(null)
 const buscandoPaciente = ref(false)
 const guardando = ref(false)
 const cargandoHorarios = ref(false)
-// ✅ FIX: Calcular fecha de hoy en hora local de El Salvador, no en UTC
+// FIX: Calcular fecha de hoy en hora local de El Salvador, no en UTC
 const hoy = new Date().toLocaleDateString('es-CA', { timeZone: 'America/El_Salvador' })
 const doctores = ref([])
 
@@ -31,7 +31,7 @@ const form = ref({
 
 // ===============================
 // WATCH — solo el watch maneja la recarga de horarios
-// ✅ FIX: Se quitaron los @change duplicados del template
+// FIX: Se quitaron los @change duplicados del template
 // ===============================
 watch(
   () => [form.value.fecha, form.value.doctorID],
@@ -40,7 +40,6 @@ watch(
     cargarHorarios()
   }
 )
-
 
 
 // ===============================
@@ -85,7 +84,7 @@ const horariosDisponibles = ref([])
 
 // ===============================
 // BUSCAR PACIENTE POR DUI (Solo secretaria/admin)
-// ✅ FIX: Función que faltaba completamente
+// FIX: Función que faltaba completamente
 // ===============================
 const buscarPaciente = async () => {
   if (!duiBusqueda.value.trim()) {
@@ -112,7 +111,7 @@ const buscarPaciente = async () => {
 
 // ===============================
 // CALCULAR FECHA FIN (+30 minutos)
-// ✅ FIX: Antes generaba "08:30:30:00" — ahora calcula bien
+// FIX: Antes generaba "08:30:30:00" — ahora calcula bien
 // ===============================
 const calcularFechaFin = (fecha, hora) => {
   const [hh, mm] = hora.split(':').map(Number)
@@ -145,7 +144,7 @@ const guardarCita = async () => {
       return
     }
 
-    // ✅ FIX: Timezone explícito de El Salvador (UTC-6)
+    //FIX: Timezone explícito de El Salvador (UTC-6)
     const fechaInicioStr = `${form.value.fecha}T${form.value.hora}:00-06:00`
     const fechaFinStr = calcularFechaFin(form.value.fecha, form.value.hora)
 

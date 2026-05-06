@@ -324,9 +324,6 @@ const verPassword = ref({ actual: false, nueva: false, confirmar: false })
                   </div>
                 </div>
 
-
-
-
                 <div class="flex flex-col gap-1">
                   <label class="text-[10px] font-black text-slate-400 uppercase">Contraseña Nueva</label>
                   <!-- Contraseña Nueva -->
@@ -355,13 +352,6 @@ const verPassword = ref({ actual: false, nueva: false, confirmar: false })
                   </div>     
                 </div>
 
-
-
-
-
-
-
-
                 <div class="flex flex-col gap-1">
                   <label class="text-[10px] font-black text-slate-400 uppercase">Confirmar Contraseña Nueva</label>
                   <!-- Confirmar Contraseña -->
@@ -389,10 +379,6 @@ const verPassword = ref({ actual: false, nueva: false, confirmar: false })
                     </button>
                   </div>
                 </div>
-
-
-
-
 
                 <div class="flex gap-3 pt-1">
                   <button

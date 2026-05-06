@@ -11,7 +11,6 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['cerrar'])
-
 const pestañaActiva = ref('Pendiente')
 const filtroBusqueda = ref('')
 const accederHistorial = ref(false)

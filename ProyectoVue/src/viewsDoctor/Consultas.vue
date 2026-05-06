@@ -154,7 +154,7 @@ onUnmounted(() => {
         <span class="animate-pulse">Cargando datos de la cita...</span>
       </div>
 
-      <!-- ✅ FIX 1: este div ahora envuelve tanto la info del paciente como la cuadrícula -->
+      <!-- FIX 1: este div ahora envuelve tanto la info del paciente como la cuadrícula -->
       <div v-else-if="cita">
 
         <!-- Info del paciente -->
