@@ -11,6 +11,7 @@ using QuestPDF.Fluent;
 
 namespace TelMedAPI.Controllers
 {
+    // Controlador para manejar consultas médicas
     [ApiController]
     [Route("api/[controller]")]
     public class ConsultasController : ControllerBase
@@ -36,6 +37,7 @@ namespace TelMedAPI.Controllers
             return Ok(consultas);
         }
 
+        // Crear consulta para cita
         [Authorize(Roles = Roles.Doctor)]
         [HttpPost]
         public async Task<IActionResult> CrearConsulta(CreateConsultaDTO dto)
@@ -85,6 +87,7 @@ namespace TelMedAPI.Controllers
             return Ok(consulta);
         }
 
+        // Descargar PDF de consulta
         [HttpGet("{id}/pdf")]
         public async Task<IActionResult> DescargarPdf(int id)
         {

@@ -28,8 +28,8 @@ namespace TelMedAPI.Services
 
             var html = $@"
                 <div style='font-family: Arial, sans-serif;'>
-                    <h2>Verifica tu cuenta en TelMed</h2>
-                    <p>Gracias por registrarte.</p>
+                    <h2>Verifica tu cuenta en TelMed Lite™</h2>
+                    <p>Gracias por registrarte ♡</p>
                     <p>Haz clic en el siguiente botón para confirmar tu correo:</p>
 
                     <a href='{verificationLink}'
@@ -42,18 +42,21 @@ namespace TelMedAPI.Services
                             border-radius:8px;
                             font-weight:bold;
                        '>
-                        Confirmar correo
+                        Confirma tu correo
                     </a>
 
                     <p style='margin-top:20px;'>
                         Si no solicitaste esta cuenta, puedes ignorar este correo.
+                        <br />
                         Este correo ha sido enviado automáticamente, por favor no respondas a este mensaje.
+                         <br />
+                        TelMed & Health Lite™ System
                     </p>
                 </div>";
 
             await EnviarCorreo(
                 destino,
-                "Verifica tu cuenta - TelMed",
+                "Verifica tu cuenta - TelMed Lite™",
                 html
             );
         }
@@ -70,7 +73,7 @@ namespace TelMedAPI.Services
 
             var html = $@"
                 <div style='font-family: Arial, sans-serif;'>
-                    <h2>Recuperación de contraseña - TelMed</h2>
+                    <h2>Recuperación de contraseña - TelMed Lite™</h2>
 
                     <p>Recibimos una solicitud para restablecer tu contraseña.</p>
 
@@ -89,13 +92,16 @@ namespace TelMedAPI.Services
 
                     <p style='margin-top:20px;'>
                         Si no solicitaste este cambio, puedes ignorar este correo.
+                        <br />
                         Este correo ha sido enviado automáticamente, por favor no respondas a este mensaje.
+                        <br />
+                        TelMed & Health Lite™ System
                     </p>
                 </div>";
 
             await EnviarCorreo(
                 destino,
-                "Recuperar contraseña - TelMed",
+                "Recuperar contraseña - TelMed Lite™",
                 html
             );
         }

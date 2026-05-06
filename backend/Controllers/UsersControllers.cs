@@ -206,11 +206,6 @@ namespace TelMedAPI.Controllers
             return Ok(new { totalPacientes, totalDoctores });
         }
 
-
-
-
-
-
         // ===============================
         // Cambiar estado activo/inactivo
         [Authorize(Roles = Roles.Admin)]
@@ -249,7 +244,7 @@ namespace TelMedAPI.Controllers
                     u.FechaNacimiento,
                     u.FotoUrl,
 
-                    //ESTE CÓDIGO ME PERMITE EXTRAER  LA FECHA DE LA ULTIMA CONSULTA DEL PACIENTE 
+                    // Obtener fecha de última consulta para cada paciente
                     FechaUltimaConsulta = _context.Consultas
                     .Where(con => con.Cita.PacienteId == u.Id)
                     .OrderByDescending(con => con.Fecha)
