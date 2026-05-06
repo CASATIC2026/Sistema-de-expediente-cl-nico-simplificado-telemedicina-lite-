@@ -204,10 +204,10 @@ const guardarCita = async () => {
             </svg>
           </div>
           <div class="min-w-0">
-            <p class="text-cyan-300/90 text-[10px] font-black uppercase tracking-[0.25em] mb-0.5 truncate">
+            <p class="text-cyan-400 text-[10px] font-black uppercase tracking-[0.25em] mb-0.5 truncate">
               {{ props.esSecretaria ? 'Panel Administrativo' : 'Telemedicina' }}
             </p>
-            <h2 class="text-cyan-10 text-lg sm:text-xl font-black leading-tight truncate">
+            <h2 class="text-cyan-400 text-lg sm:text-xl font-black leading-tight truncate">
               {{ props.esSecretaria ? 'Agendar cita para paciente' : 'Nueva cita médica' }}
             </h2>
           </div>
