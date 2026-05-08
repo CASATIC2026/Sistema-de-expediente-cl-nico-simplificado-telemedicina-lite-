@@ -123,24 +123,29 @@ const accederHistorialActivo = (id = null) => {
 
 <template>
   <div 
-    class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 md:p-8"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-2 md:p-8"
     @click.self="emit('cerrar')"
   >
-    <div class="bg-white w-full w-7xl h-full max-h-[90vh] rounded-[32px] shadow-2xl flex flex-col overflow-hidden border border-white/20">
+    <!-- ❌ w-7xl no existe en Tailwind → ✅ max-w-7xl w-full -->
+    <div class="bg-white w-full max-w-7xl h-full max-h-[95vh] md:max-h-[90vh] rounded-[32px] shadow-2xl flex flex-col overflow-hidden border border-white/20">
       
-      <header class="p-6 md:p-10 bg-slate-800 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div class="flex items-center gap-6">
+      <!-- HEADER -->
+      <header class="p-4 md:p-10 bg-slate-800 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6">
+        <div class="flex items-center gap-3 md:gap-6">
           <button 
             @click="emit('cerrar')"
-            class="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-all shadow-lg"          >
+            class="flex items-center gap-2 px-3 py-2 md:px-4 md:py-2 bg-white border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-all shadow-lg shrink-0"
+          >
             ←
             <span class="text-sm font-bold">Regresar</span>
           </button>
-          <div>
-            <h3 class="text-white text-3xl font-black tracking-tight">
+          <div class="min-w-0">
+            <h3 class="text-white text-xl md:text-3xl font-black tracking-tight truncate">
               {{ props.esAdmin ? 'Gestión de Consultas' : 'Mis Citas Médicas' }}
             </h3>
-            <p class="text-white font-medium"> {{ props.esAdmin ? 'Administra y supervisa el estado de las videollamadas' : 'Historial de tus citas médicas ' }}</p>
+            <p class="text-white font-medium text-xs md:text-base">
+              {{ props.esAdmin ? 'Administra y supervisa el estado de las videollamadas' : 'Historial de tus citas médicas' }}
+            </p>
           </div>
         </div>
 
@@ -149,40 +154,43 @@ const accederHistorialActivo = (id = null) => {
             v-model="filtroBusqueda"
             type="text" 
             placeholder="Buscar por paciente o ID..."
-            class="w-full pl-12 pr-6 py-4 bg-slate-50 border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 rounded-2xl outline-none transition-all font-medium"
+            class="w-full pl-12 pr-6 py-3 md:py-4 bg-slate-50 border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 rounded-2xl outline-none transition-all font-medium text-sm"
           />
           <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">🔍</span>
         </div>
       </header>
       
-      <nav class="flex bg-slate-800 px-2 md:px-6 mx-2 md:mx-10 mt-6 rounded-2xl gap-1 md:gap-2 border-2 border-cyan-400">
+      <!-- TABS -->
+      <nav class="flex bg-slate-800 px-2 md:px-6 mx-2 md:mx-10 mt-4 md:mt-6 rounded-2xl gap-1 md:gap-2 border-2 border-cyan-400">
         <button 
           v-for="tab in ['Pendiente', 'EnConsulta', 'Cancelada', 'Finalizada']" 
           :key="tab"
           @click="pestañaActiva = tab"
-          class="flex-1 py-2 md:py-3 rounded-xl font-bold text-[10px] md:text-sm transition-all uppercase tracking-wider"
+          class="flex-1 py-2 md:py-3 rounded-xl font-bold text-[9px] md:text-sm transition-all uppercase tracking-wider"
           :class="pestañaActiva === tab 
-            ? 'bg-slate-300 text-slate-900  ring-1 ring-slate-200' 
+            ? 'bg-slate-300 text-slate-900 ring-1 ring-slate-200' 
             : 'text-white hover:bg-slate-200/50'"
         >
           {{ tab === 'EnConsulta' ? 'En Curso' : tab }}
         </button>
       </nav>
 
-      <main class="flex-1 px-6 md:px-10 py-6 overflow-y-auto custom-scrollbar">
+      <!-- MAIN -->
+      <main class="flex-1 px-3 md:px-10 py-4 md:py-6 overflow-y-auto custom-scrollbar">
         
         <div v-if="citasFiltradas.length > 0" class="grid gap-4">
           <div 
             v-for="cita in citasFiltradas" :key="cita.id" 
-            class="group bg-white border border-slate-100 rounded-3xl p-5 md:p-6 flex flex-col lg:grid lg:grid-cols-12 lg:items-center hover:shadow-xl hover:shadow-blue-500/5 hover:border-blue-200 transition-all duration-300"
+            class="group bg-white border border-slate-100 rounded-3xl p-4 md:p-6 flex flex-col hover:shadow-xl hover:shadow-blue-500/5 hover:border-blue-200 transition-all duration-300 lg:grid lg:grid-cols-12 lg:items-center"
           >
-            <div class="lg:col-span-4 flex items-center gap-5">
-              <div class="w-14 h-14 bg-blue-600 text-white rounded-2xl flex shrink-0 items-center justify-center text-xl font-bold shadow-lg shadow-blue-200">
+            <!-- Nombre / Avatar -->
+            <div class="lg:col-span-4 flex items-center gap-4">
+              <div class="w-12 h-12 md:w-14 md:h-14 bg-blue-600 text-white rounded-2xl flex shrink-0 items-center justify-center text-xl font-bold shadow-lg shadow-blue-200">
                 {{ cita.nombre.charAt(0) }}
               </div>
               <div class="min-w-0">
-                <h4 class="text-slate-900 font-bold text-lg truncate">{{ cita.nombre }}</h4>
-                <div class="flex items-center gap-2">
+                <h4 class="text-slate-900 font-bold text-base md:text-lg truncate">{{ cita.nombre }}</h4>
+                <div class="flex items-center gap-2 flex-wrap">
                   <span class="px-2 py-0.5 bg-slate-100 text-slate-500 text-[10px] font-black rounded-md uppercase">#Tel: {{ cita.telefono }}</span>
                   <span v-if="cita.estado === 'EnConsulta'" class="flex items-center gap-1 text-green-600 text-[10px] font-bold animate-pulse">
                     ● En vivo
@@ -191,50 +199,49 @@ const accederHistorialActivo = (id = null) => {
               </div>
             </div>
 
-            <div class="lg:col-span-3 mt-4 lg:mt-0 flex flex-col border-l-0 lg:border-l lg:pl-8 border-slate-100">
+            <!-- Detalles -->
+            <div class="lg:col-span-3 mt-3 lg:mt-0 flex flex-col pt-3 lg:pt-0 border-t lg:border-t-0 lg:border-l lg:pl-8 border-slate-100">
               <span class="text-slate-400 font-bold text-[10px] uppercase tracking-tighter">Detalles de la consulta</span>
               <span class="text-slate-700 font-bold text-sm">Consulta: {{ cita.tipoConsulta }}</span>
-              <span class="text-blue-600 font-medium text-xs">DR: {{ cita.doctor}}</span>
+              <span class="text-blue-600 font-medium text-xs">DR: {{ cita.doctor }}</span>
               <span class="text-blue-600 font-medium text-xs">Estado: {{ cita.estado }}</span>
               <span class="text-blue-600 font-medium text-xs">ID cita: {{ cita.id }}</span>
             </div>
 
-            <div class="lg:col-span-2 mt-4 lg:mt-0 flex flex-col border-l-0 lg:border-l lg:pl-8 border-slate-100">
+            <!-- Fecha -->
+            <div class="lg:col-span-2 mt-3 lg:mt-0 flex flex-col pt-3 lg:pt-0 border-t lg:border-t-0 lg:border-l lg:pl-8 border-slate-100">
               <span class="text-slate-400 font-bold text-[10px] uppercase tracking-tighter">Fecha y Hora</span>
               <span class="text-slate-700 font-bold text-sm">{{ cita.fecha }}</span>
               <span class="text-slate-500 font-medium text-xs">{{ cita.hora }}</span>
             </div>
 
-            <div class="lg:col-span-3 flex items-center justify-end gap-3 mt-6 lg:mt-0">
+            <!-- Acciones -->
+            <div class="lg:col-span-3 flex items-center justify-start lg:justify-end gap-2 mt-4 lg:mt-0 pt-3 lg:pt-0 border-t lg:border-t-0 border-slate-100 flex-wrap">
               
               <template v-if="cita.estado === 'Pendiente' || cita.estado === 'EnConsulta'">
                 
                 <button 
                   v-if="props.esAdmin"
                   @click="copiarLink(cita.linkReunion)"
-                  class="flex-1 lg:flex-none px-4 py-2.5 bg-cyan-50 text-cyan-700 rounded-xl text-xs font-black hover:bg-cyan-100 transition-colors"
+                  class="px-4 py-2.5 bg-cyan-50 text-cyan-700 rounded-xl text-xs font-black hover:bg-cyan-100 transition-colors"
                 >
                   COPIAR ENLACE
                 </button>
 
-
-
-
                 <span
                   v-if="!props.esAdmin && cita.estado === 'Pendiente'"
-                  class="flex-1 lg:flex-none px-6 py-2.5 rounded-xl text-xs font-black text-center bg-blue-100 text-blue-400 cursor-not-allowed select-none"
+                  class="px-4 py-2.5 rounded-xl text-xs font-black text-center bg-blue-100 text-blue-400 cursor-not-allowed select-none"
                   title="El doctor debe iniciar la consulta primero"
                 >
                   🕐 PRÓXIMO A INICIAR
                 </span>
-
 
                 <a 
                   v-if="!props.esAdmin && cita.estado === 'EnConsulta' && cita.linkReunion"
                   :href="cita.linkReunion"
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="flex-1 lg:flex-none px-6 py-2.5 rounded-xl text-xs font-black text-center bg-green-600 text-white hover:bg-green-700 transition-all shadow-md shadow-green-200 animate-pulse"
+                  class="px-6 py-2.5 rounded-xl text-xs font-black text-center bg-green-600 text-white hover:bg-green-700 transition-all shadow-md shadow-green-200 animate-pulse"
                 >
                   🟢 UNIRSE AHORA
                 </a>
@@ -252,7 +259,7 @@ const accederHistorialActivo = (id = null) => {
               <template v-if="cita.estado === 'Finalizada'">
                 <button @click="descargarPDF(cita.id)"
                  class="flex items-center gap-2 px-4 py-2.5 bg-green-600 text-white rounded-xl font-bold text-xs hover:bg-green-700 transition-all shadow-md shadow-green-200">
-                  📄Receta PDF
+                  📄 Receta PDF
                 </button>
               </template>
 
@@ -260,6 +267,7 @@ const accederHistorialActivo = (id = null) => {
                 Anulada
               </div>
             </div>
+
           </div>
         </div>
 
