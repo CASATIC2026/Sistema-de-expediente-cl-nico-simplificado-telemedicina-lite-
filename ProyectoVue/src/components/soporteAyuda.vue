@@ -64,7 +64,7 @@ const faqsAgrupadas = computed(() => {
     leave-from-class="translate-x-0"
     leave-to-class="translate-x-full"
   >
-    <div class="fixed top-0 right-0 h-full z-[9999] bg-white shadow-2xl flex flex-col w-full sm:w-[450px]">
+    <div class="fixed top-0 right-0 h-full z-[9999] bg-slate-800 shadow-2xl flex flex-col w-full sm:w-[450px]">
 
       <!-- HEADER -->
       <div class="p-6 border-b border-gray-100 flex justify-between items-start bg-white">
@@ -81,7 +81,7 @@ const faqsAgrupadas = computed(() => {
       </div>
 
       <!-- CUERPO -->
-      <div class="flex-1 overflow-y-auto p-6 space-y-8 bg-white">
+      <div class="flex-1 overflow-y-auto p-6 space-y-8 bg-slate-800">
         <div v-for="(grupo, categoria) in faqsAgrupadas" :key="categoria" class="space-y-3">
           <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 ml-1">
             {{ categoria }}
@@ -112,7 +112,7 @@ const faqsAgrupadas = computed(() => {
             <i class="fa-solid fa-phone text-emerald-500"></i> Llamar
           </a>
           <a href="#" 
-             class="flex items-center justify-center gap-2 px-4 py-3 bg-[#25D366] text-white rounded-xl text-sm font-medium hover:bg-opacity-90 transition-colors text-center">
+             class="flex items-center justify-center gap-2 px-4 py-3 bg-slate-800 text-cyan-400 rounded-xl text-sm font-medium hover:bg-opacity-90 transition-colors text-center">
             <i class="fa-brands fa-whatsapp"></i> WhatsApp
           </a>
         </div>
