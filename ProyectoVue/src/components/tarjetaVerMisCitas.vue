@@ -134,7 +134,7 @@ const accederHistorialActivo = (id = null) => {
         <div class="flex items-center gap-3 md:gap-6">
           <button 
             @click="emit('cerrar')"
-            class="flex items-center gap-2 px-3 py-2 md:px-4 md:py-2 bg-white border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-all shadow-lg shrink-0"
+            class="flex items-center gap-2 px-3 py-2 md:px-4 md:py-2 bg-white border border-slate-200 text-slate-600 rounded-3xl hover:bg-slate-50 hover:border-slate-300 transition-all shadow-lg shrink-0"
           >
             ←
             <span class="text-sm font-bold">Regresar</span>
@@ -166,7 +166,7 @@ const accederHistorialActivo = (id = null) => {
           v-for="tab in ['Pendiente', 'EnConsulta', 'Cancelada', 'Finalizada']" 
           :key="tab"
           @click="pestañaActiva = tab"
-          class="flex-1 py-2 md:py-3 rounded-xl font-bold text-[9px] md:text-sm transition-all uppercase tracking-wider"
+          class="flex-1 py-2 md:py-3 rounded-3xl font-bold text-[9px] md:text-sm transition-all uppercase tracking-wider"
           :class="pestañaActiva === tab 
             ? 'bg-slate-300 text-slate-900 ring-1 ring-slate-200' 
             : 'text-white hover:bg-slate-200/50'"
