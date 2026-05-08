@@ -13,11 +13,11 @@ export const useCitasStore = defineStore('citas', {
       hoy: 0
     },
     cargando: false,
-    usarMocks: false  // Cambiado a false para conectar el backend
+    usarMocks: false  
   }),
 
   actions: {
-    // ─── CARGAR CITAS DESDE BACKEND ───────────────────────────────
+    // ==============CARGAR CITAS DESDE BACKEND ==================================
     async cargarCitas() {
       this.cargando = true
       try {
@@ -31,7 +31,7 @@ export const useCitasStore = defineStore('citas', {
       }
     },
 
-    // ─── CARGAR RESUMEN (StatCards) ───────────────────────────────
+    // ==================CARGAR RESUMEN (StatCards) ==================
     async cargarResumen() {
       try {
         const data = await getResumen()
@@ -48,7 +48,7 @@ export const useCitasStore = defineStore('citas', {
       }
     },
 
-    // ─── CREAR CITA ───────────────────────────────────────────────
+    // =======================CREAR CITA ==============================
     async crearCita(nuevaCita) {
       try {
         await apiCrearCita(nuevaCita)

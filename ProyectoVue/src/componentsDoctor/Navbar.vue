@@ -12,7 +12,7 @@ const links = [
 </script>
 
 <template>
-  <nav class="bg-[#4682B4] text-white shadow-md">
+  <nav class="bg-[#4682B4] text-white shadow-lg">
 
     <!-- DESKTOP: links horizontales -->
     <div class="hidden md:flex justify-center gap-2 py-3 px-4">
@@ -20,7 +20,7 @@ const links = [
         v-for="link in links"
         :key="link.name"
         :to="{ name: link.name }"
-        class="px-4 py-2 rounded transition-colors whitespace-nowrap hover:bg-white/20 text-sm font-medium"
+        class="px-4 py-2 rounded-xl transition-colors whitespace-nowrap text-white hover:bg-white/50 text-md font-medium"
         active-class="bg-white/30 font-bold border-b-2 border-white rounded-none"
       >
         {{ link.label }}
@@ -29,7 +29,7 @@ const links = [
 
     <!-- MÓVIL: barra con hamburguesa -->
     <div class="md:hidden flex items-center justify-between px-4 py-3">
-      <span class="font-bold text-sm tracking-wider">NOVOMED</span>
+      <span class="font-bold text-sm tracking-wider">T e l M e d lite</span>
       <button
         @click="menuAbierto = !menuAbierto"
         class="p-2 rounded-lg hover:bg-white/20 transition-colors"

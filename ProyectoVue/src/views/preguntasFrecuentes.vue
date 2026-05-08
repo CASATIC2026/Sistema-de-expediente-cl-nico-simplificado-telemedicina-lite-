@@ -1,90 +1,204 @@
+<script setup>
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+</script>
+
 <template>
+  <div class="min-h-screen bg-[#0a1628] text-white p-8 relative">
 
-<div class="max-w-5xl mx-auto p-8 text-slate-700">
+    <!-- Botón volver -->
+    <button
+      @click="router.push('/')"
+      class="absolute top-6 left-6 flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900/70 border border-white/10 hover:bg-slate-800 transition-all text-sm font-medium text-cyan-300 hover:text-cyan-200 shadow-lg"
+    >
+      ← Volver al inicio
+    </button>
 
-<h1 class="text-3xl font-bold mb-6">
-Preguntas Frecuentes
-</h1>
+    <div class="max-w-4xl mx-auto">
 
-<div class="space-y-6">
+      <!-- Encabezado -->
+      <div class="text-center mb-12 mt-10">
+        <h1 class="text-4xl font-extrabold tracking-tight mb-4">
+          <span class="text-white">Preguntas</span>
+          <span class="text-cyan-400 ml-3">Frecuentes</span>
+        </h1>
 
-<div>
-<h2 class="font-semibold text-lg">
-¿Cómo funciona TelMed lite?
-</h2>
+        <p class="text-slate-400">
+          Todo lo que necesitas saber sobre tu plataforma de telemedicina TelMed Lite™
+        </p>
+      </div>
 
-<p class="text-slate-600">
-TelMed lite es una plataforma web enfocada en conectar consultas médicas por medio de videollamadas.
-Los usuarios pueden registrarse usando una cuenta de Google o 
-pueden hacerlo completando el formulario que se encuentra en la sección de "Registrame".
-Dentro de la plataforma web podrá  agendar nuevas citas, acceder a los diferentes estados
-de las citas : citas pendientes, consultas en curso, citas canceladas, finalizadas, como también 
-descargar recetas que su doctor haya indicado.
-</p>
-</div>
+      <!-- FAQ -->
+      <div class="space-y-4">
 
+        <!-- Pregunta 1 -->
+        <details class="group bg-slate-900/50 border border-white/10 rounded-2xl p-6 transition-all hover:bg-slate-800/50 cursor-pointer">
+          <summary class="flex justify-between items-center font-bold text-lg text-cyan-50 list-none">
+            ¿Cómo funciona la plataforma?
 
-<div>
-<h2 class="font-semibold text-lg">
-¿Para acceder necesito un dispositivo en específico?
-</h2>
+            <span class="text-cyan-400 transition group-open:rotate-180">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+              </svg>
+            </span>
+          </summary>
 
-<p class="text-slate-600">
-Los usuarios pueden acceder al sistema usando dispositivos móviles, tablets o de escritorio.
-</p>
-</div>
+          <p class="mt-4 text-slate-400 leading-relaxed">
+            Es sencillo: te registras, validas tu cuenta, inicias sesión y agendas tu cita.<br />
+            Al agendar la cita, se creará un enlace único para recibir tu consulta mediante Jitsi Meet.<br />
+            Serás atendido por un médico del personal y, al finalizar la consulta,
+            tendrás acceso a tu receta médica en PDF.
+          </p>
+        </details>
 
-<div>
-<h2 class="font-semibold text-lg">
-¿Necesito instalar alguna aplicación para conectarme a las videollamadas?
-</h2>
+        <!-- Pregunta 2 -->
+        <details class="group bg-slate-900/50 border border-white/10 rounded-2xl p-6 transition-all hover:bg-slate-800/50 cursor-pointer">
+          <summary class="flex justify-between items-center font-bold text-lg text-cyan-50 list-none">
+            ¿Cómo me registro?
 
-<p class="text-slate-600">
-No es necesario. El sistema integra una herramienta que permite conectar la videollamada
-en una nueva pestaña del navegador.
-</p>
-</div>
+            <span class="text-cyan-400 transition group-open:rotate-180">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+              </svg>
+            </span>
+          </summary>
 
+          <p class="mt-4 text-slate-400 leading-relaxed">
+            • Haz click en "Registrarse" en la página principal.<br />
+            • Completa el formulario con tus datos.<br />
+            • Recibirás un correo de verificación.<br />
+            • Una vez validada tu cuenta, podrás iniciar sesión y usar la plataforma.
+          </p>
+        </details>
 
-<div>
-<h2 class="font-semibold text-lg">
-¿Cómo puedo agendar una cita médica?
-</h2>
+        <!-- Pregunta 3 -->
+        <details class="group bg-slate-900/50 border border-white/10 rounded-2xl p-6 transition-all hover:bg-slate-800/50 cursor-pointer">
+          <summary class="flex justify-between items-center font-bold text-lg text-cyan-50 list-none">
+            ¿Tiene un costo el uso de la plataforma?
 
-<p class="text-slate-600">
-Despues de haber iniciado sesión con tus datos, podrá dirigirse a la sección
-"Nueva cita", completa los campos y selecciona el horario a convenir.
-Dentro de la plataforma web podrá visualizar los diferentes estados de las citas
-</p>
-</div>
+            <span class="text-cyan-400 transition group-open:rotate-180">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+              </svg>
+            </span>
+          </summary>
 
+          <p class="mt-4 text-slate-400 leading-relaxed">
+            No, el uso de la plataforma es completamente gratuito.
+          </p>
+        </details>
 
-<div>
-<h2 class="font-semibold text-lg">
-¿Mis datos médicos están protegidos?
-</h2>
+        <!-- Pregunta 4 -->
+        <details class="group bg-slate-900/50 border border-white/10 rounded-2xl p-6 transition-all hover:bg-slate-800/50 cursor-pointer">
+          <summary class="flex justify-between items-center font-bold text-lg text-cyan-50 list-none">
+            ¿Mis datos y recetas están seguros?
 
-<p class="text-slate-600">
-Sí. Utilizamos medidas de seguridad para proteger la información personal
-e información médica de nuestros usuarios.
-</p>
-</div>
+            <span class="text-cyan-400 transition group-open:rotate-180">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+              </svg>
+            </span>
+          </summary>
 
+          <p class="mt-4 text-slate-400 leading-relaxed">
+            Sí. Toda la información se encuentra protegida y cifrada.
+          </p>
+        </details>
 
+        <!-- Pregunta 5 -->
+        <details class="group bg-slate-900/50 border border-white/10 rounded-2xl p-6 transition-all hover:bg-slate-800/50 cursor-pointer">
+          <summary class="flex justify-between items-center font-bold text-lg text-cyan-50 list-none">
+            ¿Cómo puedo agendar una cita médica?
 
-<div>
-<h2 class="font-semibold text-lg">
-¿Qué hago si tengo problemas técnicos para conectar la videollamada?
-</h2>
+            <span class="text-cyan-400 transition group-open:rotate-180">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+              </svg>
+            </span>
+          </summary>
 
-<p class="text-slate-600">
-Dentro del panel principal podrá encontrar una sección de soporte/ayuda, podrá consultarlo cuando haya ingresado 
-a la plataforma web, en casos mas específicos podrá encontrar los numeros de contacto dentro de la misma sección.
-</p>
-</div>
+          <p class="mt-4 text-slate-400 leading-relaxed">
+            Después de iniciar sesión, podrás acceder al panel de citas y seleccionar
+            médico, fecha y horario disponible.
+          </p>
+        </details>
 
-</div>
+        <!-- Pregunta 6 -->
+        <details class="group bg-slate-900/50 border border-white/10 rounded-2xl p-6 transition-all hover:bg-slate-800/50 cursor-pointer">
+          <summary class="flex justify-between items-center font-bold text-lg text-cyan-50 list-none">
+            ¿Qué hago si tengo problemas técnicos?
 
-</div>
+            <span class="text-cyan-400 transition group-open:rotate-180">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+              </svg>
+            </span>
+          </summary>
 
+          <p class="mt-4 text-slate-400 leading-relaxed">
+            Puedes contactar al equipo de soporte mediante el formulario de contacto
+            disponible en la plataforma cuando inicies sesión.
+          </p>
+        </details>
+
+        <!-- Pregunta 7 -->
+        <details class="group bg-slate-900/50 border border-white/10 rounded-2xl p-6 transition-all hover:bg-slate-800/50 cursor-pointer">
+          <summary class="flex justify-between items-center font-bold text-lg text-cyan-50 list-none">
+            ¿Qué dispositivo necesito para la consulta?
+
+            <span class="text-cyan-400 transition group-open:rotate-180">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+              </svg>
+            </span>
+          </summary>
+
+          <p class="mt-4 text-slate-400 leading-relaxed">
+            Puedes usar una computadora, tablet o móvil con acceso a internet, micrófono y opcionalmente cámara.<br />
+          </p>
+        </details>
+
+         <details class="group bg-slate-900/50 border border-white/10 rounded-2xl p-6 transition-all hover:bg-slate-800/50 cursor-pointer">
+          <summary class="flex justify-between items-center font-bold text-lg text-cyan-50 list-none">
+            ¿Necesito instalar alguna aplicación adicional?
+
+            <span class="text-cyan-400 transition group-open:rotate-180">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+              </svg>
+            </span>
+          </summary>
+
+          <p class="mt-4 text-slate-400 leading-relaxed">
+            No es necesario ya que la consulta se realiza mediante Jitsi Meet,<br />
+            sin embargo, puedes instalar la app oficial de Jitsi en tu dispositivo para una mejor experiencia.
+          </p>
+        </details>
+
+      </div>
+
+      <!-- Footer -->
+      <div class="mt-14 text-center text-sm text-slate-500">
+        Desarrollado por J3G Team©
+      </div>
+
+    </div>
+  </div>
 </template>

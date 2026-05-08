@@ -61,8 +61,8 @@ const cargarPerfil = async () => {
     nombreUsuario.value = localStorage.getItem('user_name') || 'Admin'
   }
 }
-// ===============================
-// ASPECT RATIO DINÁMICO
+
+// ASPECT RATIO DINÁMICO===
 const getAspectRatio = () => window.innerWidth < 768 ? 1.0 : 2.25
 
 const actualizarAspectRatio = () => {
@@ -74,8 +74,8 @@ const actualizarAspectRatio = () => {
     calendarRef.value?.getApi()?.updateSize()
   })
 }
-// ===============================
-// CALENDARIO CONFIG
+
+// CALENDARIO CONFIG    ===============================
 const calendarOptions = ref({
   plugins: [dayGridPlugin, interactionPlugin],
   initialView: 'dayGridMonth',
@@ -99,7 +99,7 @@ const calendarOptions = ref({
   }
 })
 
-// ===============================
+
 //CARGAR CITAS
 const cargarCitas = async () => {
   try {
@@ -135,7 +135,7 @@ const cargarCitas = async () => {
   }
 }
 
-// ===============================
+// =
 //LIFECYCLE
 onMounted(async () => {
   await Promise.all([
@@ -146,7 +146,7 @@ onMounted(async () => {
 
   await nextTick()
 
-  //Esperar que el contenedor tenga dimensiones reales antes de montar
+
   setTimeout(async () => {
     calendarioListo.value = true
     await nextTick()
@@ -160,8 +160,8 @@ onUnmounted(() => {
   window.removeEventListener('resize', actualizarAspectRatio)
 })
 
-// ===============================
-// MODALES
+
+// MODALES    // ===============================
 const accederCita = ref(false)
 const accederVerMisCitas = ref(false)
 const accederSoporteAyuda = ref(false)
@@ -250,7 +250,7 @@ const doctorModal = ref(false)
           <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Calendario administrativo</h1>
           <p class="text-slate-500 mt-1 font-medium">Vista general del panel administrativo</p>
         </div>
-        <!-- Indicador de fecha actual (Opcional, añade seriedad) -->
+     
         <div class="hidden lg:block text-right">
           <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Estado del Sistema</p>
           <div class="flex items-center gap-2 text-emerald-600 font-bold text-sm">
@@ -300,7 +300,7 @@ const doctorModal = ref(false)
       </section>
     </main>
 
-    <!-- ── Modales — fuera de <main> ─────────────────── -->
+  
 
     <!-- Agendar cita -->
     <div v-if="accederCita" 
@@ -316,13 +316,13 @@ const doctorModal = ref(false)
       <tarjetaVerMisCitas :esAdmin="true" @cerrar="accederVerMisCitas = false" />
     </div>
 
-    <!-- Gestión de pacientes — pantalla completa, sin overlay -->
+    <!-- Gestión de pacientes -->
     <div v-if="accederGestionUsuario" 
          class="fixed inset-0 z-[1000] overflow-y-auto">
       <gestionUsuarioAdmin @cerrar="accederGestionUsuario = false" />
     </div>
 
-    <!-- Doctores — pantalla completa, sin overlay -->
+    <!-- Doctores — -->
     <div v-if="doctorModal" 
          class="fixed inset-0 z-[1000] overflow-y-auto">
       <doctores :esAdmin="true" @cerrar="doctorModal = false" />

@@ -3,6 +3,7 @@ import { reactive, ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { register } from '@/services/api'
 import api from '@/services/api'
+import { EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/outline'
 
 const router = useRouter()
 
@@ -255,7 +256,7 @@ const enviarFormulario = async () => {
               @click="verContraseña = !verContraseña"
               class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-cyan-400 p-1 transition-colors"
             >
-              <span class="text-lg">{{ verContraseña ? 'ocultar' : '👁️' }}</span>
+              <span class="text-lg"><EyeIcon v-if="verContraseña" class="w-5 h-5" /><EyeSlashIcon v-else class="w-5 h-5"/></span>
             </button>
           </div>
           <div v-if="form.password.length > 0" class="grid grid-cols-2 gap-1 mt-1 text-[10px]">

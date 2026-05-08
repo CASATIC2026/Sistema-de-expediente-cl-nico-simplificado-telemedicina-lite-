@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { logoutPro } from '@/services/api'
 import { useVideoStore } from '@/stores/videoStore'
 
-// 1. Vistas Públicas
+
 import PantallaPrincipal   from '@/views/pantallaPrincipal.vue'
 import Terminos            from '@/views/terminos.vue'
 import Privacidad          from '@/views/privacidad.vue'
@@ -11,13 +11,13 @@ import ChangePassword      from '@/viewsDoctor/ChangePassword.vue'
 import CompletarPerfil     from '@/views/completarPerfil.vue'
 import ResetPassword       from '@/views/ResetPassword.vue'
 
-// 2. Vistas lazy
+
 const DashboardLayout   = () => import('@/componentsDoctor/ui/layout/DashboardLayout.vue')
 const MedDashboard      = () => import('@/viewsDoctor/dashboards/MedDashboard.vue')
 const PacienteDashboard = () => import('@/views/dashboardPaciente.vue')
 const AdminDashboard    = () => import('@/views/dashboardAdmin.vue')
 
-// 3. Rutas internas
+// Rutas internas
 import Agenda     from '@/viewsDoctor/Agenda.vue'
 import Pacientes  from '@/viewsDoctor/Pacientes.vue'
 import Consultas  from '@/viewsDoctor/Consultas.vue'
@@ -94,10 +94,10 @@ const routes = [
       { path: 'MedDashboard',      name: 'MedDashboard',      component: MedDashboard,      meta: { roles: ['doctor'] } },
       { path: 'dashboardPaciente', name: 'dashboardPaciente', component: PacienteDashboard, meta: { roles: ['paciente'] } },
       { path: 'dashboardAdmin',    name: 'dashboardAdmin',    component: AdminDashboard,    meta: { roles: ['admin'] } },
-      { path: 'Agenda',            name: 'Agenda',            component: Agenda,            meta: { roles: ['doctor', 'admin'] } },
+      { path: 'Agenda',            name: 'Agenda',            component: Agenda,            meta: { roles: ['doctor'] } },
       { path: 'Pacientes',         name: 'Pacientes',         component: Pacientes,         meta: { roles: ['doctor', 'admin'] } },
       { path: 'Consultas',         name: 'Consultas',         component: Consultas,         meta: { roles: ['doctor', 'admin'] } },
-      { path: 'Consultas/:id',     name: 'Consulta',          component: Consultas, props: true, meta: { roles: ['doctor', 'admin'] } },
+      { path: 'Consultas/:id',     name: 'Consulta',          component: Consultas, props: true, meta: { roles: ['doctor'] } },
       { path: 'Historial',         name: 'Historial',         component: Historial,         meta: { roles: ['doctor', 'admin'] } },
       { path: 'SalaTelmed',        name: 'SalaTelmed',        component: SalaTelmed,        meta: { roles: ['doctor', 'admin', 'paciente'] } }
     ]
@@ -118,9 +118,9 @@ const router = createRouter({
   routes
 })
 
-// ===============================
+
 // GUARD GLOBAL
-// ===============================
+
 router.beforeEach((to) => {
   const videoStore     = useVideoStore()
   const token          = localStorage.getItem('token')

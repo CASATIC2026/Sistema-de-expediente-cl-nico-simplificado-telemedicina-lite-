@@ -2,17 +2,15 @@ import axios from "axios";
 import router from "@/router";
 
 const api = axios.create({
-  //baseURL: "http://localhost:5050/api",
-  //Cambiar por la IP de tu pc para que funcione en el móvil
   baseURL: import.meta.env.VITE_API_URL,
   headers: {
     "Content-Type": "application/json"
   }
 });
 
-// ===============================
+
 // REQUEST → Enviar token automáticamente
-// ===============================
+
 api.interceptors.request.use(config => {
   const token = localStorage.getItem("token");
 
@@ -23,9 +21,9 @@ api.interceptors.request.use(config => {
   return config;
 });
 
-// ===============================
+
 // RESPONSE → Manejar errores globales
-// ===============================
+
 api.interceptors.response.use(
   response => response,
   error => {
@@ -55,9 +53,9 @@ api.interceptors.response.use(
   return res.data;
 }
 
-// ===============================
+
 // CITAS Y GESTIÓN
-// ===============================
+
 export const getCitas = async (params) => {
   const res = await api.get('/citas', { params });
   return res.data;
@@ -129,9 +127,9 @@ export const getMisCitasDetalle = async () => {
   return res.data;
 };
 
-// ===============================
+
 // ADMIN CREAR UN NUEVO DOCTOR =================================================
-// ===============================
+
 export const getDoctoresAdmin = async () => {
   const res = await api.get('/users/doctors-admin')
   return res.data
@@ -144,17 +142,16 @@ export const toggleEstadoDoctor = async (id, activo) => {
 
 
 
-// ===============================
 // ADMIN - GESTIÓN DE PACIENTES
-// ===============================
+
 export const getPacientesAdmin = async () => {
   const res = await api.get('/users/patients-admin')
   return res.data
 }
 
-// ===============================
+
 // DOCTOR - GESTIÓN DE PACIENTES
-// ===============================
+
 export const getPacientesDoctor = async () => {
   const res = await api.get('/users/my-patients')
   return res.data
@@ -166,9 +163,9 @@ export const toggleEstadoPaciente = async (id, activo) => {
   return res.data
 }
 
-// ===============================
-// CONSULTA (Videollamada)
-// ===============================
+
+// CONSULTA (Videollamada) ////////
+
 export const iniciarConsulta = async (id) => {
   const res = await api.put(`/citas/${id}/iniciar`);
   return res.data;
@@ -179,9 +176,9 @@ export const finalizarConsulta = async (id) => {
   return res.data;
 };
 
-// ===============================
-// RECETA MÉDICA
-// ===============================
+
+// RECETA MÉDICA==============================
+
 export const descargarReceta = async (id) => {
   const res = await api.get(`/citas/${id}/receta`, {
     responseType: 'blob'
@@ -199,9 +196,9 @@ export const descargarRecetaAdmin = async (citaId) => {
 
 
 
-// ===============================
-// AUTH (Identificación)
-// ===============================
+
+// AUTH (Identificación) =========================
+
 export const login = async (data) => {
   const res = await api.post('/auth/login', data);
 
@@ -212,18 +209,18 @@ export const login = async (data) => {
   return res.data
 };
 
-// ===============================
-// olvidé mi contraseña y restablecerla
-// ===============================
+
+// olvidé mi contraseña y restablecerla ===========================
+
 
 export const forgotPassword = async (email) => {
   const res = await api.post('/auth/forgot-password', { email });
   return res.data;
 };
 
-// ===============================
+
 // restablecer contraseña con token
-// ===============================
+
 
 export const resetPassword = async (token, newPassword) => {
   const res = await api.post('/auth/reset-password', { token, newPassword });
@@ -277,9 +274,9 @@ export const getEstadisticas = async () => {
   return res.data;
 };
 
-// ===============================
-// CIERRE DE SESIÓN
-// ===============================
+
+// CIERRE DE SESIÓN ================================
+
 export const logoutPro = () => {
   localStorage.clear();
   sessionStorage.clear();

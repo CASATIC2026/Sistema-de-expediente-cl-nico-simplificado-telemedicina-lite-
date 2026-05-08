@@ -117,7 +117,7 @@ const handleEventDrop = async (info) => {
 
 }
 
-// Opciones calendario
+
 // Opciones calendario
 const calendarOptions = ref({
   plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],

@@ -44,8 +44,8 @@ onMounted(() => {
         alt="nuvomed lite"
         class="w-12 h-12 md:w-24 md:h-24 object-contain drop-shadow-[0_0_12px_rgba(34,211,238,0.4)]"
       />
-      <div class="text-xs md:text-sm font-bold tracking-wider">
-        N O V O M E D<span class="text-cyan-400"> Lite™</span>
+      <div class="text-lg md:text-lg font-bold tracking-wider">
+       <strong>T e l M e d</strong><span class="text-cyan-400"> Lite™</span>
       </div>
     </div>
 
@@ -57,13 +57,13 @@ onMounted(() => {
         <!-- Nombre e ID solo visible desde sm -->
         <div class="text-right hidden sm:block">
           <div class="font-semibold text-sm md:text-base">Dr. {{ nombreUsuario }}</div>
-          <div class="text-xs opacity-60">ID: {{ usuario?.id ?? '—' }}</div>
+          
         </div>
 
         <button
           @click="mostrarConfig = true"
           title="Mi Perfil"
-          class="p-2 md:p-2.5 bg-slate-800 border border-slate-700 text-[#87CEFA] rounded-xl hover:bg-[#87CEFA] hover:text-slate-900 transition-all shadow-sm"
+          class="p-2 md:p-2.5 bg-slate-800 border border-slate-700 text-[#87CEFA] rounded-xl hover:bg-[#87CEFA] hover:text-slate-900 cursor-pointer transition-all shadow-sm"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 md:h-8 md:w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -75,9 +75,8 @@ onMounted(() => {
       <!-- Logout -->
       <button
         @click="logoutPro"
-        class="bg-red-500 hover:bg-red-600 px-3 py-2 md:px-4 md:py-3 rounded-xl text-[10px] md:text-xs font-bold uppercase tracking-widest transition-colors whitespace-nowrap"
+        class="bg-red-500 hover:bg-red-600 px-3 py-2 md:px-4 md:py-3 rounded-xl text-[10px] md:text-xs font-bold uppercase tracking-widest cursor-pointer transition-colors whitespace-nowrap"
       >
-        <!-- Texto corto en móvil, completo en desktop -->
         <span class="sm:hidden">Salir</span>
         <span class="hidden sm:inline">Cerrar sesión</span>
       </button>

@@ -154,7 +154,7 @@ onUnmounted(() => {
         <span class="animate-pulse">Cargando datos de la cita...</span>
       </div>
 
-      <!-- FIX 1: este div ahora envuelve tanto la info del paciente como la cuadrícula -->
+      <!-- FIX 1 -->
       <div v-else-if="cita">
 
         <!-- Info del paciente -->
@@ -223,7 +223,7 @@ onUnmounted(() => {
           </div>
         </div>
 
-        <!-- CUADRÍCULA ahora DENTRO del v-else-if="cita" -->
+        <!-- -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 items-start p-4 md:p-6">
 
           <!-- Izquierda: Videollamada -->
@@ -234,14 +234,14 @@ onUnmounted(() => {
             </h2>
             <div class="w-full h-[420px] rounded-lg overflow-hidden flex items-center justify-center bg-slate-900">
 
-                    <!-- DESKTOP -->
+                    
                     <div
                       v-if="!isMobile"
                       ref="jitsiContainer"
                       class="w-full h-full"
                     ></div>
 
-                    <!-- MOBILE -->
+                 
                     <div
                       v-else
                       class="flex flex-col items-center justify-center text-white text-center px-4"
@@ -278,13 +278,13 @@ onUnmounted(() => {
         </div>
 
       </div>
-      <!-- cierre correcto del v-else-if="cita" -->
+      
 
     </div>
     <!-- cierre del contenedor blanco principal -->
 
     <!-- MODAL HISTORIAL -->
-    <!-- rolVisor con comillas simples internas para pasar string literal -->
+   
     <verHistorial
       v-if="mostrarHistorial && cita"
       :esDoctor="true"

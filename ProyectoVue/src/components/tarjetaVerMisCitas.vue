@@ -127,14 +127,14 @@ const accederHistorialActivo = (id = null) => {
     @click.self="emit('cerrar')"
   >
     
-    <div class="bg-white w-full max-w-[95%] h-full md:h-[90vh] rounded-none md:rounded-[32px] shadow-2xl flex flex-col overflow-hidden border-none md:border md:border-white/20">
+    <div class="bg-white w-full max-w-[97%] h-full md:h-[90vh] rounded-none md:rounded-[32px] shadow-2xl flex flex-col overflow-hidden border-none md:border md:border-white/20">
       
       <!-- HEADER -->
       <header class="p-3 md:p-10 bg-slate-800 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6">
         <div class="flex items-center gap-3 md:gap-6">
           <button 
             @click="emit('cerrar')"
-            class="flex items-center gap-2 px-3 py-2 md:px-4 md:py-2 bg-white border border-slate-200 text-slate-600 rounded-full hover:bg-slate-50 hover:border-slate-300 transition-all shadow-lg shrink-0"
+            class="flex items-center gap-2 px-3 py-2 md:px-4 md:py-2 bg-white border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-all shadow-lg shrink-0"
           >
             ←
             <span class="text-sm font-bold">Regresar</span>
@@ -166,7 +166,7 @@ const accederHistorialActivo = (id = null) => {
           v-for="tab in ['Pendiente', 'EnConsulta', 'Cancelada', 'Finalizada']" 
           :key="tab"
           @click="pestañaActiva = tab"
-          class="flex-1 py-2 md:py-3 rounded-full font-bold text-[9px] md:text-sm transition-all uppercase tracking-wider"
+          class="flex-1 py-2 md:py-3 rounded-xl font-bold text-[9px] md:text-sm transition-all uppercase tracking-wider"
           :class="pestañaActiva === tab 
             ? 'bg-slate-300 text-slate-900 ring-1 ring-slate-200' 
             : 'text-white hover:bg-slate-200/50'"
