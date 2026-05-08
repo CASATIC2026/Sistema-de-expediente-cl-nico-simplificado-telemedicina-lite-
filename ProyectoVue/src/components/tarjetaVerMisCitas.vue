@@ -127,7 +127,7 @@ const accederHistorialActivo = (id = null) => {
     @click.self="emit('cerrar')"
   >
     
-    <div class="bg-white w-full max-w-7xl h-full md:h-auto md:max-h-[90vh] rounded-none md:rounded-[32px] shadow-2xl flex flex-col overflow-hidden border-none md:border md:border-white/20">
+    <div class="bg-white w-full max-w-[95%] h-full md:h-[90vh] rounded-none md:rounded-[32px] shadow-2xl flex flex-col overflow-hidden border-none md:border md:border-white/20">
       
       <!-- HEADER -->
       <header class="p-3 md:p-10 bg-slate-800 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6">
@@ -161,7 +161,7 @@ const accederHistorialActivo = (id = null) => {
       </header>
       
       <!-- TABS -->
-      <nav class="flex bg-slate-800 px-2 md:px-6 mx-2 md:mx-10 mt-2 md:mt-6 rounded-2xl gap-1 md:gap-2 border-2 border-cyan-400">
+      <nav class="flex bg-slate-800 px-2 md:px-8 mx-2 md:mx-10 mt-4 md:mt-10 md:p-3 rounded-2xl md:rounded-3xl gap-1 md:gap-2 border-2 border-cyan-400">
         <button 
           v-for="tab in ['Pendiente', 'EnConsulta', 'Cancelada', 'Finalizada']" 
           :key="tab"
