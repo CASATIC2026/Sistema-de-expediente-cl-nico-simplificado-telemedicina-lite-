@@ -20,17 +20,17 @@ const cerrarRegistro = () => {
 
     <div class="relative w-full max-w-7xl bg-[#111827] rounded-[24px] md:rounded-[40px] shadow-[0_0_50px_rgba(34,211,238,0.15)] border border-white/10 flex flex-col md:flex-row overflow-hidden">
 
-      <!-- ── PANEL IZQUIERDO: Logo y marca ── -->
+      <!-- ── PANEL IZQUIERDO-->
       <div class="w-full md:w-1/2 px-6 pt-14 pb-6 md:p-12 flex flex-col items-center justify-center relative z-10 gap-4 md:gap-6">
 
-        <!-- Nav: ocupa espacio real en móvil, absoluto en desktop -->
+        <!-- Nav-->
         <nav class="md:absolute md:top-8 flex gap-4 text-[10px] font-bold text-white/60 uppercase tracking-widest self-center">
           <router-link to="/preguntas-frecuentes" class="hover:text-cyan-400 transition-colors">
             Preguntas Frecuentes
           </router-link>
         </nav>
 
-        <!-- Logo: responsive sizing -->
+        
         <img
           src="@/assets/Logo icon.png"
           alt="Logo_icon"
@@ -47,7 +47,7 @@ const cerrarRegistro = () => {
           </p>
         </div>
 
-        <!-- Links legales: flujo normal en móvil, absoluto en desktop -->
+        
         <div class="md:absolute md:bottom-8 text-[10px] text-white/30 flex gap-4 mt-2 md:mt-0">
           <router-link to="/privacidad" class="hover:text-cyan-400 transition-colors">Política de Privacidad</router-link>
           <router-link to="/terminos" class="hover:text-cyan-400 transition-colors">Términos de Uso</router-link>
@@ -55,7 +55,7 @@ const cerrarRegistro = () => {
 
       </div>
 
-      <!-- ── PANEL DERECHO: Login ── -->
+      <!-- -->
       <div class="w-full md:w-1/2 bg-white/5 backdrop-blur-sm flex flex-col items-center justify-center px-6 pb-10 pt-4 md:p-8 border-t md:border-t-0 md:border-l border-white/5 relative">
 
         <LoginGeneral @abrirRegistro="abrirRegistro" />

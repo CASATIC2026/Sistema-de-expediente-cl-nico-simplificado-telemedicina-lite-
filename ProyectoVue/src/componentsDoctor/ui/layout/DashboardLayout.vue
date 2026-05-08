@@ -18,7 +18,7 @@ const rol = computed(() => {
 </script>
 
 <template>
-  <!-- Contenedor base sin filas laterales, todo en columna -->
+  <!-- Contenedor base  -->
   <div v-if="rol" class="flex flex-col min-h-screen bg-slate-100 overflow-hidden">
 
     <!-- 1. CABECERA: Solo se renderiza si el rol es exactamente 'doctor' -->
@@ -27,8 +27,6 @@ const rol = computed(() => {
       <Navbar />
     </header>
 
-    <!-- 2. ÁREA DE CONTENIDO: Aquí cargan tus dashboards (Paciente, Admin, etc.) -->
-    <!-- Al no haber 'aside', el contenido ocupará el 100% del ancho automáticamente -->
     <main class="flex-grow overflow-y-auto bg-slate-50">
       <div class="w-full h-full">
 

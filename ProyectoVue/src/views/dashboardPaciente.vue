@@ -98,8 +98,8 @@ const cargarCalendario = async () => {
   }
 }
 
-// ===============================
-// PERFIL
+
+// PERFIL         // ===============================
 const usuario = ref(null)
 const nombreUsuario = ref('Cargando...')
 const fotoPerfil = ref('')
@@ -310,7 +310,6 @@ const cerrarSesion = async () => {
   z-index: 50;
 }
 
-/* En desktop centramos verticalmente si hay espacio */
 @media (min-width: 768px) {
   .modal {
     align-items: center;
@@ -324,7 +323,6 @@ const cerrarSesion = async () => {
   border-radius: 8px;
 }
 
-/* Calendario legible en móvil */
 :deep(.fc-toolbar-title) {
   font-size: clamp(0.85rem, 2.5vw, 1.25rem) !important;
 }

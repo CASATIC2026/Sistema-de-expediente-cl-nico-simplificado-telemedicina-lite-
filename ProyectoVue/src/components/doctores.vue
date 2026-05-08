@@ -148,7 +148,7 @@ const guardarNuevoDoctor = async () => {
     <div class="w-full max-w-[95%] lg:w-[90%] mb-4">
       <button @click="emit('cerrar')"
         class="text-[10px] md:text-sm font-bold uppercase tracking-widest bg-white border border-slate-200 hover:bg-slate-50 cursor-pointer text-cyan-600 px-4 py-2.5 md:px-5 md:py-3 rounded-xl md:rounded-2xl transition-all flex items-center gap-2 shadow-sm">
-        ← <span class="hidden xs:inline">Regresar</span>
+        ← Regresar<span class="hidden xs:inline">Regresar</span>
       </button>
     </div>
 
@@ -202,7 +202,7 @@ const guardarNuevoDoctor = async () => {
                     </div>
                     <div>
                       <p class="font-bold text-slate-800 text-base leading-tight">{{ doctor.nombre }} {{ doctor.apellido }}</p>
-                      <p class="text-[10px] text-slate-400 font-bold uppercase mt-0.5">{{ doctor.email }}</p>
+                      <p class="text-[10px] text-slate-400 font-bold mt-0.5">{{ doctor.email }}</p>
                     </div>
                   </div>
                 </td>
@@ -212,15 +212,15 @@ const guardarNuevoDoctor = async () => {
                 <td class="px-8 py-6">
                   <button @click="toggleEstado(doctor)"
                     :class="doctor.activo ? 'bg-emerald-200 text-emerald-900' : 'bg-amber-100 text-amber-700'"
-                    class="px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border border-transparent shadow-sm hover:scale-105 transition-all">
+                    class="px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-transparent shadow-sm hover:scale-105 transition-all">
                     {{ doctor.activo ? 'Activo' : 'Inactivo' }}
                   </button>
                 </td>
                 <td class="px-8 py-6 text-center">
-                  <button @click="verInformacion(doctor)" class="h-9 px-4 bg-cyan-800 hover:bg-cyan-600 text-white rounded-xl text-[10px] font-black transition-all">INFO</button>
+                  <button @click="verInformacion(doctor)" class="h-9 px-4 md:px-10 bg-cyan-800 hover:bg-cyan-600 text-white rounded-xl text-[14px] md:text-xs font-black transition-all">INFO</button>
                 </td>
                 <td class="px-8 py-6 text-center">
-                  <button @click="verDiasDisponibles(doctor)" class="h-9 px-4 bg-cyan-800 text-white rounded-xl text-[10px] font-black hover:bg-cyan-600 transition-all shadow-md uppercase">Días</button>
+                  <button @click="verDiasDisponibles(doctor)" class="h-9 px-4 md:px-10 bg-cyan-800 text-white rounded-xl text-[14px] md:text-xs font-black hover:bg-cyan-600 transition-all shadow-md uppercase">Días</button>
                 </td>
               </tr>
             </tbody>
@@ -328,6 +328,7 @@ const guardarNuevoDoctor = async () => {
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
              <div>
                 <label class="text-[10px] font-black text-slate-400 uppercase mb-1 block">Teléfono</label>
+                <span>(8 dígitos, sin guión)</span>
                 <input v-model="nuevoDoctor.telefono" type="text" placeholder="78781234" class="w-full px-4 py-3 bg-slate-50 border-2 border-transparent focus:border-blue-500 rounded-xl md:rounded-2xl outline-none font-bold text-slate-700 text-sm" />
              </div>
              <div>

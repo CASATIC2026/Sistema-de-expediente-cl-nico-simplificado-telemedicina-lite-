@@ -149,7 +149,7 @@ const initGoogle = () => {
 }
 
 // ===============================
-// Helper - un solo onMounted unificado
+// Helper - un solo onMounted 
 // ===============================
 onMounted(() => {
   // Si ya hay sesión activa, redirigir directo — no inicializar Google
@@ -247,7 +247,7 @@ onUnmounted(() => {
 
       <button
         type="submit"
-        class="w-full py-3.5 md:py-4 bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-700 text-white font-bold rounded-full transition-all active:scale-[0.98] shadow-lg shadow-cyan-950/20 uppercase tracking-[0.2em] text-sm touch-manipulation"
+        class="w-full py-3.5 md:py-4 bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-700 text-white font-bold rounded-xl transition-all active:scale-[0.98] shadow-lg shadow-cyan-950/20 uppercase tracking-[0.2em] text-sm touch-manipulation"
       >
         INICIAR
       </button>

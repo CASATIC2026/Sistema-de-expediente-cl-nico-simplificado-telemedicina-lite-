@@ -21,13 +21,13 @@ const getRolFromToken = () => {
   } catch { return '' }
 }
 
-// ── Estado ────────────────────────────────────────────────────────────────
+// ── Estado 
 const usuarios    = ref([])
 const cargando    = ref(false)
 const error       = ref(null)
 const filtroQuery = ref('')
 
-// ── Cargar pacientes según rol ────────────────────────────────────────────
+// Cargar pacientes según rol 
 const cargarPacientes = async () => {
   cargando.value = true
   error.value    = null
@@ -67,7 +67,7 @@ const cargarPacientes = async () => {
     cargando.value = false
   }
 }
-// ── Helper: calcular edad desde fecha de nacimiento ──────────────────────
+// ── Helper: calcular edad desde fecha de nacimiento
 const calcularEdad = (fechaNac) => {
   if (!fechaNac) return '—'
   const hoy  = new Date()
@@ -78,7 +78,7 @@ const calcularEdad = (fechaNac) => {
   return edad
 }
 
-// ── Filtro de búsqueda (sin cambios) ─────────────────────────────────────
+// Filtro de búsqueda (sin cambios
 const usuariosFiltrados = computed(() => {
   const query = filtroQuery.value.toLowerCase().trim()
   if (!query) return usuarios.value
@@ -89,7 +89,7 @@ const usuariosFiltrados = computed(() => {
   )
 })
 
-// ── Modales (sin cambios) ─────────────────────────────────────────────────
+// Modales (sin cambios) 
 const accederInformacionPaciente = ref(false)
 const accederHistorial           = ref(false)
 const pacienteSeleccionado       = ref(null)
@@ -103,17 +103,17 @@ const abrirHistorial = (paciente) => {
   accederHistorial.value     = true
 }
 
-// ── Montar ────────────────────────────────────────────────────────────────
+
 onMounted(cargarPacientes)
 </script>
 
 <template>
-  <!-- El margen superior (mt) se ajustó ya que no está el botón superior -->
+
   <div class="min-h-screen bg-slate-50 p-4 md:p-10 flex flex-col items-center font-sans">
     
     <div class="w-full max-w-[95%] lg:w-[90%] mt-4">
       
-      <!-- HEADER PROFESIONAL -->
+      <!-- HEADER  -->
       <div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
           <div class="flex items-center gap-3 mb-2">
@@ -124,7 +124,6 @@ onMounted(cargarPacientes)
         </div>
 
 
-        <!-- Cargando -->
         <div v-if="cargando" class="mt-10 p-20 text-center">
           <div class="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
           <p class="text-slate-400 font-bold mt-4">Cargando pacientes...</p>

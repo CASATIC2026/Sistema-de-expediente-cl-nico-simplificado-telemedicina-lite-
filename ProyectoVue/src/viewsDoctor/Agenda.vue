@@ -20,7 +20,7 @@ const citas   = computed(() => citasStore.citas)
 const resumen = computed(() => citasStore.resumen)
 const selectedCita = ref(null)
 
-// ─── CARGAR TODO AL MONTAR ────────────────────────────────────────
+// ─── CARGAR TODO AL MONTAR 
 onMounted(async () => {
   await Promise.all([
     citasStore.cargarCitas(),
@@ -35,20 +35,18 @@ function prepararConsulta(cita) {
     return
   }
 
-  // 1. Limpiamos el link para obtener solo el nombre de la sala
-  // Ejemplo: "https://meet.jit.si/SalaMedica123#config..." -> "SalaMedica123"
+
+
   const roomName = cita.linkReunion.split('#')[0].split('?')[0].split('/').pop()
 
-  // 2. Notificamos al store (esto activará el JitsiOverlay en App.vue)
+  
   videoStore.iniciarLlamada(roomName, cita.idCita)
 
-  // 3. Navegamos a la ruta de consulta (formulario)
   router.push({ name: 'Consulta', params: { id: cita.idCita } })
 }
 
 function seleccionarCita(citaDelCalendario) {
-  // citaDelCalendario suele traer solo datos del evento del calendario.
-  // Buscamos en el Store la cita original que sí tiene todos los campos de la API.
+
   const citaEncontrada = citasStore.citas.find(c => c.idCita === citaDelCalendario.idCita);
   
   if (citaEncontrada) {
@@ -72,7 +70,7 @@ function moverCita(cita) {
 
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 w-full">
 
-      <!-- ── STATCARDS ─────────────────────────────────── -->
+      <!-- ── STATCARDS -->
       <div class="space-y-4 lg:col-span-1">
         <StatCard title="Citas hoy"   :value="resumen.hoy"        color="text-sky-500"/>
         <StatCard title="Pendientes"  :value="resumen.pendientes"  color="text-amber-500"/>
@@ -81,7 +79,7 @@ function moverCita(cita) {
         <StatCard title="Canceladas"  :value="resumen.canceladas"  color="text-red-400"/>
       </div>
 
-      <!-- ── CALENDARIO ────────────────────────────────── -->
+      <!-- ── CALENDARIO  -->
       <div class="lg:col-span-3 bg-white p-6 rounded-xl shadow border w-full">
 
         <div v-if="citasStore.cargando" class="text-gray-400 text-sm">
@@ -101,7 +99,7 @@ function moverCita(cita) {
         </div>
       </div>
 
-      <!-- ── DETALLE ────────────────────────────────────────── -->
+      <!-- DETALLE -->
         <div
           class="p-5 rounded-xl shadow mt-2 lg:col-span-4"
           style="background: linear-gradient(135deg, #1a2e4a 0%, #1e4d6b 100%);"
@@ -114,7 +112,7 @@ function moverCita(cita) {
           <!-- Con cita seleccionada -->
           <div v-else>
 
-            <!-- Header: título + badge estado -->
+            <!-- Header-->
             <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
               <span class="text-sm font-semibold text-white/75 flex items-center gap-2">
                 <span class="inline-block w-0.5 h-4 bg-white/50 rounded"></span>
@@ -153,7 +151,7 @@ function moverCita(cita) {
                 <span class="text-sm font-semibold text-white">{{ selectedCita.tipo }}</span>
               </div>
 
-              <!-- Botón solo si Pendiente o EnConsulta -->
+              <!--  -->
               <div class="flex justify-end">
 
                 <button

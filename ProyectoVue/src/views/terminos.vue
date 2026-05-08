@@ -1,55 +1,105 @@
 
 
+<script setup>
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
+</script>
 
 <template>
+  <div class="min-h-screen bg-[#0a1628] text-white p-8 relative">
 
-<div class="max-w-4xl mx-auto p-8 text-slate-700">
+    <!-- Botón volver -->
+    <button
+      @click="router.push('/')"
+      class="absolute top-6 left-6 flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900/70 border border-white/10 hover:bg-slate-800 transition-all text-sm font-medium text-cyan-300 hover:text-cyan-200 shadow-lg"
+    >
+      ← Volver al inicio
+    </button>
 
-<h1 class="text-3xl font-bold mb-6">
-Términos
-</h1>
+    <div class="max-w-4xl mx-auto mt-10">
 
-<p class="mb-4">
-Al utilizar la plataforma TelMed usted acepta los siguientes términos: 
-</p>
+      <!-- Encabezado -->
+      <div class="text-center mb-12">
+        <h1 class="text-4xl font-extrabold tracking-tight mb-4">
+          <span class="text-white">Términos y</span>
+          <span class="text-cyan-400 ml-3">Condiciones</span>
+        </h1>
 
-<h2 class="text-xl font-semibold mt-6 mb-2">
-1. Uso del servicio
-</h2>
+        <p class="text-slate-400">
+          Normas y condiciones para el uso de la plataforma TelMed Lite™
+        </p>
+      </div>
 
-<p>
-La plataforma está destinada a facilitar consultas médicas en línea entre pacientes y profesionales de salud autorizados.
-</p>
+      <!-- Contenido -->
+      <div class="space-y-6">
 
-<h2 class="text-xl font-semibold mt-6 mb-2">
-2. Responsabilidad médica
-</h2>
+        <!-- Intro -->
+       <section class="p-2">
+        <p class="text-slate-300 leading-relaxed text-center">
+          Al utilizar la plataforma TelMed Lite™, usted acepta los siguientes
+          términos y condiciones<br />
+          relacionados con el uso del servicio:
+        </p>
+      </section>
 
-<p>
-Los profesionales de salud son responsables de la información proporcionada durante las consultas.
-</p>
+        <!-- 1 -->
+        <section class="bg-slate-900/50 border border-white/10 rounded-2xl p-6">
+          <h2 class="text-xl font-bold text-cyan-300 mb-3">
+            1. Uso del servicio
+          </h2>
 
-<h2 class="text-xl font-semibold mt-6 mb-2">
-3. Uso adecuado
-</h2>
+          <p class="text-slate-400 leading-relaxed">
+            La plataforma está destinada a facilitar consultas médicas en línea
+            entre pacientes y profesionales de salud autorizados.
+          </p>
+        </section>
 
-<p>
-El usuario se compromete a utilizar la plataforma de forma responsable y a proporcionar información veraz.
-</p>
+        <!-- 2 -->
+        <section class="bg-slate-900/50 border border-white/10 rounded-2xl p-6">
+          <h2 class="text-xl font-bold text-cyan-300 mb-3">
+            2. Responsabilidad médica
+          </h2>
 
-<h2 class="text-xl font-semibold mt-6 mb-2">
-4. Modificaciones
-</h2>
+          <p class="text-slate-400 leading-relaxed">
+            Los profesionales de salud son responsables de la información,
+            diagnósticos y recomendaciones proporcionadas durante las consultas.
+          </p>
+        </section>
 
-<p>
-TelMed se reserva el derecho de modificar estos términos en cualquier momento.
-</p>
+        <!-- 3 -->
+        <section class="bg-slate-900/50 border border-white/10 rounded-2xl p-6">
+          <h2 class="text-xl font-bold text-cyan-300 mb-3">
+            3. Uso adecuado
+          </h2>
 
-<p class="mt-8 text-sm text-slate-500">
-Última actualización: Mayo, 2026
-</p>
+          <p class="text-slate-400 leading-relaxed">
+            El usuario se compromete a utilizar la plataforma de forma
+            responsable y a proporcionar información veraz y actualizada.
+          </p>
+        </section>
 
-</div>
+        <!-- 4 -->
+        <section class="bg-slate-900/50 border border-white/10 rounded-2xl p-6">
+          <h2 class="text-xl font-bold text-cyan-300 mb-3">
+            4. Modificaciones
+          </h2>
 
+          <p class="text-slate-400 leading-relaxed">
+            TelMed Lite™ se reserva el derecho de modificar estos términos y
+            condiciones en cualquier momento para mejorar el servicio o adaptarse
+            a nuevos requerimientos legales.
+          </p>
+        </section>
+
+      </div>
+
+      <!-- Footer -->
+      <div class="mt-14 text-center text-sm text-slate-500">
+        Última actualización: 2026 <br />
+        Desarrollado por J3G Team©
+      </div>
+
+    </div>
+  </div>
 </template>
