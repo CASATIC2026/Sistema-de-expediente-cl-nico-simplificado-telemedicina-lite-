@@ -218,7 +218,7 @@ const guardarCita = async () => {
       <div class="flex-1 overflow-y-auto bg-slate-50 px-4 sm:px-8 py-5 sm:py-7 space-y-5 sm:space-y-6 custom-scrollbar">
 
         <!-- BUSCAR PACIENTE -->
-        <div v-if="props.esSecretaria" class="bg-blue-50 border-2 border-blue-100 rounded-2xl p-4 sm:p-5 space-y-3">
+        <div v-if="props.esSecretaria" class="bg-blue-50 border-2 border-blue-100 rounded-3xl p-4 sm:p-5 space-y-3">
           <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-500">Buscar paciente por DUI</p>
           
           <!-- ✅ CORREGIDO: flex-wrap para que el botón no se salga -->
