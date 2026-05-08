@@ -123,14 +123,14 @@ const accederHistorialActivo = (id = null) => {
 
 <template>
   <div 
-    class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-2 md:p-8"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-0 md:p-8"
     @click.self="emit('cerrar')"
   >
-    <!-- ❌ w-7xl no existe en Tailwind → ✅ max-w-7xl w-full -->
-    <div class="bg-white w-full max-w-7xl h-full max-h-[95vh] md:max-h-[90vh] rounded-[32px] shadow-2xl flex flex-col overflow-hidden border border-white/20">
+    
+    <div class="bg-white w-full max-w-7xl h-full md:h-auto md:max-h-[90vh] rounded-none md:rounded-[32px] shadow-2xl flex flex-col overflow-hidden border-none md:border md:border-white/20">
       
       <!-- HEADER -->
-      <header class="p-4 md:p-10 bg-slate-800 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6">
+      <header class="p-3 md:p-10 bg-slate-800 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6">
         <div class="flex items-center gap-3 md:gap-6">
           <button 
             @click="emit('cerrar')"
@@ -161,7 +161,7 @@ const accederHistorialActivo = (id = null) => {
       </header>
       
       <!-- TABS -->
-      <nav class="flex bg-slate-800 px-2 md:px-6 mx-2 md:mx-10 mt-4 md:mt-6 rounded-2xl gap-1 md:gap-2 border-2 border-cyan-400">
+      <nav class="flex bg-slate-800 px-2 md:px-6 mx-2 md:mx-10 mt-2 md:mt-6 rounded-2xl gap-1 md:gap-2 border-2 border-cyan-400">
         <button 
           v-for="tab in ['Pendiente', 'EnConsulta', 'Cancelada', 'Finalizada']" 
           :key="tab"
