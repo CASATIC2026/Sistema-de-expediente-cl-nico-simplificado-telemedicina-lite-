@@ -4,13 +4,14 @@
 
 
 <script setup>
-/* global google */
 
 import { useRouter } from 'vue-router'
 import { ref, onMounted, onUnmounted } from 'vue'
 import { jwtDecode } from 'jwt-decode'
 import api, { login, perfil } from '@/services/api'
 import ForgotPassword from '@/views/ForgotPassword.vue'
+import { EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/outline'
+
 
 const router = useRouter()
 defineEmits(['abrirRegistro'])
@@ -178,7 +179,6 @@ onUnmounted(() => {
 
     <div class="mb-6 md:mb-8">
       <h3 class="text-xl md:text-2xl font-bold uppercase tracking-wide">Iniciar sesión</h3>
-      <p class="text-xs text-white/50 mt-1 uppercase tracking-widest">Acceso para pacientes</p>
     </div>
 
     <form @submit.prevent="handleLogin" class="space-y-5 md:space-y-6" :class="{'opacity-50 pointer-events-none': cargando}">
@@ -197,24 +197,39 @@ onUnmounted(() => {
       </div>
 
       <div>
-        <div class="flex justify-between items-center mb-2">
-          <label class="text-sm font-medium opacity-80 uppercase tracking-tighter">Contraseña</label>
+        <div>
+          <label class="block text-sm font-medium mb-2 opacity-80 uppercase tracking-tighter">Contraseña</label>
+
+          <div class="relative">
+
+          <input
+            v-model="loginData.password"
+            :type="contraseñaVisible ? 'text' : 'password'"
+            required
+            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 md:py-3.5 pr-12 text-white text-base focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:bg-white/10 transition-all placeholder:text-white/20"
+            placeholder="********"
+          >
+
           <button
             type="button"
             @click="toggleContraseña"
-            class="text-[10px] uppercase tracking-widest font-bold text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-1.5 touch-manipulation"
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-cyan-400 hover:text-cyan-300 transition-colors"
           >
-            {{ contraseñaVisible ? '◡̈ ocultar' : '👁️ ver' }}
+
+            <EyeIcon
+              v-if="!contraseñaVisible"
+              class="w-5 h-5"
+            />
+
+            <EyeSlashIcon
+              v-else
+              class="w-5 h-5"
+            />
+
           </button>
         </div>
-        <input
-          v-model="loginData.password"
-          :type="contraseñaVisible ? 'text' : 'password'"
-          required
-          class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 md:py-3.5 text-white text-base focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:bg-white/10 transition-all placeholder:text-white/20"
-          placeholder="********"
-        >
 
+        </div>
 
         <!-- ENLACE PARA PARA RECUPERAR CONTRASEÑA OLVIDADA -->
         <div class="text-right mt-1">
@@ -225,14 +240,14 @@ onUnmounted(() => {
           >
             ¿Olvidaste tu contraseña?
           </button>
-</div>
+        </div>
       </div>
 
 
 
       <button
         type="submit"
-        class="w-full py-3.5 md:py-4 bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-700 text-white font-bold rounded-xl transition-all active:scale-[0.98] shadow-lg shadow-cyan-950/20 uppercase tracking-[0.2em] text-sm touch-manipulation"
+        class="w-full py-3.5 md:py-4 bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-700 text-white font-bold rounded-full transition-all active:scale-[0.98] shadow-lg shadow-cyan-950/20 uppercase tracking-[0.2em] text-sm touch-manipulation"
       >
         INICIAR
       </button>
