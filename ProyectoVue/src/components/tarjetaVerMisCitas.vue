@@ -134,7 +134,7 @@ const accederHistorialActivo = (id = null) => {
         <div class="flex items-center gap-3 md:gap-6">
           <button 
             @click="emit('cerrar')"
-            class="flex items-center gap-2 px-3 py-2 md:px-4 md:py-2 bg-white border border-slate-200 text-slate-600 rounded-3xl hover:bg-slate-50 hover:border-slate-300 transition-all shadow-lg shrink-0"
+            class="flex items-center gap-2 px-3 py-2 md:px-4 md:py-2 bg-white border border-slate-200 text-slate-600 rounded-full hover:bg-slate-50 hover:border-slate-300 transition-all shadow-lg shrink-0"
           >
             ←
             <span class="text-sm font-bold">Regresar</span>
@@ -166,7 +166,7 @@ const accederHistorialActivo = (id = null) => {
           v-for="tab in ['Pendiente', 'EnConsulta', 'Cancelada', 'Finalizada']" 
           :key="tab"
           @click="pestañaActiva = tab"
-          class="flex-1 py-2 md:py-3 rounded-3xl font-bold text-[9px] md:text-sm transition-all uppercase tracking-wider"
+          class="flex-1 py-2 md:py-3 rounded-full font-bold text-[9px] md:text-sm transition-all uppercase tracking-wider"
           :class="pestañaActiva === tab 
             ? 'bg-slate-300 text-slate-900 ring-1 ring-slate-200' 
             : 'text-white hover:bg-slate-200/50'"
@@ -181,11 +181,11 @@ const accederHistorialActivo = (id = null) => {
         <div v-if="citasFiltradas.length > 0" class="grid gap-4">
           <div 
             v-for="cita in citasFiltradas" :key="cita.id" 
-            class="group bg-white border border-slate-100 rounded-3xl p-4 md:p-6 flex flex-col hover:shadow-xl hover:shadow-blue-500/5 hover:border-blue-200 transition-all duration-300 lg:grid lg:grid-cols-12 lg:items-center"
+            class="group bg-white border border-slate-100 rounded-full p-4 md:p-6 flex flex-col hover:shadow-xl hover:shadow-blue-500/5 hover:border-blue-200 transition-all duration-300 lg:grid lg:grid-cols-12 lg:items-center"
           >
             <!-- Nombre / Avatar -->
             <div class="lg:col-span-4 flex items-center gap-4">
-              <div class="w-12 h-12 md:w-14 md:h-14 bg-blue-600 text-white rounded-2xl flex shrink-0 items-center justify-center text-xl font-bold shadow-lg shadow-blue-200">
+              <div class="w-12 h-12 md:w-14 md:h-14 bg-blue-600 text-white rounded-full flex shrink-0 items-center justify-center text-xl font-bold shadow-lg shadow-blue-200">
                 {{ cita.nombre.charAt(0) }}
               </div>
               <div class="min-w-0">
@@ -223,14 +223,14 @@ const accederHistorialActivo = (id = null) => {
                 <button 
                   v-if="props.esAdmin"
                   @click="copiarLink(cita.linkReunion)"
-                  class="px-4 py-2.5 bg-cyan-50 text-cyan-700 rounded-xl text-xs font-black hover:bg-cyan-100 transition-colors"
+                  class="px-4 py-2.5 bg-cyan-50 text-cyan-700 rounded-full text-xs font-black hover:bg-cyan-100 transition-colors"
                 >
                   COPIAR ENLACE
                 </button>
 
                 <span
                   v-if="!props.esAdmin && cita.estado === 'Pendiente'"
-                  class="px-4 py-2.5 rounded-xl text-xs font-black text-center bg-blue-100 text-blue-400 cursor-not-allowed select-none"
+                  class="px-4 py-2.5 rounded-full text-xs font-black text-center bg-blue-100 text-blue-400 cursor-not-allowed select-none"
                   title="El doctor debe iniciar la consulta primero"
                 >
                   🕐 PRÓXIMO A INICIAR
@@ -241,7 +241,7 @@ const accederHistorialActivo = (id = null) => {
                   :href="cita.linkReunion"
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="px-6 py-2.5 rounded-xl text-xs font-black text-center bg-green-600 text-white hover:bg-green-700 transition-all shadow-md shadow-green-200 animate-pulse"
+                  class="px-6 py-2.5 rounded-full text-xs font-black text-center bg-green-600 text-white hover:bg-green-700 transition-all shadow-md shadow-green-200 animate-pulse"
                 >
                   🟢 UNIRSE AHORA
                 </a>
@@ -249,7 +249,7 @@ const accederHistorialActivo = (id = null) => {
                 <button 
                   v-if="cita.estado === 'Pendiente'"
                   @click="ejecutarCancelar(cita.id)"
-                  class="p-2.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
+                  class="p-2.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-all"
                   title="Cancelar Cita"
                 >
                   ✕
@@ -258,12 +258,12 @@ const accederHistorialActivo = (id = null) => {
 
               <template v-if="cita.estado === 'Finalizada'">
                 <button @click="descargarPDF(cita.id)"
-                 class="flex items-center gap-2 px-4 py-2.5 bg-green-600 text-white rounded-xl font-bold text-xs hover:bg-green-700 transition-all shadow-md shadow-green-200">
+                 class="flex items-center gap-2 px-4 py-2.5 bg-green-600 text-white rounded-full font-bold text-xs hover:bg-green-700 transition-all shadow-md shadow-green-200">
                   📄 Receta PDF
                 </button>
               </template>
 
-              <div v-if="cita.estado === 'Cancelada'" class="px-4 py-2 bg-red-50 text-red-400 rounded-xl font-bold text-[10px] uppercase">
+              <div v-if="cita.estado === 'Cancelada'" class="px-4 py-2 bg-red-50 text-red-400 rounded-full font-bold text-[10px] uppercase">
                 Anulada
               </div>
             </div>
