@@ -10,25 +10,54 @@ Preguntas Frecuentes
 
 <div>
 <h2 class="font-semibold text-lg">
-¿Cómo funciona la plataforma?
+¿Cómo funciona TelMed lite?
 </h2>
 
 <p class="text-slate-600">
-Los pacientes pueden registrarse en la plataforma, programar citas
-y realizar consultas médicas en línea con profesionales de la salud.
+TelMed lite es una plataforma web enfocada en conectar consultas médicas por medio de videollamadas.
+Los usuarios pueden registrarse usando una cuenta de Google o 
+pueden hacerlo completando el formulario que se encuentra en la sección de "Registrame".
+Dentro de la plataforma web podrá  agendar nuevas citas, acceder a los diferentes estados
+de las citas : citas pendientes, consultas en curso, citas canceladas, finalizadas, como también 
+descargar recetas que su doctor haya indicado.
+</p>
+</div>
+
+
+<div>
+<h2 class="font-semibold text-lg">
+¿Para acceder necesito un dispositivo en específico?
+</h2>
+
+<p class="text-slate-600">
+Los usuarios pueden acceder al sistema usando dispositivos móviles, tablets o de escritorio.
 </p>
 </div>
 
 <div>
 <h2 class="font-semibold text-lg">
-¿Necesito instalar algún programa?
+¿Necesito instalar alguna aplicación para conectarme a las videollamadas?
 </h2>
 
 <p class="text-slate-600">
-No. Las consultas pueden realizarse directamente desde el navegador
-utilizando la plataforma de videollamadas integrada.
+No es necesario. El sistema integra una herramienta que permite conectar la videollamada
+en una nueva pestaña del navegador.
 </p>
 </div>
+
+
+<div>
+<h2 class="font-semibold text-lg">
+¿Cómo puedo agendar una cita médica?
+</h2>
+
+<p class="text-slate-600">
+Despues de haber iniciado sesión con tus datos, podrá dirigirse a la sección
+"Nueva cita", completa los campos y selecciona el horario a convenir.
+Dentro de la plataforma web podrá visualizar los diferentes estados de las citas
+</p>
+</div>
+
 
 <div>
 <h2 class="font-semibold text-lg">
@@ -37,29 +66,20 @@ utilizando la plataforma de videollamadas integrada.
 
 <p class="text-slate-600">
 Sí. Utilizamos medidas de seguridad para proteger la información personal
-y médica de nuestros usuarios.
+e información médica de nuestros usuarios.
 </p>
 </div>
 
-<div>
-<h2 class="font-semibold text-lg">
-¿Cómo puedo agendar una cita médica?
-</h2>
 
-<p class="text-slate-600">
-Una vez que haya iniciado sesión, podrá acceder al panel de citas
-y seleccionar el médico, la fecha y la hora disponibles.
-</p>
-</div>
 
 <div>
 <h2 class="font-semibold text-lg">
-¿Qué hago si tengo problemas técnicos?
+¿Qué hago si tengo problemas técnicos para conectar la videollamada?
 </h2>
 
 <p class="text-slate-600">
-Puede ponerse en contacto con nuestro equipo de soporte
-a través del formulario de contacto disponible en la plataforma.
+Dentro del panel principal podrá encontrar una sección de soporte/ayuda, podrá consultarlo cuando haya ingresado 
+a la plataforma web, en casos mas específicos podrá encontrar los numeros de contacto dentro de la misma sección.
 </p>
 </div>
 
