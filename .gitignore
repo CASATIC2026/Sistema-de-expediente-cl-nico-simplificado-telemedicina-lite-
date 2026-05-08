@@ -1,6 +1,6 @@
-# ========================
+
 # .NET / Backend
-# ========================
+
 **/bin/
 **/obj/
 **/*.user
@@ -11,9 +11,9 @@ appsettings.Development.json
 appsettings.Local.json
 appsettings.json
 
-# ========================
-# Google OAuth - CRÍTICO
-# ========================
+
+# Google OAuth 
+
 Resources/token.json
 Resources/token.json/
 Resources/tokens/
@@ -21,7 +21,7 @@ Resources/credentials.json
 
 # ========================
 # Vue / Node / Frontend
-# ========================
+
 **/node_modules/
 **/.env
 **/.env.local
@@ -33,7 +33,7 @@ backend/Resources/*.json
 
 # ========================
 # IDEs
-# ========================
+
 .vscode/
 .idea/
 *.DS_Store
@@ -43,7 +43,7 @@ backend/Resources/*.json
 
 # ========================
 # .NET / Backend
-# ========================
+
 backend/**/bin/
 backend/**/obj/
 backend/**/*.user
@@ -54,7 +54,7 @@ backend/Resources/credentials.json
 
 # ========================
 # Vue / Node / Frontend
-# ========================
+
 **/node_modules/
 **/.env
 **/.env.local
@@ -63,7 +63,7 @@ backend/Resources/credentials.json
 
 # ========================
 # IDEs
-# ========================
+
 .vscode/
 .idea/
 *.DS_Store
