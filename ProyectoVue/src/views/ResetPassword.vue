@@ -20,9 +20,7 @@ const verConfirmar = ref(false)
 
 // Validación de contraseña segura
 const contraseñaEsSegura = computed(() => {
-  const regex =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
-
+ const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/
   return regex.test(newPassword.value)
 })
 
@@ -69,7 +67,7 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-[#0a1628] via-[#0f2040] to-[#0a1628] flex items-center justify-center px-4">
+  <div class="min-h-screen bg-linear-to-br from-[#0a1628] via-[#0f2040] to-[#0a1628] flex items-center justify-center px-4">
     <div class="w-full max-w-md bg-slate-900 border border-white/10 rounded-2xl p-8 shadow-2xl text-white">
 
       <!-- Logo / Titulo-->

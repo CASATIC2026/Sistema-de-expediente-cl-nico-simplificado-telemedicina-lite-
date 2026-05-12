@@ -70,13 +70,12 @@ builder.Services.AddDbContext<TelMedAPIContext>(options =>
 // CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowVue", policy =>
+    options.AddPolicy("VercelPolicy", policy =>
         {
-            //policy.WithOrigins("http://localhost:5173", "http://192.168.137.1:5173")
-            policy.AllowAnyOrigin()
+            policy.WithOrigins("http://localhost:5173")
                   .AllowAnyHeader()
-                  .AllowAnyMethod();
-                  //.AllowCredentials();
+                  .AllowAnyMethod()
+                  .AllowCredentials();
         });
 });
 
@@ -104,12 +103,12 @@ builder.Services.AddAuthorization();
 // Servicio de Email (verificación de cuenta y restablecimiento de contraseña)
 builder.Services.AddScoped<EmailService>();
 
-
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", false);
 
 var app = builder.Build();
+
 // Middleware
-app.UseCors("AllowVue");
+app.UseCors("VercelPolicy");
 
 app.UseAuthentication();
 app.UseMiddleware<ForcePasswordChangeMiddleware>();

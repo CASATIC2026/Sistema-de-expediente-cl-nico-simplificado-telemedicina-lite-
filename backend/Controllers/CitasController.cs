@@ -43,11 +43,13 @@ namespace TelMedAPI.Controllers
             if (rol == Roles.Doctor)
                 query = query.Where(c => c.DoctorId == userId);
 
-            // ── Filtro de HOY ─────────────────────────────────────────
-            var hoyInicio = DateTime.SpecifyKind(DateTime.UtcNow.Date, DateTimeKind.Utc);
-            var hoyFin    = hoyInicio.AddDays(1);
+            var zonaSV    = GetZonaElSalvador();
+            var ahoraSV   = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, zonaSV);
+            var hoySV     = ahoraSV.Date;
+            var hoyInicio = TimeZoneInfo.ConvertTimeToUtc(hoySV, zonaSV);
+            var hoyFin    = TimeZoneInfo.ConvertTimeToUtc(hoySV.AddDays(1), zonaSV);
 
-            // ← Todas las queries ahora filtran solo por hoy
+            
             var queryHoy = query.Where(c => c.FechaInicio >= hoyInicio && c.FechaInicio < hoyFin);
 
             var resumen = new

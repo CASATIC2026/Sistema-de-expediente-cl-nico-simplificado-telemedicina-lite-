@@ -1,8 +1,5 @@
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.Gmail.v1;
-using Google.Apis.Gmail.v1.Data;
-using Google.Apis.Services;
-using Google.Apis.Util.Store;
+using MailKit.Net.Smtp;
+using MailKit.Security;
 using MimeKit;
 
 namespace TelMedAPI.Services
@@ -28,9 +25,13 @@ namespace TelMedAPI.Services
 
             var html = $@"
                 <div style='font-family: Arial, sans-serif;'>
-                    <h2>Verifica tu cuenta en TelMed</h2>
-                    <p>Gracias por registrarte.</p>
-                    <p>Haz clic en el siguiente botón para confirmar tu correo:</p>
+                    <h2>Verifica tu cuenta en TelMed™</h2>
+
+                    <p>Gracias por registrarte a TelMed Lite™♡</p>
+
+                    <p>
+                        Haz clic en el siguiente botón para confirmar tu correo:
+                    </p>
 
                     <a href='{verificationLink}'
                        style='
@@ -46,14 +47,14 @@ namespace TelMedAPI.Services
                     </a>
 
                     <p style='margin-top:20px;'>
-                        Si no solicitaste esta cuenta, puedes ignorar este correo.
+                        Si no solicitaste esta cuenta, puedes ignorar este correo.<br />
                         Este correo ha sido enviado automáticamente, por favor no respondas a este mensaje.
                     </p>
                 </div>";
 
             await EnviarCorreo(
                 destino,
-                "Verifica tu cuenta - TelMed",
+                "Verifica tu cuenta - TelMed™",
                 html
             );
         }
@@ -70,9 +71,12 @@ namespace TelMedAPI.Services
 
             var html = $@"
                 <div style='font-family: Arial, sans-serif;'>
-                    <h2>Recuperación de contraseña - TelMed</h2>
+                    <h2>Recuperación de contraseña - TelMed™</h2>
 
-                    <p>Recibimos una solicitud para restablecer tu contraseña.</p>
+                    <p>
+                        Recibimos una solicitud para restablecer tu contraseña.<br />
+                        Haz clic en el siguiente botón para crear una nueva contraseña:
+                    </p>
 
                     <a href='{resetLink}'
                        style='
@@ -84,11 +88,11 @@ namespace TelMedAPI.Services
                             border-radius:8px;
                             font-weight:bold;
                        '>
-                        Restablecer contraseña
+                        Restablece tu contraseña
                     </a>
 
                     <p style='margin-top:20px;'>
-                        Si no solicitaste este cambio, puedes ignorar este correo.
+                        Si no solicitaste este cambio, puedes ignorar este correo.<br />
                         Este correo ha sido enviado automáticamente, por favor no respondas a este mensaje.
                     </p>
                 </div>";
@@ -101,7 +105,7 @@ namespace TelMedAPI.Services
         }
 
         // =========================================================
-        // MÉTODO GENERAL GMAIL API
+        // ENVÍO GENERAL SMTP
         // =========================================================
         private async Task EnviarCorreo(
             string destino,
@@ -109,38 +113,18 @@ namespace TelMedAPI.Services
             string html)
         {
             var senderEmail = _configuration["Gmail:SenderEmail"];
-            var credentialsPath = _configuration["Gmail:CredentialsPath"];
-            var tokenPath = _configuration["Gmail:TokenPath"];
-            var applicationName = _configuration["Gmail:ApplicationName"];
-
-            string[] scopes = {
-                GmailService.Scope.GmailSend
-            };
-
-            using var stream = new FileStream(
-                credentialsPath,
-                FileMode.Open,
-                FileAccess.Read
-            );
-
-            var credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
-                GoogleClientSecrets.FromStream(stream).Secrets,
-                scopes,
-                "user",
-                CancellationToken.None,
-                new FileDataStore(tokenPath, true)
-            );
-
-            var service = new GmailService(new BaseClientService.Initializer()
-            {
-                HttpClientInitializer = credential,
-                ApplicationName = applicationName
-            });
+            var appPassword = _configuration["Gmail:AppPassword"];
 
             var email = new MimeMessage();
 
-            email.From.Add(MailboxAddress.Parse(senderEmail));
-            email.To.Add(MailboxAddress.Parse(destino));
+            email.From.Add(
+                MailboxAddress.Parse(senderEmail)
+            );
+
+            email.To.Add(
+                MailboxAddress.Parse(destino)
+            );
+
             email.Subject = asunto;
 
             var builder = new BodyBuilder
@@ -150,23 +134,22 @@ namespace TelMedAPI.Services
 
             email.Body = builder.ToMessageBody();
 
-            using var memoryStream = new MemoryStream();
-            await email.WriteToAsync(memoryStream);
+            using var smtp = new SmtpClient();
 
-            var rawMessage = Convert.ToBase64String(memoryStream.ToArray())
-                .Replace("+", "-")
-                .Replace("/", "_")
-                .Replace("=", "");
+            await smtp.ConnectAsync(
+                "smtp.gmail.com",
+                587,
+                SecureSocketOptions.StartTls
+            );
 
-            var gmailMessage = new Message
-            {
-                Raw = rawMessage
-            };
+            await smtp.AuthenticateAsync(
+                senderEmail,
+                appPassword
+            );
 
-            await service.Users.Messages.Send(
-                gmailMessage,
-                "me"
-            ).ExecuteAsync();
+            await smtp.SendAsync(email);
+
+            await smtp.DisconnectAsync(true);
         }
     }
 }

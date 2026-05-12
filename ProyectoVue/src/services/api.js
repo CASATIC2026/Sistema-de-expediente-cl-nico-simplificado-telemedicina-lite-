@@ -8,9 +8,7 @@ const api = axios.create({
   }
 });
 
-
 // REQUEST → Enviar token automáticamente
-
 api.interceptors.request.use(config => {
   const token = localStorage.getItem("token");
 
@@ -21,9 +19,7 @@ api.interceptors.request.use(config => {
   return config;
 });
 
-
 // RESPONSE → Manejar errores globales
-
 api.interceptors.response.use(
   response => response,
   error => {
@@ -53,9 +49,7 @@ api.interceptors.response.use(
   return res.data;
 }
 
-
 // CITAS Y GESTIÓN
-
 export const getCitas = async (params) => {
   const res = await api.get('/citas', { params });
   return res.data;
@@ -129,7 +123,6 @@ export const getMisCitasDetalle = async () => {
 
 
 // ADMIN CREAR UN NUEVO DOCTOR =================================================
-
 export const getDoctoresAdmin = async () => {
   const res = await api.get('/users/doctors-admin')
   return res.data
@@ -140,10 +133,7 @@ export const toggleEstadoDoctor = async (id, activo) => {
   return res.data
 }
 
-
-
 // ADMIN - GESTIÓN DE PACIENTES
-
 export const getPacientesAdmin = async () => {
   const res = await api.get('/users/patients-admin')
   return res.data
@@ -151,12 +141,10 @@ export const getPacientesAdmin = async () => {
 
 
 // DOCTOR - GESTIÓN DE PACIENTES
-
 export const getPacientesDoctor = async () => {
   const res = await api.get('/users/my-patients')
   return res.data
 }
-
 
 export const toggleEstadoPaciente = async (id, activo) => {
   const res = await api.put(`/users/${id}/estado`, { activo })
@@ -164,8 +152,7 @@ export const toggleEstadoPaciente = async (id, activo) => {
 }
 
 
-// CONSULTA (Videollamada) ////////
-
+// CONSULTA (Videollamada)===============================
 export const iniciarConsulta = async (id) => {
   const res = await api.put(`/citas/${id}/iniciar`);
   return res.data;
@@ -178,14 +165,12 @@ export const finalizarConsulta = async (id) => {
 
 
 // RECETA MÉDICA==============================
-
 export const descargarReceta = async (id) => {
   const res = await api.get(`/citas/${id}/receta`, {
     responseType: 'blob'
   });
   return res.data;
 };
-
 
 export const descargarRecetaAdmin = async (citaId) => {
   const res = await api.get(`/citas/${citaId}/receta`, {
@@ -194,11 +179,7 @@ export const descargarRecetaAdmin = async (citaId) => {
   return res.data
 }
 
-
-
-
 // AUTH (Identificación) =========================
-
 export const login = async (data) => {
   const res = await api.post('/auth/login', data);
 
@@ -211,17 +192,12 @@ export const login = async (data) => {
 
 
 // olvidé mi contraseña y restablecerla ===========================
-
-
 export const forgotPassword = async (email) => {
   const res = await api.post('/auth/forgot-password', { email });
   return res.data;
 };
 
-
 // restablecer contraseña con token
-
-
 export const resetPassword = async (token, newPassword) => {
   const res = await api.post('/auth/reset-password', { token, newPassword });
   return res.data;
@@ -276,7 +252,6 @@ export const getEstadisticas = async () => {
 
 
 // CIERRE DE SESIÓN ================================
-
 export const logoutPro = () => {
   localStorage.clear();
   sessionStorage.clear();

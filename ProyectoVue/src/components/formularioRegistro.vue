@@ -65,7 +65,7 @@ onMounted(() => {
 // ===============================
 // CONTRASEÑA SEGURA
 const passwordValido = computed(() => {
-  const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+ const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/
   return regex.test(form.password)
 })
 
@@ -158,9 +158,9 @@ const enviarFormulario = async () => {
 </script>
 
 <template>
-  <div class="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4 overflow-hidden animacion-suave">
+  <div class="fixed inset-0 z-9999 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4 overflow-hidden animacion-suave">
     <form
-      class="bg-[#1f2e4e]/95 w-full max-w-[460px] p-6 md:p-10 rounded-[2.5rem] shadow-2xl flex flex-col gap-5 max-h-[90vh] overflow-y-auto border border-white/10 text-white custom-scrollbar transition-all"
+      class="bg-[#1f2e4e]/95 w-full max-w-115 p-6 md:p-10 rounded-[2.5rem] shadow-2xl flex flex-col gap-5 max-h-[90vh] overflow-y-auto border border-white/10 text-white custom-scrollbar transition-all"
       @submit.prevent="enviarFormulario"
     >
       <div v-if="!esGoogle">
@@ -209,8 +209,8 @@ const enviarFormulario = async () => {
 
         <div class="grid grid-cols-2 gap-4">
           <div class="flex flex-col gap-2">
-            <label class="text-[11px] font-bold uppercase text-slate-400">Teléfono</label>
-            <input v-model="form.telefono" type="text" placeholder="7777-7777" required class="bg-white/5 border border-white/10 p-3 rounded-xl outline-none text-white focus:ring-2 focus:ring-cyan-500/50" />
+            <label class="text-[11px] font-bold uppercase text-slate-400">Teléfono (sin guión)</label>
+            <input v-model="form.telefono" type="text" placeholder="77777777" required class="bg-white/5 border border-white/10 p-3 rounded-xl outline-none text-white focus:ring-2 focus:ring-cyan-500/50" />
           </div>
           <div class="flex flex-col gap-2">
             <label class="text-[11px] font-bold uppercase text-slate-400">Dirección</label>
@@ -236,10 +236,11 @@ const enviarFormulario = async () => {
           <label class="text-[11px] font-bold uppercase text-slate-400">Correo</label>
           <input v-model="form.email" type="email" readonly class="bg-white/10 border border-white/10 p-3 rounded-xl outline-none text-white opacity-70 cursor-not-allowed" />
           <p class="text-xs text-slate-400">Este correo viene de Google y no puede cambiarse aquí.</p>
+          <p class="text-xs text-slate-400">Tu cuenta utilizará inicio de sesión con google.</p>
         </div>
 
-        <div class="flex flex-col gap-2">
-          <label class="text-[11px] font-bold uppercase text-slate-400">Contraseña (mín. 8)
+        <div v-if="!esGoogle" class="flex flex-col gap-2">
+          <label class="text-[11px] font-bold uppercase text-slate-400">Escribe una contraseña
             <span v-if="!esGoogle">*</span>
           </label>
           <div class="relative w-full">

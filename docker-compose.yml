@@ -16,7 +16,7 @@ services:
     build:
       context: ./ProyectoVue
       dockerfile: Dockerfile
-    container_name: frontend
+    container_name: ProyectoVue
     ports:
       - "80:80"
     depends_on:

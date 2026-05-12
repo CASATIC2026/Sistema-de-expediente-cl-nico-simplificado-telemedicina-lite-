@@ -1,123 +1,215 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, ref } from 'vue'
 
-const emit = defineEmits(['cerrar']);
+import {
+  ComputerDesktopIcon,
+  CalendarDaysIcon,
+  VideoCameraIcon,
+  DocumentTextIcon,
+  ClipboardDocumentListIcon
+} from '@heroicons/vue/24/outline'
+
+defineEmits(['cerrar'])
 
 const faqs = ref([
-  { id: 1, 
-    categoria: '💻 Problemas Técnicos',
-    pregunta: 'Mi cámara o micrófono no funcionan, ¿Qué hago?', 
-    respuesta: `1. Revisa que el navegador tenga permisos: haz clic en el icono del candado (🔒) junto a la dirección web y activa "Cámara" y "Micrófono". 
+  {
+    id: 1,
+    categoria: 'Problemas Técnicos',
+    icono: ComputerDesktopIcon,
+    pregunta: 'Mi cámara o micrófono no funcionan, ¿Qué hago?',
+    respuesta: `1. Revisa que el navegador tenga permisos: haz clic en el icono del candado (🔒) junto a la dirección web y activa "Cámara" y "Micrófono".
                 2. Asegúrate de que ninguna otra aplicación (como Zoom, Teams o WhatsApp) esté usando la cámara en ese momento.
                 3. Si persiste, recarga la página (F5) e intenta ingresar nuevamente.`
   },
-  { id: 2,
-    categoria: '📅 Sobre mi Cita',
+
+  {
+    id: 2,
+    categoria: 'Sobre mi Cita',
+    icono: CalendarDaysIcon,
     pregunta: '¿Cómo puedo cancelar o reprogramar una cita?',
-    respuesta: `Ve a la sección "Ver citas" y selecciona la opción "Cancelar" en la cita correspondiente. 
-                Ten en cuenta que las cancelaciones deben hacerse con al menos 24 horas de 
+    respuesta: `Ve a la sección "Ver citas" y selecciona la opción "Cancelar" en la cita correspondiente.
+                Ten en cuenta que las cancelaciones deben hacerse con al menos 24 horas de
                 anticipación para evitar cargos adicionales.`
   },
-  { id: 3,
-    categoria: '📅 Sobre mi consulta',
+
+  {
+    id: 3,
+    categoria: 'Sobre mi Consulta',
+    icono: VideoCameraIcon,
     pregunta: '¿Cómo me uno a mi videollamada?',
     respuesta: `Dirígete a la sección "Ver citas" en tu panel lateral. Allí encontrarás tu próxima consulta programada.
                 Diez minutos antes de la hora acordada, se habilitará el botón "Entrar a la consulta".
                 Haz clic en él y asegúrate de permitir el acceso a tu cámara y micrófono cuando el navegador lo solicite.`
   },
-  { id: 4,
-    categoria: '📅 Sobre mi consulta',
+
+  {
+    id: 4,
+    categoria: 'Sobre mi Consulta',
+    icono: VideoCameraIcon,
     pregunta: '¿Puedo entrar a la consulta desde mi celular?',
     respuesta: `Sí, nuestra plataforma es compatible con dispositivos móviles.
                 Solo asegúrate de usar un navegador actualizado (Chrome o Safari) y tener una conexión a internet estable.`
   },
-  { id: 5, 
-    categoria: '📄 Recetas y Médica',
-    pregunta: '¿Dónde descargo mi receta?', 
+
+  {
+    id: 5,
+    categoria: 'Recetas Médicas',
+    icono: DocumentTextIcon,
+    pregunta: '¿Dónde descargo mi receta?',
     respuesta: `Una vez finalizada la consulta, ve a la sección "Historial". Busca la fecha de tu atención y haz clic en el icono de "Descargar Receta".
-                El documento se abrirá en formato PDF para que puedas guardarlo o imprimirlo.` 
+                El documento se abrirá en formato PDF para que puedas guardarlo o imprimirlo.`
   },
-  { id: 6, 
-    categoria: '📄 Sobre mi historial',
-    pregunta: 'No encuentro mi historial de consultas anteriores.', 
+
+  {
+    id: 6,
+    categoria: 'Sobre mi Historial',
+    icono: ClipboardDocumentListIcon,
+    pregunta: 'No encuentro mi historial de consultas anteriores.',
     respuesta: `Asegúrate de estar en la cuenta correcta. Si la consulta fue muy reciente,
-                puede tardar hasta 5 minutos en aparecer en el historial mientras el sistema procesa el cierre de la sesión médica.` 
+                puede tardar hasta 5 minutos en aparecer en el historial mientras el sistema procesa el cierre de la sesión médica.`
   }
-]);
+])
 
 const faqsAgrupadas = computed(() => {
   return faqs.value.reduce((acc, obj) => {
-    const clave = obj.categoria;
-    if (!acc[clave]) acc[clave] = [];
-    acc[clave].push(obj);
-    return acc;
-  }, {});
-});
+
+    const clave = obj.categoria
+
+    if (!acc[clave]) {
+      acc[clave] = {
+        icono: obj.icono,
+        items: []
+      }
+    }
+
+    acc[clave].items.push(obj)
+
+    return acc
+
+  }, {})
+})
 </script>
 
 <template>
-  <Transition 
-    enter-active-class="transition transform duration-300 ease-in-out"
-    enter-from-class="translate-x-full"
-    enter-to-class="translate-x-0"
-    leave-active-class="transition transform duration-200 ease-in-out"
-    leave-from-class="translate-x-0"
-    leave-to-class="translate-x-full"
+
+  <div
+    class="fixed top-0 right-0 h-full z-9999 bg-[#0a1628] shadow-2xl flex flex-col w-full sm:w-112.5 border-l border-cyan-500/20"
   >
-    <div class="fixed top-0 right-0 h-full z-[9999] bg-slate-800 shadow-2xl flex flex-col w-full sm:w-[450px]">
 
       <!-- HEADER -->
-      <div class="p-6 border-b border-gray-100 flex justify-between items-start bg-white">
+      <div
+        class="p-6 border-b border-white/10 flex justify-between items-start bg-linear-to-r from-[#0f2040] to-[#10284f]"
+      >
+
         <div>
-          <h3 class="text-xl font-bold text-slate-800">Centro de Ayuda</h3>
-          <p class="text-sm text-slate-500 mt-1">Encuentra soluciones rápidas</p>
+          <h3 class="text-2xl font-bold text-white tracking-wide">
+            Centro de Ayuda
+          </h3>
+
+          <p class="text-sm text-cyan-200/70 mt-1">
+            Encuentra soluciones rápidas
+          </p>
         </div>
-        <button 
-          @click="$emit('cerrar')" 
-          class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full bg-red-100 hover:bg-red-200 text-red-400 hover:text-red-600 text-2xl md:text-3xl transition-all leading-none shrink-0"
+
+        <button
+          @click="$emit('cerrar')"
+          class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full bg-red-500/10 hover:bg-red-500/20 border border-red-400/20 text-red-300 hover:text-red-200 text-2xl md:text-3xl transition-all leading-none shrink-0"
         >
           &times;
         </button>
+
       </div>
 
       <!-- CUERPO -->
-      <div class="flex-1 overflow-y-auto p-6 space-y-8 bg-slate-800">
-        <div v-for="(grupo, categoria) in faqsAgrupadas" :key="categoria" class="space-y-3">
-          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 ml-1">
+      <div class="flex-1 overflow-y-auto p-6 space-y-8 bg-[#0a1628]">
+
+        <div
+          v-for="(grupo, categoria) in faqsAgrupadas"
+          :key="categoria"
+          class="space-y-3"
+        >
+
+          <!-- TITULO CATEGORIA -->
+          <h4
+            class="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-cyan-400 ml-1"
+          >
+
+            <component
+              :is="grupo.icono"
+              class="w-4 h-4"
+            />
+
             {{ categoria }}
+
           </h4>
-          
-          <div v-for="faq in grupo" :key="faq.id" class="border border-slate-100 rounded-xl overflow-hidden shadow-sm bg-white">
+
+          <!-- FAQS -->
+          <div
+            v-for="faq in grupo.items"
+            :key="faq.id"
+            class="border border-white/10 rounded-2xl overflow-hidden shadow-lg bg-slate-900/70 backdrop-blur-sm"
+          >
+
             <details class="group">
-              <summary class="flex justify-between items-center p-4 cursor-pointer hover:bg-slate-50 list-none font-medium text-slate-700">
+
+              <summary
+                class="flex justify-between items-center p-4 cursor-pointer hover:bg-white/5 list-none font-medium text-slate-100 transition-colors"
+              >
+
                 {{ faq.pregunta }}
+
                 <span class="transition group-open:rotate-180 shrink-0 ml-2">
-                  <i class="fa-solid fa-chevron-down text-xs text-slate-400"></i>
+                  <i class="fa-solid fa-chevron-down text-xs text-cyan-400"></i>
                 </span>
+
               </summary>
-              <div class="px-4 pb-4 text-sm text-slate-600 leading-relaxed border-t border-slate-50 pt-3 whitespace-pre-line">
+
+              <div
+                class="px-4 pb-4 text-sm text-slate-300 leading-relaxed border-t border-white/5 pt-3 whitespace-pre-line"
+              >
                 {{ faq.respuesta }}
               </div>
+
             </details>
+
           </div>
+
         </div>
+
       </div>
 
       <!-- FOOTER -->
-      <div class="p-6 border-t border-gray-100 bg-slate-50 space-y-4">
-        <p class="text-sm font-semibold text-slate-700 text-center">¿Aún necesitas ayuda?</p>
+      <div class="p-6 border-t border-white/10 bg-[#0f2040] space-y-4">
+
+        <p class="text-sm font-semibold text-white text-center">
+          ¿Aún necesitas ayuda?
+        </p>
+
         <div class="grid grid-cols-2 gap-3">
-          <a href="tel:+57300000000" 
-             class="flex items-center justify-center gap-2 px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors">
-            <i class="fa-solid fa-phone text-emerald-500"></i> Llamar
+
+          <!-- LLAMAR -->
+          <a
+            href="tel:+50300000000"
+            class="flex items-center justify-center gap-2 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm font-medium text-slate-200 hover:bg-white/10 transition-all"
+          >
+            <i class="fa-solid fa-phone text-cyan-400"></i>
+            Llamar
           </a>
-          <a href="#" 
-             class="flex items-center justify-center gap-2 px-4 py-3 bg-slate-800 text-cyan-400 rounded-xl text-sm font-medium hover:bg-opacity-90 transition-colors text-center">
-            <i class="fa-brands fa-whatsapp"></i> WhatsApp
+
+          <!-- WHATSAPP -->
+          <a
+            href="https://wa.me/50300000000"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex items-center justify-center gap-2 px-4 py-3 bg-green-600 hover:bg-green-500 rounded-xl text-sm font-bold text-white transition-all shadow-lg"
+          >
+            <i class="fa-brands fa-whatsapp text-lg"></i>
+            WhatsApp
           </a>
+
         </div>
+
       </div>
 
     </div>
-  </Transition>
 </template>

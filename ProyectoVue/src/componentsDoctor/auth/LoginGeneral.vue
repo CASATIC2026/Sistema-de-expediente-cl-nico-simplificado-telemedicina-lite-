@@ -1,7 +1,4 @@
-
-
-/// ESTE ES EL VERADERO LOGIN PARA TODOS LOS USUARIOS, INCLUYENDO DOCTORES, PACIENTES Y ADMINISTRADORES
-
+/// ESTE ES EL LOGIN PARA TODOS LOS USUARIOS, INCLUYENDO DOCTORES, PACIENTES Y ADMINISTRADORES
 
 <script setup>
 
@@ -132,24 +129,37 @@ const handleGoogleLogin = async (response) => {
 // GOOGLE INIT
 // ===============================
 const initGoogle = () => {
-  if (typeof google === 'undefined') return
+  // Accede a través de window para evitar errores de "google is not defined"
+  const g = window.google;
 
-  google.accounts.id.initialize({
-    client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-    callback: handleGoogleLogin
-  })
-
-  const btn = document.getElementById('googleBtn')
-  if (btn) {
-    google.accounts.id.renderButton(btn, {
-      theme: 'filled_blue',
-      size:  'large'
-    })
+  if (!g || !g.accounts) {
+    console.warn('Google Identity Services no está listo aún.');
+    return;
   }
-}
+
+  // Inicialización
+  g.accounts.id.initialize({
+    client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+    callback: handleGoogleLogin,
+    // Opcional: Esto ayuda a evitar problemas de cookies en algunos navegadores
+    auto_select: false,
+    itp_support: true
+  });
+
+  // Renderizado del botón
+  const btn = document.getElementById('googleBtn');
+  if (btn) {
+    g.accounts.id.renderButton(btn, {
+      theme: 'filled_blue',
+      size: 'large',
+      shape: 'pill',      // Un toque más moderno (opcional)
+      width: btn.offsetWidth // Ajusta el botón al ancho del contenedor
+    });
+  }
+};
 
 // ===============================
-// Helper - un solo onMounted 
+// Helper - un solo onMounted
 // ===============================
 onMounted(() => {
   // Si ya hay sesión activa, redirigir directo — no inicializar Google
@@ -175,16 +185,16 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="w-full max-w-md p-4 md:p-8 text-white">
+  <div class="w-full max-w-md p-4 text-white md:p-8">
 
     <div class="mb-6 md:mb-8">
-      <h3 class="text-xl md:text-2xl font-bold uppercase tracking-wide">Iniciar sesión</h3>
+      <h3 class="text-xl font-bold tracking-wide uppercase md:text-2xl">Iniciar sesión</h3>
     </div>
 
     <form @submit.prevent="handleLogin" class="space-y-5 md:space-y-6" :class="{'opacity-50 pointer-events-none': cargando}">
 
       <div>
-        <label class="block text-sm font-medium mb-2 opacity-80 uppercase tracking-tighter">
+        <label class="block mb-2 text-sm font-medium tracking-tighter uppercase opacity-80">
           Correo Electrónico
         </label>
         <input
@@ -198,7 +208,7 @@ onUnmounted(() => {
 
       <div>
         <div>
-          <label class="block text-sm font-medium mb-2 opacity-80 uppercase tracking-tighter">Contraseña</label>
+          <label class="block mb-2 text-sm font-medium tracking-tighter uppercase opacity-80">Contraseña</label>
 
           <div class="relative">
 
@@ -213,7 +223,7 @@ onUnmounted(() => {
           <button
             type="button"
             @click="toggleContraseña"
-            class="absolute right-3 top-1/2 -translate-y-1/2 text-cyan-400 hover:text-cyan-300 transition-colors"
+            class="absolute transition-colors -translate-y-1/2 right-3 top-1/2 text-cyan-400 hover:text-cyan-300"
           >
 
             <EyeIcon
@@ -232,7 +242,7 @@ onUnmounted(() => {
         </div>
 
         <!-- ENLACE PARA PARA RECUPERAR CONTRASEÑA OLVIDADA -->
-        <div class="text-right mt-1">
+        <div class="mt-1 text-right">
           <button
             type="button"
             @click="mostrarForgotPassword = true"
@@ -254,7 +264,7 @@ onUnmounted(() => {
 
       <div class="flex items-center my-4 md:my-6">
         <div class="flex-grow border-t border-slate-700"></div>
-        <span class="px-3 text-slate-500 text-xs uppercase">O continúa con</span>
+        <span class="px-3 text-xs uppercase text-slate-500">O continúa con</span>
         <div class="flex-grow border-t border-slate-700"></div>
       </div>
 
@@ -262,29 +272,29 @@ onUnmounted(() => {
       <div id="googleBtn" class="flex justify-center h-[50px] overflow-hidden" v-if="!cargando"></div>
 
       <!-- Error: break-words para textos largos -->
-      <div v-if="mensajeError" class="bg-red-50 border-l-4 border-red-500 p-3 md:p-4 my-4 rounded shadow-sm">
+      <div v-if="mensajeError" class="p-3 my-4 border-l-4 border-red-500 rounded shadow-sm bg-red-50 md:p-4">
         <div class="flex items-start gap-2">
           <span class="text-red-500 shrink-0 mt-0.5">⚠️</span>
-          <p class="text-sm text-red-700 font-medium break-words">{{ mensajeError }}</p>
+          <p class="text-sm font-medium text-red-700 break-words">{{ mensajeError }}</p>
         </div>
       </div>
 
       <div class="flex flex-col items-center justify-center min-h-[50px] w-full py-3 md:py-4">
         <div v-if="cargando" class="flex flex-col items-center space-y-3">
-          <div class="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
-          <p class="text-sm font-medium text-slate-300 animate-pulse text-center">
+          <div class="w-8 h-8 border-4 border-blue-200 rounded-full border-t-blue-600 animate-spin"></div>
+          <p class="text-sm font-medium text-center text-slate-300 animate-pulse">
             Verificando cuenta médica...
           </p>
         </div>
       </div>
 
       <!-- Registro: flex-wrap para pantallas muy angostas -->
-      <p class="text-center text-sm text-white/60 flex flex-wrap items-center justify-center gap-1">
+      <p class="flex flex-wrap items-center justify-center gap-1 text-sm text-center text-white/60">
         ¿No tienes cuenta?
         <button
           type="button"
           @click="$emit('abrirRegistro')"
-          class="text-cyan-400 font-bold hover:text-cyan-300 hover:underline uppercase transition-all touch-manipulation"
+          class="font-bold uppercase transition-all text-cyan-400 hover:text-cyan-300 hover:underline touch-manipulation"
         >
           Registrarme
         </button>

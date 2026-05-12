@@ -18,11 +18,13 @@ public class AuthController : ControllerBase
 {
     private readonly TelMedAPIContext _context;
     private readonly string _key;
+    private readonly IConfiguration _config;
     private readonly EmailService _emailService;
 
     public AuthController(TelMedAPIContext context, IConfiguration config, EmailService emailService)
     {
         _context = context;
+        _config = config;
         _key = config["Jwt:Key"] 
             ?? throw new ArgumentNullException("Jwt:Key no configurado en appsettings.json");
         _emailService = emailService;
@@ -243,7 +245,7 @@ public class AuthController : ControllerBase
         });
     }
 
-    // =========================================================
+   // =========================================================
     // GOOGLE LOGIN
     // =========================================================
     [HttpPost("google")]
@@ -251,7 +253,18 @@ public class AuthController : ControllerBase
     {
         try 
         {
-            var payload = await GoogleJsonWebSignature.ValidateAsync(dto.IdToken);
+            // Obtener el ClientId de la configuración
+            var clientId = _config["Google:ClientId"];
+            
+            // Valida el token incluyendo la audiencia (ClientId)
+            var settings = new GoogleJsonWebSignature.ValidationSettings()
+            {
+                Audience = new List<string> { clientId },
+            };
+
+            var payload = await GoogleJsonWebSignature.ValidateAsync(dto.idToken, settings);
+            
+            // ... resto de tu lógica de búsqueda/creación de usuario ...
             var user = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == payload.Email);
 
             if (user == null)
@@ -285,12 +298,13 @@ public class AuthController : ControllerBase
                 requiereCambioPassword = user.DebeCambiarPassword
             });
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            return BadRequest("Token de Google inválido.");
+            Console.WriteLine($"Error detallado de Google Auth: {ex.Message}");
+            return BadRequest(new { message = "Token de Google inválido.", detail = ex.Message });
         }
     }
-
+    
     // =========================================================
     // RECUPERACIÓN DE CONTRASEÑA
     // =========================================================
