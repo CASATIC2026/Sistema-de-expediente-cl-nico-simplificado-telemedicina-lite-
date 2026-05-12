@@ -207,7 +207,6 @@ namespace TelMedAPI.Controllers
         [HttpGet("mis-citas-detalle")]
         public async Task<IActionResult> GetMisCitasDetalle()
         {
-            // ✅ FIX: Null-safe claim parsing
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userIdClaim == null) return Unauthorized();
             var userId = int.Parse(userIdClaim);
@@ -320,137 +319,133 @@ namespace TelMedAPI.Controllers
         // =========================================================
         // Horarios disponibles para agendar citas
        // =========================================================
-// GET horario de un doctor específico (Admin + Doctor)
-// GET /api/citas/horarios-disponibles?doctorId=1
-[Authorize]
-[HttpGet("horarios-disponibles")]
-public async Task<IActionResult> GetHorariosDisponibles([FromQuery] int doctorId)
-{
-    if (doctorId == 0)
-        return BadRequest(new { message = "doctorId es requerido." });
-
-    var horarios = await _context.HorariosDoctor
-        .Where(h => h.DoctorId == doctorId)
-        .OrderBy(h => h.DiaSemana)
-        .Select(h => new
+        [Authorize]
+        [HttpGet("horarios-disponibles")]
+        public async Task<IActionResult> GetHorariosDisponibles([FromQuery] int doctorId)
         {
-            h.DiaSemana,
-            h.Activo,
-            HoraInicio = h.HoraInicio.ToString(@"hh\:mm"),
-            HoraFin    = h.HoraFin.ToString(@"hh\:mm")
-        })
-        .ToListAsync();
+            if (doctorId == 0)
+                return BadRequest(new { message = "doctorId es requerido." });
 
-    return Ok(horarios);
-}
+            var horarios = await _context.HorariosDoctor
+                .Where(h => h.DoctorId == doctorId)
+                .OrderBy(h => h.DiaSemana)
+                .Select(h => new
+                {
+                    h.DiaSemana,
+                    h.Activo,
+                    HoraInicio = h.HoraInicio.ToString(@"hh\:mm"),
+                    HoraFin    = h.HoraFin.ToString(@"hh\:mm")
+                })
+                .ToListAsync();
 
-// =========================================================
-// PUT actualizar horario completo de un doctor (solo Admin)
-// PUT /api/citas/horarios-doctor/1
-[Authorize(Roles = Roles.Admin)]
-[HttpPut("horarios-doctor/{doctorId}")]
-public async Task<IActionResult> ActualizarHorarioDoctor(
-    int doctorId,
-    [FromBody] List<HorarioDoctorDTO> horarios)
-{
-    // Verificar que el doctor existe
-    var doctorExiste = await _context.Usuarios
-        .AnyAsync(u => u.Id == doctorId && u.Rol == Roles.Doctor);
+            return Ok(horarios);
+        }
 
-    if (!doctorExiste)
-        return NotFound(new { message = "Doctor no encontrado." });
-
-    // Borrar horarios anteriores de ese doctor y reemplazar
-    var horariosExistentes = await _context.HorariosDoctor
-        .Where(h => h.DoctorId == doctorId)
-        .ToListAsync();
-
-    _context.HorariosDoctor.RemoveRange(horariosExistentes);
-
-    foreach (var h in horarios)
-    {
-        _context.HorariosDoctor.Add(new HorarioDoctor
+        // =========================================================
+        // Actualizar los horarios del doctor (solo Admin)
+        [Authorize(Roles = Roles.Admin)]
+        [HttpPut("horarios-doctor/{doctorId}")]
+        public async Task<IActionResult> ActualizarHorarioDoctor(
+            int doctorId,
+            [FromBody] List<HorarioDoctorDTO> horarios)
         {
-            DoctorId   = doctorId,
-            DiaSemana  = h.DiaSemana,
-            HoraInicio = TimeSpan.Parse(h.HoraInicio),
-            HoraFin    = TimeSpan.Parse(h.HoraFin),
-            Activo     = h.Activo
-        });
-    }
+            // Verificar que el doctor existe
+            var doctorExiste = await _context.Usuarios
+                .AnyAsync(u => u.Id == doctorId && u.Rol == Roles.Doctor);
 
-    await _context.SaveChangesAsync();
-    return Ok(new { message = "Horario actualizado correctamente." });
-}
+            if (!doctorExiste)
+                return NotFound(new { message = "Doctor no encontrado." });
 
-// =========================================================
-// GET slots disponibles para agendar (paciente/admin al crear cita)
-// GET /api/citas/slots-disponibles?doctorId=1&fecha=2026-05-10
-[Authorize]
-[HttpGet("slots-disponibles")]
-public async Task<IActionResult> GetSlotsDisponibles(
-    [FromQuery] int    doctorId,
-    [FromQuery] string fecha)
-{
-    if (!DateTime.TryParse(fecha, out var fechaDate))
-        return BadRequest(new { message = "Fecha inválida." });
+            // Borrar horarios anteriores de ese doctor y reemplazar
+            var horariosExistentes = await _context.HorariosDoctor
+                .Where(h => h.DoctorId == doctorId)
+                .ToListAsync();
 
-    // 1. Día de la semana de la fecha solicitada
-    var diaSemana = (int)fechaDate.DayOfWeek;
+            _context.HorariosDoctor.RemoveRange(horariosExistentes);
 
-    // 2. Buscar el horario del doctor para ese día
-    var horario = await _context.HorariosDoctor
-        .FirstOrDefaultAsync(h => h.DoctorId == doctorId
-                               && h.DiaSemana == diaSemana
-                               && h.Activo);
+            foreach (var h in horarios)
+            {
+                _context.HorariosDoctor.Add(new HorarioDoctor
+                {
+                    DoctorId   = doctorId,
+                    DiaSemana  = h.DiaSemana,
+                    HoraInicio = TimeSpan.Parse(h.HoraInicio),
+                    HoraFin    = TimeSpan.Parse(h.HoraFin),
+                    Activo     = h.Activo
+                });
+            }
 
-    // Si no hay horario activo ese día → lista vacía
-    if (horario == null)
-        return Ok(new List<object>());
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "Horario actualizado correctamente." });
+        }
 
-    // 3. Citas ya ocupadas ese día para ese doctor (en UTC)
-    var diaInicioUtc = DateTime.SpecifyKind(fechaDate.Date, DateTimeKind.Utc);
-    var diaFinUtc    = diaInicioUtc.AddDays(1);
-
-    var horasOcupadas = await _context.Citas
-        .Where(c =>
-            c.DoctorId    == doctorId        &&
-            c.Estado      != CitaEstados.Cancelada &&
-            c.FechaInicio >= diaInicioUtc    &&
-            c.FechaInicio  < diaFinUtc)
-        .Select(c => c.FechaInicio)
-        .ToListAsync();
-
-    // 4. Generar slots de 30 min entre HoraInicio y HoraFin
-    const int duracion = 30;
-    var slots  = new List<object>();
-    var cursor = horario.HoraInicio;
-
-    while (cursor.Add(TimeSpan.FromMinutes(duracion)) <= horario.HoraFin)
-    {
-        // Convertir slot local SV (UTC-6) a UTC para comparar con la BD
-        var slotUtc = diaInicioUtc.Add(cursor).AddHours(6);
-
-        var ocupado = horasOcupadas.Any(h =>
-            h.Hour   == slotUtc.Hour &&
-            h.Minute == slotUtc.Minute);
-
-        var inicio  = DateTime.Today.Add(cursor);
-        var fin     = inicio.AddMinutes(duracion);
-        var periodo = cursor.Hours < 12 ? "AM" : "PM";
-
-        slots.Add(new
+        // =========================================================
+        // Slots disponibles para una fecha y doctor específicos
+        [Authorize]
+        [HttpGet("slots-disponibles")]
+        public async Task<IActionResult> GetSlotsDisponibles(
+            [FromQuery] int    doctorId,
+            [FromQuery] string fecha)
         {
-            valor    = cursor.ToString(@"hh\:mm"),
-            etiqueta = $"{inicio:hh:mm} - {fin:hh:mm} {periodo}",
-            ocupado
-        });
+            if (!DateTime.TryParse(fecha, out var fechaDate))
+                return BadRequest(new { message = "Fecha inválida." });
 
-        cursor = cursor.Add(TimeSpan.FromMinutes(duracion));
-    }
+            // Día de la semana de la fecha solicitada
+            var diaSemana = (int)fechaDate.DayOfWeek;
 
-    return Ok(slots);
-}
+            // 2. Buscar el horario del doctor para ese día
+            var horario = await _context.HorariosDoctor
+                .FirstOrDefaultAsync(h => h.DoctorId == doctorId
+                                    && h.DiaSemana == diaSemana
+                                    && h.Activo);
+
+            // Si no hay horario activo ese día → lista vacía
+            if (horario == null)
+                return Ok(new List<object>());
+
+            // Citas ya ocupadas ese día para ese doctor (en UTC)
+            var diaInicioUtc = DateTime.SpecifyKind(fechaDate.Date, DateTimeKind.Utc);
+            var diaFinUtc    = diaInicioUtc.AddDays(1);
+
+            var horasOcupadas = await _context.Citas
+                .Where(c =>
+                    c.DoctorId    == doctorId        &&
+                    c.Estado      != CitaEstados.Cancelada &&
+                    c.FechaInicio >= diaInicioUtc    &&
+                    c.FechaInicio  < diaFinUtc)
+                .Select(c => c.FechaInicio)
+                .ToListAsync();
+
+            // Generar slots de 30 min entre HoraInicio y HoraFin
+            const int duracion = 30;
+            var slots  = new List<object>();
+            var cursor = horario.HoraInicio;
+
+            while (cursor.Add(TimeSpan.FromMinutes(duracion)) <= horario.HoraFin)
+            {
+                // Convertir slot local SV (UTC-6) a UTC para comparar con la BD
+                var slotUtc = diaInicioUtc.Add(cursor).AddHours(6);
+
+                var ocupado = horasOcupadas.Any(h =>
+                    h.Hour   == slotUtc.Hour &&
+                    h.Minute == slotUtc.Minute);
+
+                var inicio  = DateTime.Today.Add(cursor);
+                var fin     = inicio.AddMinutes(duracion);
+                var periodo = cursor.Hours < 12 ? "AM" : "PM";
+
+                slots.Add(new
+                {
+                    valor    = cursor.ToString(@"hh\:mm"),
+                    etiqueta = $"{inicio:hh:mm} - {fin:hh:mm} {periodo}",
+                    ocupado
+                });
+
+                cursor = cursor.Add(TimeSpan.FromMinutes(duracion));
+            }
+
+            return Ok(slots);
+        }
 
         // =========================================================
         // CALENDARIO
@@ -516,8 +511,6 @@ public async Task<IActionResult> GetSlotsDisponibles(
 
         // =========================================================
         // CREAR CITA
-        // =========================================================
-        // CREAR CITA
         [Authorize(Roles = Roles.Paciente + "," + Roles.Admin)]
         [HttpPost]
         public async Task<IActionResult> CrearCita([FromBody] CreateCitaDTO dto)
@@ -529,7 +522,7 @@ public async Task<IActionResult> GetSlotsDisponibles(
             var fechaInicioUtc   = dto.FechaInicio.UtcDateTime;
             var fechaFinUtc      = dto.FechaFin.UtcDateTime;
 
-            // ✅ Convertir a hora local SV para comparar contra horario del doctor
+            // Convertir a hora local para comparar contra horario del doctor
             var fechaInicioLocal = TimeZoneInfo.ConvertTimeFromUtc(fechaInicioUtc, GetZonaElSalvador());
             var horaCita         = fechaInicioLocal.TimeOfDay;
 
@@ -541,10 +534,10 @@ public async Task<IActionResult> GetSlotsDisponibles(
             if (fechaInicioUtc < DateTime.UtcNow)
                 return BadRequest(new { message = "No puedes agendar una cita en el pasado." });
 
-            // Día de la semana en hora local SV
+            // Día de la semana en hora local
             var diaSemana = (int)fechaInicioLocal.DayOfWeek;
 
-            // ✅ Buscar horario del doctor específico para ese día
+            // Buscar horario del doctor específico para ese día
             var horarioDisponible = await _context.HorariosDoctor
                 .FirstOrDefaultAsync(h => h.DiaSemana == diaSemana
                                     && h.DoctorId  == dto.DoctorId
@@ -635,7 +628,6 @@ public async Task<IActionResult> GetSlotsDisponibles(
         [HttpPut("{id}/finalizar")]
         public async Task<IActionResult> FinalizarConsulta(int id)
         {
-            // ✅ FIX: Null-safe claim parsing
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userIdClaim == null) return Unauthorized();
             var userId = int.Parse(userIdClaim);
@@ -690,8 +682,7 @@ public async Task<IActionResult> GetSlotsDisponibles(
         }
 
         // =========================================================
-        // HELPER — zona horaria El Salvador
-        // ✅ Dentro de la clase, antes del último }
+        // Helper - Obtiene zona horaria de El Salvador
         private static TimeZoneInfo GetZonaElSalvador()
         {
             try

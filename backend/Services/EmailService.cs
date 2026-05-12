@@ -43,12 +43,14 @@ namespace TelMedAPI.Services
                             border-radius:8px;
                             font-weight:bold;
                        '>
-                        Confirmar correo
+                        Confirma tu correo
                     </a>
 
                     <p style='margin-top:20px;'>
                         Si no solicitaste esta cuenta, puedes ignorar este correo.<br />
                         Este correo ha sido enviado automáticamente, por favor no respondas a este mensaje.
+                         <br />
+                        TelMed & Health Lite™ System
                     </p>
                 </div>";
 
@@ -94,12 +96,14 @@ namespace TelMedAPI.Services
                     <p style='margin-top:20px;'>
                         Si no solicitaste este cambio, puedes ignorar este correo.<br />
                         Este correo ha sido enviado automáticamente, por favor no respondas a este mensaje.
+                        <br />
+                        TelMed & Health Lite™ System
                     </p>
                 </div>";
 
             await EnviarCorreo(
                 destino,
-                "Recuperar contraseña - TelMed",
+                "Recuperar contraseña - TelMed Lite™",
                 html
             );
         }

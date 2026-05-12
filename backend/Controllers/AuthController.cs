@@ -152,98 +152,98 @@ public class AuthController : ControllerBase
         }
 
 
-    // =========================================================
-    // COMPLETAR PERFIL (Para usuarios de Google)
-    // =========================================================
-    [Authorize]
-    [HttpPost("completar-perfil")]
-    public async Task<IActionResult> CompletarPerfil([FromBody] RegisterDTO model)
-    {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
-        var email = User.FindFirst(ClaimTypes.Email)?.Value;
-        var user = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == email);
-
-        if (user == null)
-            return NotFound("Usuario no encontrado");
-
-        // Solo usuarios de Google
-        if (user.GoogleId == null)
-        {
-            return BadRequest(new { message = "Este endpoint es solo para usuarios de Google." });
-        }
-
-        // Contraseña opcional (solo si no tiene)
-        if (!string.IsNullOrEmpty(model.Password))
-        {
-            if (user.PasswordHash != null)
+            // =========================================================
+            // COMPLETAR PERFIL (Para usuarios de Google)
+            // =========================================================
+            [Authorize]
+            [HttpPost("completar-perfil")]
+            public async Task<IActionResult> CompletarPerfil([FromBody] RegisterDTO model)
             {
-                return BadRequest(new { message = "Ya tienes una contraseña definida." });
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+
+                var email = User.FindFirst(ClaimTypes.Email)?.Value;
+                var user = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == email);
+
+                if (user == null)
+                    return NotFound("Usuario no encontrado");
+
+                // Solo usuarios de Google
+                if (user.GoogleId == null)
+                {
+                    return BadRequest(new { message = "Este endpoint es solo para usuarios de Google." });
+                }
+
+                // Contraseña opcional (solo si no tiene)
+                if (!string.IsNullOrEmpty(model.Password))
+                {
+                    if (user.PasswordHash != null)
+                    {
+                        return BadRequest(new { message = "Ya tienes una contraseña definida." });
+                    }
+
+                    user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password);
+                }
+
+                // Actualización de campos
+                user.Nombre = model.Nombre;
+                user.Apellido = model.Apellido;
+                user.Genero = model.Genero;
+                user.FechaNacimiento = model.FechaNacimiento;
+                user.Direccion = model.Direccion;
+                user.Telefono = model.Telefono;
+                user.DUI = model.DUI;
+
+                await _context.SaveChangesAsync();
+
+                var token = GenerarToken(user);
+
+                return Ok(new {
+                    token = token,
+                    rol = user.Rol.ToLower(),
+                    perfilCompleto = true,
+                    message = "Perfil actualizado correctamente."
+                });
             }
 
-            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password);
-        }
-
-        // Actualización de campos
-        user.Nombre = model.Nombre;
-        user.Apellido = model.Apellido;
-        user.Genero = model.Genero;
-        user.FechaNacimiento = model.FechaNacimiento;
-        user.Direccion = model.Direccion;
-        user.Telefono = model.Telefono;
-        user.DUI = model.DUI;
-
-        await _context.SaveChangesAsync();
-
-        var token = GenerarToken(user);
-
-        return Ok(new {
-            token = token,
-            rol = user.Rol.ToLower(),
-            perfilCompleto = true,
-            message = "Perfil actualizado correctamente."
-        });
-    }
-
-    // =========================================================
-    // LOGIN TRADICIONAL
-    // =========================================================
-    [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginDTO login)
-    {
-        var emailNormalizado = login.Email.Trim().ToLower();
-
-        var user = await _context.Usuarios
-            .FirstOrDefaultAsync(u => u.Email == emailNormalizado);
-
-        if (user == null) return Unauthorized("Credenciales inválidas.");
-
-        if (user.GoogleId != null)
-            return BadRequest("Este usuario utiliza inicio de sesión con Google.");
-
-        if (!user.EmailVerified)
-        {
-            return BadRequest(new
+            // =========================================================
+            // LOGIN TRADICIONAL
+            // =========================================================
+            [HttpPost("login")]
+            public async Task<IActionResult> Login([FromBody] LoginDTO login)
             {
-                message = "Debes verificar tu correo antes de iniciar sesión."
-            });
-        }
+                var emailNormalizado = login.Email.Trim().ToLower();
 
-        if (user.PasswordHash == null || !BCrypt.Net.BCrypt.Verify(login.Password, user.PasswordHash))
-            return Unauthorized("Credenciales inválidas.");
+                var user = await _context.Usuarios
+                    .FirstOrDefaultAsync(u => u.Email == emailNormalizado);
 
-        var token = GenerarToken(user);
+                if (user == null) return Unauthorized("Credenciales inválidas.");
 
-        return Ok(new
-        {
-            token,
-            id = user.Id,
-            rol = user.Rol.ToLower(),
-            perfilCompleto = PerfilCompleto(user),
-            requiereCambioPassword = user.DebeCambiarPassword
-        });
-    }
+                if (user.GoogleId != null)
+                    return BadRequest("Este usuario utiliza inicio de sesión con Google.");
+
+                if (!user.EmailVerified)
+                {
+                    return BadRequest(new
+                    {
+                        message = "Debes verificar tu correo antes de iniciar sesión."
+                    });
+                }
+
+                if (user.PasswordHash == null || !BCrypt.Net.BCrypt.Verify(login.Password, user.PasswordHash))
+                    return Unauthorized("Credenciales inválidas.");
+
+                var token = GenerarToken(user);
+
+                return Ok(new
+                {
+                    token,
+                    id = user.Id,
+                    rol = user.Rol.ToLower(),
+                    perfilCompleto = PerfilCompleto(user),
+                    requiereCambioPassword = user.DebeCambiarPassword
+                });
+            }
 
    // =========================================================
     // GOOGLE LOGIN
@@ -267,28 +267,28 @@ public class AuthController : ControllerBase
             // ... resto de tu lógica de búsqueda/creación de usuario ...
             var user = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == payload.Email);
 
-            if (user == null)
-            {
-                user = new Usuario
+                if (user == null)
                 {
-                    Nombre = payload.GivenName ?? payload.Name,
-                    Apellido = payload.FamilyName ?? "",
-                    Email = payload.Email,
-                    GoogleId = payload.Subject,
-                    FotoUrl = payload.Picture,
-                    Rol = Roles.Paciente,
-                    DebeCambiarPassword = false,
-                    EmailVerified = true
-                };
-                _context.Usuarios.Add(user);
-            }
-            else if (user.GoogleId == null)
-            {
-                user.GoogleId = payload.Subject;
-            }
+                    user = new Usuario
+                    {
+                        Nombre = payload.GivenName ?? payload.Name,
+                        Apellido = payload.FamilyName ?? "",
+                        Email = payload.Email,
+                        GoogleId = payload.Subject,
+                        FotoUrl = payload.Picture,
+                        Rol = Roles.Paciente,
+                        DebeCambiarPassword = false,
+                        EmailVerified = true
+                    };
+                    _context.Usuarios.Add(user);
+                }
+                else if (user.GoogleId == null)
+                {
+                    user.GoogleId = payload.Subject;
+                }
 
-            await _context.SaveChangesAsync();
-            var token = GenerarToken(user);
+                await _context.SaveChangesAsync();
+                var token = GenerarToken(user);
 
             return Ok(new {
                 token,
@@ -298,13 +298,12 @@ public class AuthController : ControllerBase
                 requiereCambioPassword = user.DebeCambiarPassword
             });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            Console.WriteLine($"Error detallado de Google Auth: {ex.Message}");
-            return BadRequest(new { message = "Token de Google inválido.", detail = ex.Message });
+            return BadRequest("Token de Google inválido.");
         }
     }
-    
+
     // =========================================================
     // RECUPERACIÓN DE CONTRASEÑA
     // =========================================================

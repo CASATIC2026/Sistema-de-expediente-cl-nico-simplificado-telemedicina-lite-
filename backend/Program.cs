@@ -79,7 +79,7 @@ builder.Services.AddCors(options =>
         });
 });
 
-// 🔐 JWT Authentication
+// JWT Authentication
 var keyString = builder.Configuration["Jwt:Key"]
     ?? throw new ArgumentNullException("Jwt:Key no está configurado en appsettings.json");
 var key = Encoding.UTF8.GetBytes(keyString);
@@ -89,8 +89,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer = false,       // No definimos issuer todavía
-            ValidateAudience = false,     // No definimos audience
+            ValidateIssuer = false,
+            ValidateAudience = false,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(key)
@@ -113,6 +113,7 @@ app.UseCors("VercelPolicy");
 app.UseAuthentication();
 app.UseMiddleware<ForcePasswordChangeMiddleware>();
 app.UseAuthorization();
+
 //Swagger siempre activo
 app.UseSwagger();
 app.UseSwaggerUI();
