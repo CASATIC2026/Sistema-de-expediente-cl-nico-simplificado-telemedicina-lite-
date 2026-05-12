@@ -136,7 +136,7 @@ function moverCita(cita) {
 
               <div class="flex flex-col gap-1">
                 <span class="text-[11px] font-semibold uppercase tracking-wide text-white/60">Paciente</span>
-                <span class="text-sm font-semibold text-white">{{ selectedCita.paciente }}</span>
+                <span class="text-sm font-semibold text-white">{{ selectedCita.pacienteNombreCompleto }}</span>
               </div>
 
               <div class="flex flex-col gap-1">
@@ -148,7 +148,7 @@ function moverCita(cita) {
 
               <div class="flex flex-col gap-1">
                 <span class="text-[11px] font-semibold uppercase tracking-wide text-white/60">Tipo de consulta</span>
-                <span class="text-sm font-semibold text-white">{{ selectedCita.tipo }}</span>
+                <span class="text-sm font-semibold text-white">{{ selectedCita.tipoConsulta }}</span>
               </div>
 
               <!--  -->

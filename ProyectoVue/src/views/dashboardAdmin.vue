@@ -94,8 +94,8 @@ const calendarOptions = ref({
     actualizarAspectRatio()
   },
   eventClick: (info) => {
-    const { doctor, estado } = info.event.extendedProps
-    alert(`Gestión Admin: ${info.event.title}\nEstado: ${estado}\nDoctor: ${doctor}`)
+    const { doctor, estado, doctorId } = info.event.extendedProps
+    alert(`Paciente: ${info.event.title}\nEstado: ${estado}\nMotivo consulta: ${doctor}`)
   }
 })
 
@@ -112,7 +112,8 @@ const cargarCitas = async () => {
       end: c.end,
       extendedProps: {
         estado: c.estado,
-        doctor: c.titulo
+        doctor: c.titulo, 
+        doctorId: c.doctorId
       }
     }))
 
@@ -172,7 +173,7 @@ const doctorModal = ref(false)
 
 <template>
   <div class="flex flex-col md:flex-row min-h-screen bg-slate-100 font-sans text-slate-700">
-    
+
     <!-- ── Sidebar ────────────────────────────────────── -->
     <aside class="w-full md:w-64 bg-slate-900 text-white flex flex-col p-5 shadow-lg shrink-0">
       <div class="mb-8 md:mb-10 text-center">
@@ -186,15 +187,15 @@ const doctorModal = ref(false)
           <div class="text-sm font-bold tracking-wider">
             T E L M E D<span class="text-cyan-400"> Lite™</span>
           </div>
-        
+
 
         <div class="text-sm border-t border-white/10 pt-4">
           <p class="font-semibold text-emerald-400">Panel Administrador</p>
 
           <div v-if="usuario" class="flex justify-center my-3">
-            <img v-if="fotoPerfil" :src="fotoPerfil" @error="fotoPerfil = ''" 
+            <img v-if="fotoPerfil" :src="fotoPerfil" @error="fotoPerfil = ''"
                 class="w-16 h-16 rounded-full border-2 border-emerald-400 object-cover shadow-md" />
-            
+
             <div v-else class="w-16 h-16 rounded-full bg-emerald-600 flex items-center justify-center text-xl font-bold text-white border-2 border-emerald-400/50">
               {{ usuario.nombre?.[0] || 'A' }}{{ usuario.apellido?.[0] || '' }}
             </div>
@@ -206,28 +207,28 @@ const doctorModal = ref(false)
       </div>
 
       <nav class="grid grid-cols-3 md:flex md:flex-col gap-3 flex-grow">
-        
+
         <button @click="accederCita = true" class="border-t border-white/10 pt-3 md:pt-4 flex flex-col md:flex-row items-center gap-1 md:gap-3 px-2 py-2 md:px-4 md:py-3 rounded-lg w-full text-center md:text-left transition-all hover:bg-cyan-500/60 hover:md:translate-x-1">
           <i class="fa-solid fa-calendar-plus text-xl text-cyan-400"></i>
           <span class="mt-1 leading-tight">Agendar cita</span>
         </button>
         <button @click="accederVerMisCitas = true" class="border-t border-white/10 pt-3 md:pt-4 flex flex-col md:flex-row items-center gap-1 md:gap-3 px-2 py-2 md:px-4 md:py-3 rounded-lg w-full text-center md:text-left transition-all hover:bg-cyan-500/60 hover:md:translate-x-1">
-          <i class="fa-solid fa-clipboard-list text-xl text-cyan-400"></i> 
+          <i class="fa-solid fa-clipboard-list text-xl text-cyan-400"></i>
           <span class="leading-tight">Control de citas</span>
         </button>
 
         <button @click="doctorModal = true" class="border-t border-white/10 pt-3 md:pt-4 flex flex-col md:flex-row items-center gap-1 md:gap-3 px-2 py-2 md:px-4 md:py-3 rounded-lg w-full text-center md:text-left transition-all hover:bg-cyan-500/60 hover:md:translate-x-1">
-          <i class="fa-solid fa-user-doctor text-lg text-cyan-400 md:justify-start"></i> 
+          <i class="fa-solid fa-user-doctor text-lg text-cyan-400 md:justify-start"></i>
           <span class=" mt-1 leading-tight md:justify-right">Gestion Doctores</span>
         </button>
 
         <button @click="accederGestionUsuario = true" class="border-t border-white/10 pt-3 md:pt-4 flex flex-col md:flex-row items-center gap-1 md:gap-3 px-2 py-2 md:px-4 md:py-3 rounded-lg w-full text-center md:text-left transition-all hover:bg-cyan-500/60 hover:md:translate-x-1">
-          <i class="fa-solid fa-hospital-user text-lg text-cyan-400"></i> 
+          <i class="fa-solid fa-hospital-user text-lg text-cyan-400"></i>
           <span class="mt-1 leading-tight">Gestion de pacientes</span>
         </button>
 
-        <button @click="accederSoporteAyuda = true" class="border-t border-white/10 pt-3 md:pt-4 flex flex-col md:flex-row items-center gap-1 md:gap-3 px-2 py-2 md:px-4 md:py-3 rounded-lg w-full text-center md:text-left transition-all hover:bg-cyan-500/60 hover:md:translate-x-1">
-          <i class="fa-solid fa-circle-question text-lg text-cyan-400"></i> 
+        <button @click="accederSoporteAyuda = !accederSoporteAyuda" class="border-t border-white/10 pt-3 md:pt-4 flex flex-col md:flex-row items-center gap-1 md:gap-3 px-2 py-2 md:px-4 md:py-3 rounded-lg w-full text-center md:text-left transition-all hover:bg-cyan-500/60 hover:md:translate-x-1">
+          <i class="fa-solid fa-circle-question text-lg text-cyan-400"></i>
           <span class="mt-1 leading-tight">Soporte/ayuda</span>
         </button>
 
@@ -235,7 +236,7 @@ const doctorModal = ref(false)
           <i class="fa-solid fa-user-gear text-cyan-400"></i>
           <span class="mt-1 leading-tight">Mi cuenta</span>
         </button>
-        
+
         <button @click="logoutPro" class="flex items-center gap-3 px-4 py-3 rounded-lg w-auto md:w-full text-left transition-all mt-0 md:mt-auto text-red-300 hover:bg-red-500/50">
           <i class="fa-solid fa-power-off"></i>
           <span class="mt-1 leading-tight">Cerrar Sesión</span>
@@ -250,7 +251,7 @@ const doctorModal = ref(false)
           <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Calendario administrativo</h1>
           <p class="text-slate-500 mt-1 font-medium">Vista general del panel administrativo</p>
         </div>
-     
+
         <div class="hidden lg:block text-right">
           <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Estado del Sistema</p>
           <div class="flex items-center gap-2 text-emerald-600 font-bold text-sm">
@@ -292,7 +293,7 @@ const doctorModal = ref(false)
 
       <section class="bg-white rounded-xl p-4 md:p-6 shadow-sm border border-slate-200">
         <div class="calendar-container overflow-hidden">
-          <FullCalendar 
+          <FullCalendar
           v-if="calendarioListo"
           ref="calendarRef"
           :options="calendarOptions" />
@@ -300,45 +301,55 @@ const doctorModal = ref(false)
       </section>
     </main>
 
-  
+
 
     <!-- Agendar cita -->
-    <div v-if="accederCita" 
-         class="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" 
+    <div v-if="accederCita"
+         class="fixed inset-0 z-1000 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
          @click.self="accederCita = false">
       <tarjetaAgendarCitas :esSecretaria="true" @cerrar="accederCita = false" />
     </div>
 
     <!-- Ver/control de citas -->
-    <div v-if="accederVerMisCitas" 
-         class="fixed inset-0 z-[1000] overflow-y-auto" 
+    <div v-if="accederVerMisCitas"
+         class="fixed inset-0 z-1000 overflow-y-auto"
          @click.self="accederVerMisCitas = false">
       <tarjetaVerMisCitas :esAdmin="true" @cerrar="accederVerMisCitas = false" />
     </div>
 
     <!-- Gestión de pacientes -->
-    <div v-if="accederGestionUsuario" 
-         class="fixed inset-0 z-[1000] overflow-y-auto">
+    <div v-if="accederGestionUsuario"
+         class="fixed inset-0 z-1000 overflow-y-auto">
       <gestionUsuarioAdmin @cerrar="accederGestionUsuario = false" />
     </div>
 
     <!-- Doctores — -->
-    <div v-if="doctorModal" 
-         class="fixed inset-0 z-[1000] overflow-y-auto">
+    <div v-if="doctorModal"
+         class="fixed inset-0 z-1000 overflow-y-auto">
       <doctores :esAdmin="true" @cerrar="doctorModal = false" />
     </div>
 
     <!-- Soporte y ayuda -->
-    <soporteAyuda v-if="accederSoporteAyuda" @cerrar="accederSoporteAyuda = false" />
+     <Transition
+      enter-active-class="transition-all duration-300 ease-out"
+      enter-from-class="translate-x-full opacity-0"
+      enter-to-class="translate-x-0 opacity-100"
+      leave-active-class="transition-all duration-200 ease-in"
+      leave-from-class="translate-x-0 opacity-100"
+      leave-to-class="translate-x-full opacity-0"
+    >
+    <soporteAyuda v-if="accederSoporteAyuda"
+    @cerrar="accederSoporteAyuda = false" />
+    </Transition>
 
     <!-- Mi cuenta (perfil del admin) -->
-    <div v-if="mostrarInformacion" 
-         class="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" 
+    <div v-if="mostrarInformacion"
+         class="fixed inset-0 z-1000 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
          @click.self="mostrarInformacion = false">
-      <configuracionCuenta 
-        :usuarioData="usuario" 
-        :rolSesion="'admin'" 
-        @cerrar="mostrarInformacion = false" 
+      <configuracionCuenta
+        :usuarioData="usuario"
+        :rolSesion="'admin'"
+        @cerrar="mostrarInformacion = false"
       />
     </div>
 

@@ -35,7 +35,7 @@ const puedeEditar = computed(() => {
   return ['paciente', 'admin', 'doctor'].includes(props.rolSesion?.toLowerCase())
 })
 
-const esVistaPacientePropia = computed(() => props.rolSesion === 'paciente')
+//const esVistaPacientePropia = computed(() => props.rolSesion === 'paciente')
 
 const esUsuarioGoogle = computed(
   () => formulario.value.esGoogle === true)
@@ -160,7 +160,7 @@ const verPassword = ref({ actual: false, nueva: false, confirmar: false })
           </svg>
         </button>
 
-        <div class="mx-auto w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-xl md:rounded-2xl flex items-center justify-center shadow-lg shadow-blue-200 mb-2 md:mb-3">
+        <div class="mx-auto w-12 h-12 md:w-16 md:h-16 bg-linear-to-br from-cyan-400 to-blue-600 rounded-xl md:rounded-2xl flex items-center justify-center shadow-lg shadow-blue-200 mb-2 md:mb-3">
           <span class="text-xl md:text-2xl text-white font-black uppercase">
             {{ formulario.nombre?.[0] || '?' }}{{ formulario.apellido?.[0] || '' }}
           </span>
@@ -247,7 +247,7 @@ const verPassword = ref({ actual: false, nueva: false, confirmar: false })
             <div class="flex flex-col gap-1">
               <label class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase">Dirección</label>
               <div v-if="!editarPerfil" class="text-xs md:text-sm font-bold text-slate-600 italic break-words">
-                "{{ formulario.direccion || 'No registrada' }}"
+                "{{ formulario.direccion || 'No asignada' }}"
               </div>
               <textarea
                 v-else
@@ -299,7 +299,7 @@ const verPassword = ref({ actual: false, nueva: false, confirmar: false })
 
                 <div class="flex flex-col gap-1">
                   <label class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase">Nueva</label>
-                  
+
                   <div class="relative">
                     <input
                       v-model="passwordForm.nueva"

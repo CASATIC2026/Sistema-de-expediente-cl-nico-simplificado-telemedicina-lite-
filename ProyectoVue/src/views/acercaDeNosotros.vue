@@ -1,60 +1,107 @@
+<script setup>
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+</script>
+
 <template>
+  <div class="min-h-screen bg-[#0a1628] text-white p-8 relative">
 
-<div class="max-w-5xl mx-auto p-8 text-slate-700">
+    <!-- Botón volver -->
+    <button
+      @click="router.push('/')"
+      class="absolute flex items-center gap-2 px-4 py-2 text-sm font-medium transition-all border shadow-lg top-6 left-6 rounded-xl bg-slate-900/70 border-white/10 hover:bg-slate-800 text-cyan-300 hover:text-cyan-200"
+    >
+      ← Volver al inicio
+    </button>
 
-<h1 class="text-3xl font-bold mb-6">
-Acerca de Nosotros
-</h1>
+    <div class="max-w-4xl mx-auto mt-10">
 
-<p class="mb-4">
-TeleMed es una plataforma de telemedicina diseñada para facilitar la conexión
-entre pacientes y profesionales de la salud a través de consultas médicas en línea.
-Nuestro objetivo es mejorar el acceso a servicios médicos mediante tecnología
-segura, rápida y accesible.
-</p>
+      <!-- Encabezado -->
+      <div class="mb-12 text-center">
+        <h1 class="mb-4 text-4xl font-extrabold tracking-tight">
+          <span class="text-white">Acerca de</span>
+          <span class="ml-3 text-cyan-400">Nosotros</span>
+        </h1>
 
-<p class="mb-4">
-Creemos que la tecnología puede transformar la manera en que las personas
-reciben atención médica, permitiendo consultas desde cualquier lugar
-sin necesidad de desplazarse físicamente.
-</p>
+        <p class="text-slate-400">
+          Conoce la visión, misión y propósito detrás de TelMed Lite™
+        </p>
+      </div>
 
-<h2 class="text-xl font-semibold mt-6 mb-2">
-Nuestra misión
-</h2>
+      <!-- Contenido -->
+      <div class="space-y-6">
 
-<p class="mb-4">
-Brindar acceso a atención médica de calidad mediante herramientas digitales
-que permitan a pacientes y doctores conectarse de manera segura y eficiente.
-</p>
+        <!-- Intro -->
+        <section class="p-2">
+          <p class="leading-relaxed text-center text-slate-300">
+            TelMed Lite™ es una plataforma de telemedicina creada para facilitar
+            la conexión entre pacientes y profesionales de la salud mediante
+            consultas médicas en línea, ofreciendo accesibilidad, seguridad y comodidad.
+          </p>
+        </section>
 
-<h2 class="text-xl font-semibold mt-6 mb-2">
-Nuestra visión
-</h2>
+        <!-- 1 -->
+        <section class="p-6 border bg-slate-900/50 border-white/10 rounded-2xl">
+          <h2 class="mb-3 text-xl font-bold text-cyan-300">
+            Nuestra misión
+          </h2>
 
-<p class="mb-4">
-Convertirnos en una plataforma líder en telemedicina que contribuya a mejorar
-la calidad de vida de las personas mediante servicios médicos accesibles
-y confiables.
-</p>
+          <p class="leading-relaxed text-slate-400">
+            Brindar acceso a atención médica de calidad mediante herramientas digitales
+            que permitan a pacientes y doctores conectarse de manera segura,
+            eficiente y accesible desde cualquier lugar.
+          </p>
+        </section>
 
-<h2 class="text-xl font-semibold mt-6 mb-2">
-Nuestros valores
-</h2>
+        <!-- 2 -->
+        <section class="p-6 border bg-slate-900/50 border-white/10 rounded-2xl">
+          <h2 class="mb-3 text-xl font-bold text-cyan-300">
+            Nuestra visión
+          </h2>
 
-<ul class="list-disc ml-6 space-y-1">
+          <p class="leading-relaxed text-slate-400">
+            Convertirnos en una plataforma referente en telemedicina,
+            contribuyendo a mejorar la calidad de vida de las personas
+            mediante servicios médicos digitales modernos y confiables.
+          </p>
+        </section>
 
-<li>Confidencialidad en la información médica.</li>
-<li>Accesibilidad para todos los usuarios.</li>
-<li>Profesionalismo en cada consulta.</li>
-<li>Innovación tecnológica en salud digital.</li>
+        <!-- 3 -->
+        <section class="p-6 border bg-slate-900/50 border-white/10 rounded-2xl">
+          <h2 class="mb-3 text-xl font-bold text-cyan-300">
+            Nuestros valores
+          </h2>
 
-</ul>
+          <ul class="ml-5 space-y-2 leading-relaxed list-disc text-slate-400">
+            <li>Confidencialidad en la información médica.</li>
+            <li>Accesibilidad para todos los usuarios.</li>
+            <li>Profesionalismo en cada consulta.</li>
+            <li>Innovación tecnológica aplicada a la salud.</li>
+          </ul>
+        </section>
 
-<p class="mt-8 text-sm text-slate-500">
-TeleMed © 2026
-</p>
+        <!-- 4 -->
+        <section class="p-6 border bg-slate-900/50 border-white/10 rounded-2xl">
+          <h2 class="mb-3 text-xl font-bold text-cyan-300">
+            Nuestro propósito
+          </h2>
 
-</div>
+          <p class="leading-relaxed text-slate-400">
+            Creemos que la tecnología puede transformar la forma en que las personas
+            reciben atención médica, eliminando barreras de distancia y facilitando
+            consultas rápidas, seguras y eficientes desde cualquier dispositivo.
+          </p>
+        </section>
 
+      </div>
+
+      <!-- Footer -->
+      <div class="text-sm text-center mt-14 text-slate-500">
+        TelMed & Health Lite™ System 2026© <br />
+        Desarrollado por J3G Team©
+      </div>
+
+    </div>
+  </div>
 </template>

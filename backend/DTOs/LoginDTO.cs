@@ -14,7 +14,7 @@ namespace TelMedAPI.DTOs
 
     public class GoogleDTO
     {
-        public string IdToken { get; set; }
+        public string idToken { get; set; }
     }
 
 }

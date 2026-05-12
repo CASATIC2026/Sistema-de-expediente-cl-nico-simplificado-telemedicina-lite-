@@ -70,17 +70,16 @@ builder.Services.AddDbContext<TelMedAPIContext>(options =>
 // CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowVue", policy =>
+    options.AddPolicy("VercelPolicy", policy =>
         {
-            //policy.WithOrigins("http://localhost:5173", "http://192.168.137.1:5173")
-            policy.AllowAnyOrigin()
+            policy.WithOrigins("http://localhost:5173")
                   .AllowAnyHeader()
-                  .AllowAnyMethod();
-                  //.AllowCredentials();
+                  .AllowAnyMethod()
+                  .AllowCredentials();
         });
 });
 
-// 🔐 JWT Authentication
+// JWT Authentication
 var keyString = builder.Configuration["Jwt:Key"]
     ?? throw new ArgumentNullException("Jwt:Key no está configurado en appsettings.json");
 var key = Encoding.UTF8.GetBytes(keyString);
@@ -90,8 +89,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer = false,       // No definimos issuer todavía
-            ValidateAudience = false,     // No definimos audience
+            ValidateIssuer = false,
+            ValidateAudience = false,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(key)
@@ -104,16 +103,17 @@ builder.Services.AddAuthorization();
 // Servicio de Email (verificación de cuenta y restablecimiento de contraseña)
 builder.Services.AddScoped<EmailService>();
 
-
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", false);
 
 var app = builder.Build();
+
 // Middleware
-app.UseCors("AllowVue");
+app.UseCors("VercelPolicy");
 
 app.UseAuthentication();
 app.UseMiddleware<ForcePasswordChangeMiddleware>();
 app.UseAuthorization();
+
 //Swagger siempre activo
 app.UseSwagger();
 app.UseSwaggerUI();

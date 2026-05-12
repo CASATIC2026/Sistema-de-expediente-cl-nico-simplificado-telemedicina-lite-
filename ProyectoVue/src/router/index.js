@@ -7,6 +7,7 @@ import PantallaPrincipal   from '@/views/pantallaPrincipal.vue'
 import Terminos            from '@/views/terminos.vue'
 import Privacidad          from '@/views/privacidad.vue'
 import PreguntasFrecuentes from '@/views/preguntasFrecuentes.vue'
+import acercaDeNosotros from '@/views/acercaDeNosotros.vue'
 import ChangePassword      from '@/viewsDoctor/ChangePassword.vue'
 import CompletarPerfil     from '@/views/completarPerfil.vue'
 import ResetPassword       from '@/views/ResetPassword.vue'
@@ -71,6 +72,7 @@ const routes = [
   { path: '/terminos', component: Terminos },
   { path: '/privacidad', component: Privacidad },
   { path: '/preguntas-frecuentes', component: PreguntasFrecuentes },
+  {path: '/acerca-de-nosotros', component: acercaDeNosotros },
   { path: '/reset-password', name: 'resetPassword', component: ResetPassword },
 
   {

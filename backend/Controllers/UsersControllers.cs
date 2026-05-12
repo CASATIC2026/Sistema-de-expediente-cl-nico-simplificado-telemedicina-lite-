@@ -100,7 +100,8 @@ namespace TelMedAPI.Controllers
                     u.Email,
                     u.Rol,
                     u.Telefono,
-                    u.Genero
+                    u.Genero,
+                    u.Direccion
                 })
                 .ToListAsync();
 
@@ -184,14 +185,14 @@ namespace TelMedAPI.Controllers
                     u.Email,
                     u.Telefono,
                     u.Activo,
-                    u.FotoUrl
+                    u.FotoUrl,
+                    u.Direccion
                 })
                 .ToListAsync();
             return Ok(doctors);
         }
 
-
-
+        // ===============================
         // ESTADÍSTICAS GENERALES (solo Admin)
         [Authorize(Roles = Roles.Admin)]
         [HttpGet("estadisticas")]
@@ -205,11 +206,6 @@ namespace TelMedAPI.Controllers
 
             return Ok(new { totalPacientes, totalDoctores });
         }
-
-
-
-
-
 
         // ===============================
         // Cambiar estado activo/inactivo
@@ -249,7 +245,7 @@ namespace TelMedAPI.Controllers
                     u.FechaNacimiento,
                     u.FotoUrl,
 
-                    //ESTE CÓDIGO ME PERMITE EXTRAER  LA FECHA DE LA ULTIMA CONSULTA DEL PACIENTE 
+                    // Obtener fecha de última consulta para cada paciente
                     FechaUltimaConsulta = _context.Consultas
                     .Where(con => con.Cita.PacienteId == u.Id)
                     .OrderByDescending(con => con.Fecha)
@@ -278,7 +274,8 @@ namespace TelMedAPI.Controllers
                     u.Email,
                     u.Telefono,
                     u.Genero,
-                    u.Activo
+                    u.Activo,
+                    u.Direccion
                 })
                 .ToListAsync();
             return Ok(patients);
