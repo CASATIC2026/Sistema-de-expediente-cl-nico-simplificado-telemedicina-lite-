@@ -220,7 +220,7 @@ const cerrarSesion = async () => {
           <span class="text-[11px] md:text-base font-medium leading-tight">Ver mis citas</span>
         </button>
 
-        <button @click="accederSoporteAyuda = true"
+        <button @click="accederSoporteAyuda = !accederSoporteAyuda"
           class="border-t border-white/10 pt-3 md:pt-4 flex flex-col md:flex-row items-center gap-1 md:gap-3 px-2 py-2 md:px-4 md:py-3 rounded-lg w-full text-center md:text-left transition-all hover:bg-cyan-500/60 hover:md:translate-x-1">
           <i class="fa-solid fa-circle-question text-base md:text-lg text-emerald-400"></i>
           <span class="text-[11px] md:text-base font-medium leading-tight">Soporte/ayuda</span>
@@ -282,7 +282,18 @@ const cerrarSesion = async () => {
         <tarjetaVerMisCitas @cerrar="accederVerMisCitas = false" />
       </div>
 
-      <soporteAyuda v-if="accederSoporteAyuda" @cerrar="accederSoporteAyuda = false" />
+      <!-- <soporteAyuda v-if="accederSoporteAyuda" @cerrar="accederSoporteAyuda = false" /> -->
+       <Transition
+      enter-active-class="transition-all duration-300 ease-out"
+      enter-from-class="translate-x-full opacity-0"
+      enter-to-class="translate-x-0 opacity-100"
+      leave-active-class="transition-all duration-200 ease-in"
+      leave-from-class="translate-x-0 opacity-100"
+      leave-to-class="translate-x-full opacity-0"
+    >
+    <soporteAyuda v-if="accederSoporteAyuda"
+    @cerrar="accederSoporteAyuda = false" />
+    </Transition>
 
       <div v-if="mostrarInformacion" class="modal" @click.self="mostrarInformacion = false">
         <configuracionCuenta

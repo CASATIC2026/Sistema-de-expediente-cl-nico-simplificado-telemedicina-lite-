@@ -260,7 +260,7 @@ const eliminarPaciente = (id) => {
   />
   <verHistorial
     v-if="accederHistorial"
-    :usuarioSeleccionado ="pacienteSeleccionado"
+    :usuarioSeleccionado ="pacienteHistorialId"
     :esAdmin = "true"
     rolVisor = "admin"
     @cerrar="accederHistorial = false"
