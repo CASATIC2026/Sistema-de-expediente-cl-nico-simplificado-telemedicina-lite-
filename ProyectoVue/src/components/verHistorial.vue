@@ -37,7 +37,7 @@ onMounted(async () => {
       doctor:       c.doctor       || 'Sin asignar',
       tipoConsulta: c.tipoConsulta || '—',
       motivo:       c.motivo       || '—',
-      diagnostico:  c.consulta?.Diagnostico || c.consulta?.diagnostico || 'Sin diagnóstico registrado',
+      diagnostico:  c.consulta?.Diagnostico || c.consulta?.diagnostico || 'Sin diagnóstico / Consulta pendiente',
       sintomas:     c.consulta?.Sintomas    || c.consulta?.sintomas    || '',
       tratamiento:  c.consulta?.Tratamiento || c.consulta?.tratamiento || '',
       estado:       c.estado       || '—',
@@ -107,7 +107,7 @@ const descargarRecetaPaciente = async (citaId) => {
             ← Regresar
           </button>
           <h3 class="text-xl font-bold">
-            Consulta #{{ consultaSeleccionada.id }}
+            Consulta #{{ consultaSeleccionada.id}}
           </h3>
         </div>
       </header>
@@ -197,7 +197,7 @@ const descargarRecetaPaciente = async (citaId) => {
 
           <!-- Botón receta -->
           <button
-            v-if="consultaSeleccionada.id"
+            v-if="consultaSeleccionada.id && consultaSeleccionada.estado === 'Finalizada'"
             @click="descargarRecetaPaciente(consultaSeleccionada.id)"
             :disabled="descargando"
             class="w-full text-center bg-emerald-500 hover:bg-emerald-600 p-4 rounded-xl font-bold transition-all disabled:opacity-50">

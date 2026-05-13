@@ -579,6 +579,13 @@ public async Task<IActionResult> GetSlotsDisponibles(
                 finalPacienteId = int.Parse(userIdClaim);
             }
 
+             //Validar que el paciente esté activo
+            var paciente = await _context.Usuarios.FindAsync(finalPacienteId);
+            if (paciente == null || !paciente.Activo)
+                return BadRequest(new { message = "El paciente está inactivo y no puede agendar citas." });
+
+
+
             var identificadorUnico = Guid.NewGuid().ToString().Substring(0, 8);
             var linkCalculado      = $"https://meet.jit.si/NovoMed{identificadorUnico}#config.prejoinPageEnabled=false";
 

@@ -186,7 +186,8 @@ namespace TelMedAPI.Controllers
                     u.Telefono,
                     u.Activo,
                     u.FotoUrl,
-                    u.Direccion
+                    u.Direccion,
+                    u.Genero
                 })
                 .ToListAsync();
             return Ok(doctors);

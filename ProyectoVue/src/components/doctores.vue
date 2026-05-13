@@ -220,7 +220,7 @@ const guardarNuevoDoctor = async () => {
                   <button @click="verInformacion(doctor)" class="h-9 px-4 md:px-10 bg-cyan-800 hover:bg-cyan-600 text-white rounded-xl text-[14px] md:text-xs font-black transition-all">INFO</button>
                 </td>
                 <td class="px-8 py-6 text-center">
-                  <button @click="verDiasDisponibles(doctor)" class="h-9 px-4 md:px-10 bg-cyan-800 text-white rounded-xl text-[14px] md:text-xs font-black hover:bg-cyan-600 transition-all shadow-md uppercase">Días</button>
+                  <button @click="verDiasDisponibles(doctor)" class="h-9 px-4 md:px-10 bg-cyan-800 text-white rounded-xl text-[14px] md:text-xs font-black hover:bg-cyan-600 transition-all shadow-md uppercase">Horarios</button>
                 </td>
               </tr>
             </tbody>
