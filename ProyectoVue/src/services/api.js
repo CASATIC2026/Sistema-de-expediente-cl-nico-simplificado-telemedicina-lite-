@@ -244,6 +244,10 @@ export const actualizarHorarioDoctor = (doctorId, payload) =>
 export const getSlotsDisponibles = (doctorId, fecha) =>
   api.get(`/citas/slots-disponibles?doctorId=${doctorId}&fecha=${fecha}`).then(r => r.data)
 
+// Eliminar paciente (soft delete)
+export const eliminarPacienteSoft = (id) =>
+  api.delete(`/users/${id}`).then(r => r.data)
+
 
 export const getEstadisticas = async () => {
   const res = await api.get('/users/estadisticas');
