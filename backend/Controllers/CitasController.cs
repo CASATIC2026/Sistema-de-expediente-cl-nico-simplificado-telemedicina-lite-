@@ -43,11 +43,13 @@ namespace TelMedAPI.Controllers
             if (rol == Roles.Doctor)
                 query = query.Where(c => c.DoctorId == userId);
 
-            // ── Filtro de HOY ─────────────────────────────────────────
-            var hoyInicio = DateTime.SpecifyKind(DateTime.UtcNow.Date, DateTimeKind.Utc);
-            var hoyFin    = hoyInicio.AddDays(1);
+            var zonaSV    = GetZonaElSalvador();
+            var ahoraSV   = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, zonaSV);
+            var hoySV     = ahoraSV.Date;
+            var hoyInicio = TimeZoneInfo.ConvertTimeToUtc(hoySV, zonaSV);
+            var hoyFin    = TimeZoneInfo.ConvertTimeToUtc(hoySV.AddDays(1), zonaSV);
 
-            // ← Todas las queries ahora filtran solo por hoy
+            
             var queryHoy = query.Where(c => c.FechaInicio >= hoyInicio && c.FechaInicio < hoyFin);
 
             var resumen = new
@@ -396,6 +398,10 @@ namespace TelMedAPI.Controllers
                 .FirstOrDefaultAsync(h => h.DoctorId == doctorId
                                     && h.DiaSemana == diaSemana
                                     && h.Activo);
+            var doctorActivo = await _context.Usuarios
+                .AnyAsync(u => u.Id == doctorId && u.Activo && !u.Eliminado); 
+            if (!doctorActivo)
+                return BadRequest(new { message = "Doctor no encontrado o inactivo." });                       
 
             // Si no hay horario activo ese día → lista vacía
             if (horario == null)
@@ -569,6 +575,17 @@ namespace TelMedAPI.Controllers
                 if (userIdClaim == null) return Unauthorized();
                 finalPacienteId = int.Parse(userIdClaim);
             }
+
+             //Validar que el paciente esté activo
+            var paciente = await _context.Usuarios.FindAsync(finalPacienteId);
+            if (paciente == null || !paciente.Activo)
+                return BadRequest(new { message = "El paciente está inactivo y no puede agendar citas." });
+            
+            var doctor = await _context.Usuarios.FindAsync(dto.DoctorId);
+            if (doctor == null || !doctor.Activo)
+                return BadRequest(new { message = "El doctor está inactivo y no puede recibir citas." });
+
+
 
             var identificadorUnico = Guid.NewGuid().ToString().Substring(0, 8);
             var linkCalculado      = $"https://meet.jit.si/NovoMed{identificadorUnico}#config.prejoinPageEnabled=false";
