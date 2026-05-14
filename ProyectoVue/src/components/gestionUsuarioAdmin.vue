@@ -62,8 +62,8 @@ const abrirInformacion = (paciente) => {
 }
 
 const abrirHistorial = (paciente) => {
-  pacienteHistorialId.value  = paciente
-  accederHistorial.value     = true
+  pacienteHistorialId.value = paciente.id
+  accederHistorial.value = true
 }
 
 const eliminarPaciente =async (paciente) => {
@@ -146,7 +146,7 @@ const eliminarPaciente =async (paciente) => {
                 <!-- Nombre -->
                 <td class="px-8 py-6">
                   <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 shrink-0 rounded-2xl bg-cyan-600 from-cyan-700 flex items-center justify-center font-bold text-slate-600 group-hover:from-blue-500 group-hover:to-blue-700 group-hover:text-white transition-all shadow-sm">
+                    <div class="w-12 h-12 shrink-0 rounded-2xl bg-gradient-to-br from-cyan-600 to-cyan-800 flex items-center justify-center font-bold text-slate-600 group-hover:from-blue-500 group-hover:to-blue-700 group-hover:text-white transition-all shadow-sm">
                       {{ paciente.nombre?.[0] }}{{ paciente.apellido?.[0] }}
                     </div>
                     <div>
@@ -179,8 +179,18 @@ const eliminarPaciente =async (paciente) => {
                     <!-- INFO -->
                     <button
                       @click="abrirInformacion(paciente)"
+<<<<<<< HEAD
                       class="h-11 px-5 bg-cyan-700 border-2 border-slate-100 text-white rounded-2xl text-xs font-black hover:bg-500 transition-all shadow-md"
                     >INFORMACIÓN</button>
+=======
+<<<<<<< Updated upstream
+                      class="h-11 px-5 bg-cyan-700 border-2 border-slate-100 text-white rounded-2xl text-xs font-black hover:border-blue-500 hover:text-blue-600 transition-all"
+                    >INFO</button>
+=======
+                      class="h-11 px-5 bg-cyan-700 border-2 border-slate-100 text-white rounded-2xl text-xs font-black hover:bg-cyan-500 transition-all shadow-md"
+                    >INFORMACIÓN</button>
+>>>>>>> Stashed changes
+>>>>>>> backend
 
                     <!-- HISTORIAL -->
                     <button
@@ -241,7 +251,7 @@ const eliminarPaciente =async (paciente) => {
             <button @click="toggleEstado(paciente)" :class="paciente.activo ? 'bg-amber-50 text-amber-500 border-amber-100' : 'bg-emerald-50 text-emerald-600 border-emerald-100'" class="py-4 rounded-xl text-[10px] font-black uppercase tracking-widest border">
               {{ paciente.activo ? 'Inactivar' : 'Activar' }}
             </button>
-            <button @click="eliminarPaciente(paciente.id)" class="py-4 bg-red-50 text-red-500 rounded-xl text-[10px] font-black uppercase tracking-widest border border-red-100">Eliminar</button>
+            <button @click="eliminarPaciente(paciente)" class="py-4 bg-red-50 text-red-500 rounded-xl text-[10px] font-black uppercase tracking-widest border border-red-100">Eliminar</button>
           </div>
         </div>
       </div>
@@ -258,7 +268,7 @@ const eliminarPaciente =async (paciente) => {
   <configuracionCuenta
     v-if="accederInformacionPaciente"
     :usuarioData="pacienteSeleccionado"
-    :rolSesion = "pacienteSeleccionado?.rol??'paciente'"
+    :rolSesion = "pacienteSeleccionado?.rol ?? 'paciente'"
     :modoAdmin="true"
     :pacienteId="pacienteSeleccionado?.id"
     @cerrar="accederInformacionPaciente = false"

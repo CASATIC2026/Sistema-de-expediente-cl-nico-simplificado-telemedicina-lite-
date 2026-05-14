@@ -51,7 +51,8 @@ namespace TelMedAPI.Controllers
                 })
                 .FirstOrDefaultAsync();
 
-            if (user == null) return NotFound(new { message = "Usuario no encontrado en la base de datos." });
+            if (user == null)
+                return NotFound(new { message = "Usuario no encontrado en la base de datos." });
 
             return Ok(user);
         }
@@ -64,15 +65,25 @@ namespace TelMedAPI.Controllers
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            if (userIdClaim == null)
+            if (string.IsNullOrEmpty(userIdClaim) ||
+                !int.TryParse(userIdClaim, out int userId))
+            {
                 return Unauthorized();
-
-            var userId = int.Parse(userIdClaim);
+            }
 
             var user = await _context.Usuarios.FindAsync(userId);
 
             if (user == null)
                 return NotFound();
+
+            if (string.IsNullOrWhiteSpace(model.Nombre) ||
+                string.IsNullOrWhiteSpace(model.Apellido))
+            {
+                return BadRequest(new
+                {
+                    message = "Nombre y apellido son obligatorios."
+                });
+            }
 
             user.Nombre = model.Nombre;
             user.Apellido = model.Apellido;
@@ -91,6 +102,13 @@ namespace TelMedAPI.Controllers
         public async Task<IActionResult> GetUsers()
         {
             var users = await _context.Usuarios
+                .Where(u =>
+                    u.Rol != Roles.Admin &&
+                    (
+                        u.Rol == Roles.Doctor ||
+                        (u.Rol == Roles.Paciente && !u.Eliminado)
+                    )
+                )
                 .Select(u => new
                 {
                     u.Id,
@@ -101,7 +119,8 @@ namespace TelMedAPI.Controllers
                     u.Rol,
                     u.Telefono,
                     u.Genero,
-                    u.Direccion
+                    u.Direccion,
+                    u.Activo
                 })
                 .ToListAsync();
 
@@ -115,7 +134,11 @@ namespace TelMedAPI.Controllers
         public async Task<IActionResult> GetDoctors()
         {
             var doctors = await _context.Usuarios
-                .Where(u => u.Rol == Roles.Doctor && u.Activo == true && !u.Eliminado)
+                .Where(u =>
+                    u.Rol == Roles.Doctor &&
+                    u.Activo == true &&
+                    !u.Eliminado
+                )
                 .Select(u => new
                 {
                     Id = u.Id,
@@ -123,6 +146,7 @@ namespace TelMedAPI.Controllers
                     Email = u.Email,
                     Telefono = u.Telefono
                 })
+                .OrderBy(u => u.NombreCompleto)
                 .ToListAsync();
 
             return Ok(doctors);
@@ -135,12 +159,16 @@ namespace TelMedAPI.Controllers
         public async Task<IActionResult> GetPatients()
         {
             var patients = await _context.Usuarios
-                .Where(u => u.Rol == Roles.Paciente)
+                .Where(u =>
+                    u.Rol == Roles.Paciente &&
+                    !u.Eliminado
+                )
                 .Select(u => new
                 {
                     Id = u.Id,
                     NombreCompleto = u.Nombre + " " + u.Apellido,
-                    Email = u.Email
+                    Email = u.Email,
+                    Activo = u.Activo
                 })
                 .ToListAsync();
 
@@ -149,6 +177,7 @@ namespace TelMedAPI.Controllers
 
         // ===============================
         // USUARIO POR ID
+        [Authorize(Roles = Roles.Admin)]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUser(int id)
         {
@@ -160,11 +189,13 @@ namespace TelMedAPI.Controllers
                     u.Nombre,
                     u.Apellido,
                     u.Email,
-                    u.Rol
+                    u.Rol,
+                    u.Activo
                 })
                 .FirstOrDefaultAsync();
 
-            if (user == null) return NotFound();
+            if (user == null)
+                return NotFound();
 
             return Ok(user);
         }
@@ -177,7 +208,8 @@ namespace TelMedAPI.Controllers
         {
             var doctors = await _context.Usuarios
                 .Where(u => u.Rol == Roles.Doctor && !u.Eliminado)
-                .Select(u => new {
+                .Select(u => new
+                {
                     u.Id,
                     u.Nombre,
                     u.Apellido,
@@ -190,6 +222,7 @@ namespace TelMedAPI.Controllers
                     u.Genero
                 })
                 .ToListAsync();
+
             return Ok(doctors);
         }
 
@@ -200,10 +233,16 @@ namespace TelMedAPI.Controllers
         public async Task<IActionResult> GetEstadisticas()
         {
             var totalPacientes = await _context.Usuarios
-                .CountAsync(u => u.Rol == Roles.Paciente && !u.Eliminado);
+                .CountAsync(u =>
+                    u.Rol == Roles.Paciente &&
+                    !u.Eliminado
+                );
 
             var totalDoctores = await _context.Usuarios
-                .CountAsync(u => u.Rol == Roles.Doctor && !u.Eliminado);
+                .CountAsync(u =>
+                    u.Rol == Roles.Doctor &&
+                    !u.Eliminado
+                );
 
             return Ok(new { totalPacientes, totalDoctores });
         }
@@ -215,33 +254,87 @@ namespace TelMedAPI.Controllers
         public async Task<IActionResult> CambiarEstado(int id, [FromBody] CambiarEstadoDTO dto)
         {
             var user = await _context.Usuarios.FindAsync(id);
-            if (user == null) return NotFound();
+
+            if (user == null)
+                return NotFound();
+
+            if (user.Eliminado)
+            {
+                return BadRequest(new
+                {
+                    message = "No se puede modificar un usuario eliminado."
+                });
+            }
+
+            if (user.Rol == Roles.Admin)
+            {
+                return BadRequest(new
+                {
+                    message = "No se puede modificar el estado de un administrador."
+                });
+            }
+
             user.Activo = dto.Activo;
+
             await _context.SaveChangesAsync();
+
             return Ok(new { message = "Estado actualizado" });
         }
 
-
         // ===============================
-        // Eliminar a paciente
+        // Eliminar paciente (soft delete)
         [Authorize(Roles = Roles.Admin)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> EliminarPaciente(int id)
         {
             var user = await _context.Usuarios.FindAsync(id);
-            if (user == null) return NotFound();
+
+            if (user == null)
+                return NotFound();
+
+            // No permitir eliminar administradores
+            if (user.Rol == Roles.Admin)
+            {
+                return BadRequest(new
+                {
+                    message = "No puedes eliminar un administrador."
+                });
+            }
+
+            // No permitir eliminar doctores
+            if (user.Rol == Roles.Doctor)
+            {
+                return BadRequest(new
+                {
+                    message = "Los doctores solo pueden ser desactivados."
+                });
+            }
+
+            // Solo pacientes pueden eliminarse
+            if (user.Rol != Roles.Paciente)
+            {
+                return BadRequest(new
+                {
+                    message = "Solo se pueden eliminar pacientes."
+                });
+            }
+
+            // Evitar eliminar dos veces
+            if (user.Eliminado)
+            {
+                return BadRequest(new
+                {
+                    message = "El paciente ya fue eliminado."
+                });
+            }
 
             user.Eliminado = true;
-            user.Activo    = false;
+            user.Activo = false;
+
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "Paciente eliminado correctamente." });
         }
-
-
-
-
-
 
         // =========================================================
         // Pacientes del doctor (solo los que tienen citas con él)
@@ -250,14 +343,21 @@ namespace TelMedAPI.Controllers
         public async Task<IActionResult> GetMyPatients()
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (userIdClaim == null) return Unauthorized();
+
+            if (userIdClaim == null)
+                return Unauthorized();
+
             var doctorId = int.Parse(userIdClaim);
 
             var patients = await _context.Citas
-                .Where(c => c.DoctorId == doctorId && !c.Paciente.Eliminado)
-                .Select(c => c.Paciente)
-                .Distinct()
-                .Select(u => new {
+                .Where(c =>
+                    c.DoctorId == doctorId &&
+                    !c.Paciente.Eliminado
+                )
+                .GroupBy(c => c.Paciente.Id)
+                .Select(g => g.First().Paciente)
+                .Select(u => new
+                {
                     u.Id,
                     u.Nombre,
                     u.Apellido,
@@ -270,16 +370,15 @@ namespace TelMedAPI.Controllers
 
                     // Obtener fecha de última consulta para cada paciente
                     FechaUltimaConsulta = _context.Consultas
-                    .Where(con => con.Cita.PacienteId == u.Id)
-                    .OrderByDescending(con => con.Fecha)
-                    .Select(con => con.Fecha)
-                    .FirstOrDefault()
+                        .Where(con => con.Cita.PacienteId == u.Id)
+                        .OrderByDescending(con => con.Fecha)
+                        .Select(con => con.Fecha)
+                        .FirstOrDefault()
                 })
                 .ToListAsync();
 
             return Ok(patients);
         }
-
 
         // ===============================
         // Pacientes para panel admin (con detalle completo)
@@ -288,8 +387,12 @@ namespace TelMedAPI.Controllers
         public async Task<IActionResult> GetPatientsAdmin()
         {
             var patients = await _context.Usuarios
-                .Where(u => u.Rol == Roles.Paciente && !u.Eliminado)
-                .Select(u => new {
+                .Where(u =>
+                    u.Rol == Roles.Paciente &&
+                    !u.Eliminado
+                )
+                .Select(u => new
+                {
                     u.Id,
                     u.Nombre,
                     u.Apellido,
@@ -301,6 +404,7 @@ namespace TelMedAPI.Controllers
                     u.Direccion
                 })
                 .ToListAsync();
+
             return Ok(patients);
         }
     }

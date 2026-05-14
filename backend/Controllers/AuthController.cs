@@ -133,7 +133,8 @@ public class AuthController : ControllerBase
                     message = "Token no válido o usuario no encontrado."
                 });
 
-            if (user.EmailVerificationExpiresAt < DateTime.UtcNow)
+            if (user.EmailVerificationExpiresAt == null ||
+                user.EmailVerificationExpiresAt < DateTime.UtcNow)
                 return BadRequest(new
                 {
                     message = "El enlace de verificación ha expirado."
@@ -212,6 +213,15 @@ public class AuthController : ControllerBase
             [HttpPost("login")]
             public async Task<IActionResult> Login([FromBody] LoginDTO login)
             {
+                if (string.IsNullOrWhiteSpace(login.Email) ||
+                    string.IsNullOrWhiteSpace(login.Password))
+                {
+                    return BadRequest(new
+                    {
+                        message = "Correo y contraseña son obligatorios."
+                    });
+                }
+
                 var emailNormalizado = login.Email.Trim().ToLower();
 
                 var user = await _context.Usuarios
@@ -229,6 +239,13 @@ public class AuthController : ControllerBase
                         message = "Debes verificar tu correo antes de iniciar sesión."
                     });
                 }
+                if (!user.Activo || user.Eliminado)
+                    {
+                        return Unauthorized(new
+                        {
+                            message = "Tu cuenta está inactiva o eliminada."
+                        });
+                    }
 
                 if (user.PasswordHash == null || !BCrypt.Net.BCrypt.Verify(login.Password, user.PasswordHash))
                     return Unauthorized("Credenciales inválidas.");
@@ -259,13 +276,28 @@ public class AuthController : ControllerBase
             // Valida el token incluyendo la audiencia (ClientId)
             var settings = new GoogleJsonWebSignature.ValidationSettings()
             {
+<<<<<<< HEAD
+=======
+<<<<<<< Updated upstream
+                var payload = await GoogleJsonWebSignature.ValidateAsync(dto.IdToken);
+                var user = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == payload.Email);
+=======
+>>>>>>> backend
                 Audience = new List<string> { clientId },
             };
 
             var payload = await GoogleJsonWebSignature.ValidateAsync(dto.idToken, settings);
             
+<<<<<<< HEAD
             // ... resto de tu lógica de búsqueda/creación de usuario ...
             var user = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == payload.Email);
+=======
+            var emailGoogle = payload.Email.Trim().ToLower();
+
+            var user = await _context.Usuarios
+                .FirstOrDefaultAsync(u => u.Email == emailGoogle);
+>>>>>>> Stashed changes
+>>>>>>> backend
 
                 if (user == null)
                 {
@@ -273,7 +305,7 @@ public class AuthController : ControllerBase
                     {
                         Nombre = payload.GivenName ?? payload.Name,
                         Apellido = payload.FamilyName ?? "",
-                        Email = payload.Email,
+                        Email = emailGoogle,
                         GoogleId = payload.Subject,
                         FotoUrl = payload.Picture,
                         Rol = Roles.Paciente,
@@ -286,6 +318,13 @@ public class AuthController : ControllerBase
                 {
                     user.GoogleId = payload.Subject;
                 }
+                if (!user.Activo || user.Eliminado)
+                    {
+                        return Unauthorized(new
+                        {
+                            message = "Tu cuenta está inactiva o eliminada."
+                        });
+                    }
 
                 await _context.SaveChangesAsync();
                 var token = GenerarToken(user);
@@ -324,7 +363,7 @@ public class AuthController : ControllerBase
             .FirstOrDefaultAsync(u => u.Email == emailNormalizado);
 
         // Siempre responder lo mismo por seguridad
-        if (user == null)
+        if (user.GoogleId != null)
         {
             return Ok(new
             {
@@ -392,6 +431,14 @@ public class AuthController : ControllerBase
             });
         }
 
+        if (string.IsNullOrWhiteSpace(model.NewPassword))
+        {
+            return BadRequest(new
+            {
+                message = "La nueva contraseña es obligatoria."
+            });
+        }
+
         user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.NewPassword);
 
         user.PasswordResetToken = null;
@@ -423,7 +470,8 @@ public class AuthController : ControllerBase
         if (user.GoogleId != null)
             return BadRequest(new { message = "Las cuentas de Google no pueden cambiar contraseña aquí." });
 
-        if (!BCrypt.Net.BCrypt.Verify(dto.PasswordActual, user.PasswordHash))
+        if (string.IsNullOrWhiteSpace(user.PasswordHash) ||
+            !BCrypt.Net.BCrypt.Verify(dto.PasswordActual, user.PasswordHash))
             return BadRequest(new { message = "La contraseña actual es incorrecta." });
 
         user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.PasswordNueva);
@@ -471,6 +519,8 @@ public class AuthController : ControllerBase
         var descriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
+            Issuer = _config["Jwt:Issuer"],
+            Audience = _config["Jwt:Audience"],
             Expires = DateTime.UtcNow.AddHours(2),
             SigningCredentials = new SigningCredentials(
                 new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -506,6 +556,14 @@ public class AuthController : ControllerBase
     if (!string.IsNullOrEmpty(model.DUI) && await _context.Usuarios.AnyAsync(u => u.DUI == model.DUI))
         return BadRequest(new { message = "El DUI ya está registrado." });
 
+    if (string.IsNullOrWhiteSpace(model.Password))
+        {
+            return BadRequest(new
+            {
+                message = "La contraseña es obligatoria para el doctor."
+            });
+        }
+
     var doctor = new Usuario
     {
         Nombre              = model.Nombre,
@@ -521,8 +579,7 @@ public class AuthController : ControllerBase
         EmailVerified       = true                 
     };
 
-    if (!string.IsNullOrEmpty(model.Password))
-        doctor.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password);
+    doctor.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password);
 
     try
     {
