@@ -72,9 +72,15 @@ builder.Services.AddCors(options =>
 { // Cambiar configuración por las URLs específicas de frontend en producción
     options.AddPolicy("PublicPolicy", policy =>
         {
-            policy.AllowAnyOrigin() // Permite cualquier URL
-                  .AllowAnyHeader() // Permite headers como 'Authorization' o 'Content-Type'
-                  .AllowAnyMethod(); // Permite GET, POST, PUT, DELETE, etc.
+            policy.WithOrigins(
+                "http://localhost",
+                "http://localhost:80",
+                "http://localhost:5173",
+                "http://127.0.0.1"
+            )
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials();
         });
 });
 

@@ -142,30 +142,47 @@ namespace TelMedAPI.Controllers
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetCitaById(int id)
         {
-            var cita = await _context.Citas
-                .Include(c => c.Paciente)
-                .Where(c => c.IdCita == id)
-                .Select(c => new CitaCalendarDto
-                {
-                    IdCita                 = c.IdCita,
-                    Titulo                 = c.Motivo,
-                    Start                  = c.FechaInicio,
-                    End                    = c.FechaFin,
-                    Estado                 = c.Estado,
-                    PacienteNombreCompleto = c.Paciente.Nombre + " " + c.Paciente.Apellido,
-                    TipoConsulta           = c.TipoConsulta,
-                    PacienteId             = c.PacienteId,
-                    LinkReunion            = c.LinkReunion,
-                    DuiPaciente            = c.Paciente.DUI,
-                    TelefonoPaciente       = c.Paciente.Telefono,
-                    CorreoPaciente          = c.Paciente.Email,
-                    FechaNacimientoPaciente = c.Paciente.FechaNacimiento.ToString(),
-                    FotoPaciente            = c.Paciente.FotoUrl
-                })
-                .FirstOrDefaultAsync();
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var rol = User.FindFirst(ClaimTypes.Role)?.Value;
 
-            if (cita == null)
+            if (userIdClaim == null || rol == null)
+                return Unauthorized();
+
+            var userId = int.Parse(userIdClaim);
+
+            var citaEntity = await _context.Citas
+                .Include(c => c.Paciente)
+                .Include(c => c.Doctor)
+                .FirstOrDefaultAsync(c => c.IdCita == id);
+
+            if (citaEntity == null)
                 return NotFound(new { message = "Cita no encontrada." });
+
+            // Paciente solo puede ver sus propias citas
+            if (rol == Roles.Paciente && citaEntity.PacienteId != userId)
+                return Forbid();
+
+            // Doctor solo puede ver sus propias citas
+            if (rol == Roles.Doctor && citaEntity.DoctorId != userId)
+                return Forbid();
+
+            var cita = new CitaCalendarDto
+            {
+                IdCita                  = citaEntity.IdCita,
+                Titulo                  = citaEntity.Motivo,
+                Start                   = citaEntity.FechaInicio,
+                End                     = citaEntity.FechaFin,
+                Estado                  = citaEntity.Estado,
+                PacienteNombreCompleto  = citaEntity.Paciente.Nombre + " " + citaEntity.Paciente.Apellido,
+                TipoConsulta            = citaEntity.TipoConsulta,
+                PacienteId              = citaEntity.PacienteId,
+                LinkReunion             = citaEntity.LinkReunion,
+                DuiPaciente             = citaEntity.Paciente.DUI,
+                TelefonoPaciente        = citaEntity.Paciente.Telefono,
+                CorreoPaciente          = citaEntity.Paciente.Email,
+                FechaNacimientoPaciente = citaEntity.Paciente.FechaNacimiento.ToString(),
+                FotoPaciente            = citaEntity.Paciente.FotoUrl
+            };
 
             return Ok(cita);
         }
@@ -176,13 +193,17 @@ namespace TelMedAPI.Controllers
         [HttpGet("mis-citas")]
         public async Task<IActionResult> GetMisCitas()
         {
-            var email = User.FindFirst(ClaimTypes.Email)?.Value;
-            if (email == null) return Unauthorized();
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userIdClaim == null)
+                return Unauthorized();
+
+            var userId = int.Parse(userIdClaim);
 
             var citas = await _context.Citas
                 .Include(c => c.Doctor)
                 .Include(c => c.Paciente)
-                .Where(c => c.Paciente.Email == email)
+                .Where(c => c.PacienteId == userId)
                 .Select(c => new CitaCalendarDto
                 {
                     PacienteNombreCompleto = c.Paciente.Nombre + " " + c.Paciente.Apellido,
@@ -193,8 +214,7 @@ namespace TelMedAPI.Controllers
                     End                    = c.FechaFin,
                     Estado                 = c.Estado,
                     TipoConsulta           = c.TipoConsulta,
-                    LinkReunion            = c.LinkReunion,       
-                    
+                    LinkReunion            = c.LinkReunion,
                 })
                 .ToListAsync();
 
@@ -250,10 +270,27 @@ namespace TelMedAPI.Controllers
         [HttpGet("historial-paciente/{pacienteId}")]
         public async Task<IActionResult> GetHistorialPaciente(int pacienteId)
         {
-            var citas = await _context.Citas
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var rol         = User.FindFirst(ClaimTypes.Role)?.Value;
+
+            if (userIdClaim == null || rol == null)
+                return Unauthorized();
+
+            var userId = int.Parse(userIdClaim);
+
+            var query = _context.Citas
                 .Include(c => c.Doctor)
                 .Include(c => c.Consulta)
                 .Where(c => c.PacienteId == pacienteId)
+                .AsQueryable();
+
+            // Doctor solo puede ver historial de sus propios pacientes
+            if (rol == Roles.Doctor)
+            {
+                query = query.Where(c => c.DoctorId == userId);
+            }
+
+            var citas = await query
                 .OrderByDescending(c => c.FechaInicio)
                 .Select(c => new {
                     idCita       = c.IdCita,
@@ -279,29 +316,44 @@ namespace TelMedAPI.Controllers
         // =========================================================
         // RECETA MÉDICA EN PDF
         // =========================================================
-        // Después
         [Authorize(Roles = Roles.Paciente + "," + Roles.Doctor + "," + Roles.Admin)]
         [HttpGet("{id}/receta")]
         public async Task<IActionResult> DescargarReceta(int id)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userIdClaim == null) return Unauthorized();
+
             var userId = int.Parse(userIdClaim);
             var rol    = User.FindFirst(ClaimTypes.Role)?.Value;
 
+            IQueryable<Cita> query = _context.Citas
+                .Include(c => c.Paciente)
+                .Include(c => c.Doctor)
+                .Include(c => c.Consulta);
+
             // Paciente solo puede ver su propia receta
-            // Doctor y admin pueden ver cualquiera
-            var cita = rol == Roles.Paciente
-                ? await _context.Citas
-                    .Include(c => c.Paciente)
-                    .Include(c => c.Doctor)
-                    .Include(c => c.Consulta)
-                    .FirstOrDefaultAsync(c => c.IdCita == id && c.PacienteId == userId)
-                : await _context.Citas
-                    .Include(c => c.Paciente)
-                    .Include(c => c.Doctor)
-                    .Include(c => c.Consulta)
-                    .FirstOrDefaultAsync(c => c.IdCita == id);
+            if (rol == Roles.Paciente)
+            {
+                query = query.Where(c =>
+                    c.IdCita == id &&
+                    c.PacienteId == userId);
+            }
+
+            // Doctor solo puede ver recetas de sus propias citas
+            else if (rol == Roles.Doctor)
+            {
+                query = query.Where(c =>
+                    c.IdCita == id &&
+                    c.DoctorId == userId);
+            }
+
+            // Admin puede ver cualquiera
+            else
+            {
+                query = query.Where(c => c.IdCita == id);
+            }
+
+            var cita = await query.FirstOrDefaultAsync();
 
             if (cita == null)
                 return NotFound(new { message = "Cita no encontrada." });
@@ -312,8 +364,11 @@ namespace TelMedAPI.Controllers
             var document = new CitaReport(cita, cita.Consulta);
             var pdf      = document.GeneratePdf();
 
-            return File(pdf, "application/pdf",
-            $"RecetaMedica_{cita.Paciente?.Nombre}_{DateTime.Now:yyyyMMdd}.pdf");
+            return File(
+                pdf,
+                "application/pdf",
+                $"RecetaMedica_{cita.Paciente?.Nombre}_{DateTime.Now:yyyyMMdd}.pdf"
+            );
         }
 
         // =========================================================
@@ -365,12 +420,18 @@ namespace TelMedAPI.Controllers
 
             foreach (var h in horarios)
             {
+                if (!TimeSpan.TryParse(h.HoraInicio, out var horaInicio))
+                    return BadRequest(new { message = "HoraInicio inválida." });
+
+                if (!TimeSpan.TryParse(h.HoraFin, out var horaFin))
+                    return BadRequest(new { message = "HoraFin inválida." });
+
                 _context.HorariosDoctor.Add(new HorarioDoctor
                 {
                     DoctorId   = doctorId,
                     DiaSemana  = h.DiaSemana,
-                    HoraInicio = TimeSpan.Parse(h.HoraInicio),
-                    HoraFin    = TimeSpan.Parse(h.HoraFin),
+                    HoraInicio = horaInicio,
+                    HoraFin    = horaFin,
                     Activo     = h.Activo
                 });
             }
@@ -384,7 +445,7 @@ namespace TelMedAPI.Controllers
         [Authorize]
         [HttpGet("slots-disponibles")]
         public async Task<IActionResult> GetSlotsDisponibles(
-            [FromQuery] int    doctorId,
+            [FromQuery] int doctorId,
             [FromQuery] string fecha)
         {
             if (!DateTime.TryParse(fecha, out var fechaDate))
@@ -393,15 +454,17 @@ namespace TelMedAPI.Controllers
             // Día de la semana de la fecha solicitada
             var diaSemana = (int)fechaDate.DayOfWeek;
 
-            // 2. Buscar el horario del doctor para ese día
+            // Buscar el horario del doctor para ese día
             var horario = await _context.HorariosDoctor
                 .FirstOrDefaultAsync(h => h.DoctorId == doctorId
                                     && h.DiaSemana == diaSemana
                                     && h.Activo);
+
             var doctorActivo = await _context.Usuarios
-                .AnyAsync(u => u.Id == doctorId && u.Activo && !u.Eliminado); 
+                .AnyAsync(u => u.Id == doctorId && u.Activo && !u.Eliminado);
+
             if (!doctorActivo)
-                return BadRequest(new { message = "Doctor no encontrado o inactivo." });                       
+                return BadRequest(new { message = "Doctor no encontrado o inactivo." });
 
             // Si no hay horario activo ese día → lista vacía
             if (horario == null)
@@ -413,10 +476,10 @@ namespace TelMedAPI.Controllers
 
             var horasOcupadas = await _context.Citas
                 .Where(c =>
-                    c.DoctorId    == doctorId        &&
-                    c.Estado      != CitaEstados.Cancelada &&
-                    c.FechaInicio >= diaInicioUtc    &&
-                    c.FechaInicio  < diaFinUtc)
+                    c.DoctorId == doctorId &&
+                    c.Estado != CitaEstados.Cancelada &&
+                    c.FechaInicio >= diaInicioUtc &&
+                    c.FechaInicio < diaFinUtc)
                 .Select(c => c.FechaInicio)
                 .ToListAsync();
 
@@ -425,16 +488,23 @@ namespace TelMedAPI.Controllers
             var slots  = new List<object>();
             var cursor = horario.HoraInicio;
 
+            var zonaSV = GetZonaElSalvador();
+
             while (cursor.Add(TimeSpan.FromMinutes(duracion)) <= horario.HoraFin)
             {
-                // Convertir slot local SV (UTC-6) a UTC para comparar con la BD
-                var slotUtc = diaInicioUtc.Add(cursor).AddHours(6);
+                // Convertir slot local SV a UTC para comparar con BD
+                var localDateTime = fechaDate.Date.Add(cursor);
+                var slotUtc       = TimeZoneInfo.ConvertTimeToUtc(localDateTime, zonaSV);
 
                 var ocupado = horasOcupadas.Any(h =>
-                    h.Hour   == slotUtc.Hour &&
+                    h.Hour == slotUtc.Hour &&
                     h.Minute == slotUtc.Minute);
 
-                var inicio  = DateTime.Today.Add(cursor);
+                var hoyLocal = TimeZoneInfo
+                    .ConvertTimeFromUtc(DateTime.UtcNow, zonaSV)
+                    .Date;
+
+                var inicio  = hoyLocal.Add(cursor);
                 var fin     = inicio.AddMinutes(duracion);
                 var periodo = cursor.Hours < 12 ? "AM" : "PM";
 
@@ -578,12 +648,12 @@ namespace TelMedAPI.Controllers
 
              //Validar que el paciente esté activo
             var paciente = await _context.Usuarios.FindAsync(finalPacienteId);
-            if (paciente == null || !paciente.Activo)
-                return BadRequest(new { message = "El paciente está inactivo y no puede agendar citas." });
+            if (paciente == null || !paciente.Activo || paciente.Eliminado)
+                return BadRequest(new { message = "El paciente está inactivo o eliminado y no puede agendar citas." });
             
             var doctor = await _context.Usuarios.FindAsync(dto.DoctorId);
-            if (doctor == null || !doctor.Activo)
-                return BadRequest(new { message = "El doctor está inactivo y no puede recibir citas." });
+            if (doctor == null || !doctor.Activo || doctor.Eliminado)
+                return BadRequest(new { message = "El doctor está inactivo o eliminado y no puede recibir citas." });
 
 
 
@@ -607,7 +677,6 @@ namespace TelMedAPI.Controllers
 
             return Ok(cita);
         }
-
 
         // =========================================================
         // INICIAR CONSULTA
@@ -712,9 +781,3 @@ namespace TelMedAPI.Controllers
 
     }  
 }      
-
-        
-
-
-
-    

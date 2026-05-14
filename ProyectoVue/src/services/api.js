@@ -33,12 +33,22 @@ api.interceptors.response.use(
     console.error("API ERROR:", error.response?.data || error.message);
 
     if (status === 401) {
-      logoutPro();
+
+      const currentPath = router.currentRoute.value.path;
+      if (
+        currentPath !== '/' &&
+         currentPath !== '/login'
+        ) {
+          logoutPro();
+
+        }
+
     }
 
     if (status === 403) {
-      const msg = error.response?.data?.message || '';
-      if (msg.toLowerCase().includes('password')) {
+      const msg = String(error.response?.data?.message || '');
+
+    if (msg.toLowerCase().includes('password')) {
         localStorage.setItem('requiereCambioPassword', 'true');
         if (router.currentRoute.value.path !== "/change-password") {
           router.push("/change-password");
@@ -255,8 +265,6 @@ export const perfil = async () => {
     throw new Error("No viene ID");
   }
 
-  localStorage.setItem('user_id', data.id);
-
   return data;
 };
 
@@ -279,8 +287,19 @@ export const actualizarHorarioDoctor = (doctorId, payload) =>
   api.put(`/citas/horarios-doctor/${doctorId}`, payload).then(r => r.data)
 
 // Slots libres para que el paciente elija al agendar
-export const getSlotsDisponibles = (doctorId, fecha) =>
-  api.get(`/citas/slots-disponibles?doctorId=${doctorId}&fecha=${fecha}`).then(r => r.data)
+export const getSlotsDisponibles = (doctorId, fecha) => {
+  const fechaStr =
+    typeof fecha === 'string'
+      ? fecha
+      : new Date(fecha).toISOString().split('T')[0]
+
+  return api.get(`/citas/slots-disponibles`, {
+    params: {
+      doctorId,
+      fecha: fechaStr
+    }
+  }).then(r => r.data)
+}
 
 
 export const getEstadisticas = async () => {
@@ -297,12 +316,11 @@ export const getEstadisticas = async () => {
 // CIERRE DE SESIÓN
 // ===============================
 export const logoutPro = () => {
-  localStorage.clear();
+  localStorage.removeItem('token');
+localStorage.removeItem('user_id');
+localStorage.removeItem('requiereCambioPassword');
   sessionStorage.clear();
-  router.replace('/');
-  setTimeout(() => {
-    window.location.reload();
-  }, 100);
+  window.location.href = '/';
 };
 
 export default api;
