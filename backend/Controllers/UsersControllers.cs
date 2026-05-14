@@ -115,7 +115,7 @@ namespace TelMedAPI.Controllers
         public async Task<IActionResult> GetDoctors()
         {
             var doctors = await _context.Usuarios
-                .Where(u => u.Rol == Roles.Doctor)
+                .Where(u => u.Rol == Roles.Doctor && u.Activo == true && !u.Eliminado)
                 .Select(u => new
                 {
                     Id = u.Id,
@@ -220,6 +220,28 @@ namespace TelMedAPI.Controllers
             await _context.SaveChangesAsync();
             return Ok(new { message = "Estado actualizado" });
         }
+
+
+        // ===============================
+        // Eliminar a paciente
+        [Authorize(Roles = Roles.Admin)]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> EliminarPaciente(int id)
+        {
+            var user = await _context.Usuarios.FindAsync(id);
+            if (user == null) return NotFound();
+
+            user.Eliminado = true;
+            user.Activo    = false;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Paciente eliminado correctamente." });
+        }
+
+
+
+
+
 
         // =========================================================
         // Pacientes del doctor (solo los que tienen citas con él)

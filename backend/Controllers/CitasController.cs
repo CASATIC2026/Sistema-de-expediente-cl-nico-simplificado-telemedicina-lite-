@@ -398,6 +398,10 @@ namespace TelMedAPI.Controllers
                 .FirstOrDefaultAsync(h => h.DoctorId == doctorId
                                     && h.DiaSemana == diaSemana
                                     && h.Activo);
+            var doctorActivo = await _context.Usuarios
+                .AnyAsync(u => u.Id == doctorId && u.Activo && !u.Eliminado); 
+            if (!doctorActivo)
+                return BadRequest(new { message = "Doctor no encontrado o inactivo." });                       
 
             // Si no hay horario activo ese día → lista vacía
             if (horario == null)
@@ -576,6 +580,10 @@ namespace TelMedAPI.Controllers
             var paciente = await _context.Usuarios.FindAsync(finalPacienteId);
             if (paciente == null || !paciente.Activo)
                 return BadRequest(new { message = "El paciente está inactivo y no puede agendar citas." });
+            
+            var doctor = await _context.Usuarios.FindAsync(dto.DoctorId);
+            if (doctor == null || !doctor.Activo)
+                return BadRequest(new { message = "El doctor está inactivo y no puede recibir citas." });
 
 
 
