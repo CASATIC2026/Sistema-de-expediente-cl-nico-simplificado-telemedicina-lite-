@@ -107,6 +107,7 @@ builder.Services.AddAuthorization();
 
 // Servicio de Email (verificación de cuenta y restablecimiento de contraseña)
 builder.Services.AddScoped<EmailService>();
+builder.Services.AddHostedService<CitaReminderService>();
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", false);
 

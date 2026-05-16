@@ -50,8 +50,9 @@ namespace TelMedAPI.Services
             var context = scope.ServiceProvider.GetRequiredService<TelMedAPIContext>();
             var emailService = scope.ServiceProvider.GetRequiredService<EmailService>();
 
-            var ahoraUtc = DateTime.UtcNow;
-            var ventanaFin = ahoraUtc.AddHours(24);
+            var ahoraUtc = DateTimeOffset.UtcNow;
+            var ventanaInicio = ahoraUtc.AddHours(23);
+            var ventanaFin = ahoraUtc.AddHours(25);
 
             var citas = await context.Citas
                 .Include(c => c.Paciente)
@@ -59,7 +60,7 @@ namespace TelMedAPI.Services
                 .Where(c => !c.NotificacionRecordatorioEnviada
                             && c.Estado != CitaEstados.Cancelada
                             && c.Estado != CitaEstados.Finalizada
-                            && c.FechaInicio >= ahoraUtc
+                            && c.FechaInicio >= ventanaInicio
                             && c.FechaInicio <= ventanaFin)
                 .ToListAsync(stoppingToken);
 

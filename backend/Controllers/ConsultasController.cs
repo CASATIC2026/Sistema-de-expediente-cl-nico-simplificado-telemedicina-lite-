@@ -17,10 +17,12 @@ namespace TelMedAPI.Controllers
     public class ConsultasController : ControllerBase
     {
         private readonly TelMedAPIContext _context;
+        private readonly EmailService _emailService;
 
-        public ConsultasController(TelMedAPIContext context)
+        public ConsultasController(TelMedAPIContext context, EmailService emailService)
         {
             _context = context;
+            _emailService = emailService;
         }
 
         [Authorize(Roles = Roles.Admin + "," + Roles.Doctor)]
@@ -49,6 +51,8 @@ namespace TelMedAPI.Controllers
                 return Forbid();
 
             var cita = await _context.Citas
+                .Include(c => c.Paciente)
+                .Include(c => c.Doctor)
                 .FirstOrDefaultAsync(c => c.IdCita == dto.CitaId);
 
             if (cita == null)
@@ -65,6 +69,37 @@ namespace TelMedAPI.Controllers
             if (existe)
                 return BadRequest("Esta cita ya tiene una consulta registrada");
 
+            if (dto.TieneIncapacidad)
+            {
+                if (!dto.FechaInicioIncapacidad.HasValue || !dto.FechaFinIncapacidad.HasValue)
+                    return BadRequest("Si se genera incapacidad, debe incluir fecha de inicio y fecha de fin.");
+
+                var fechaInicioUtc = DateTime.SpecifyKind(dto.FechaInicioIncapacidad.Value, DateTimeKind.Utc);
+                var fechaFinUtc = DateTime.SpecifyKind(dto.FechaFinIncapacidad.Value, DateTimeKind.Utc);
+
+                if (fechaFinUtc.Date < fechaInicioUtc.Date)
+                    return BadRequest("La fecha fin de la incapacidad no puede ser anterior a la fecha inicio.");
+
+                if (string.IsNullOrWhiteSpace(dto.MotivoIncapacidad))
+                    return BadRequest("El motivo de incapacidad es requerido cuando se emite incapacidad.");
+
+                if (!dto.DiasIncapacidad.HasValue)
+                {
+                    dto.DiasIncapacidad = (int)(fechaFinUtc.Date - fechaInicioUtc.Date).TotalDays + 1;
+                }
+
+                dto.FechaInicioIncapacidad = fechaInicioUtc;
+                dto.FechaFinIncapacidad = fechaFinUtc;
+            }
+            else
+            {
+                dto.FechaInicioIncapacidad = null;
+                dto.FechaFinIncapacidad = null;
+                dto.DiasIncapacidad = null;
+                dto.MotivoIncapacidad = string.Empty;
+                dto.ObservacionesIncapacidad = string.Empty;
+            }
+
             var consulta = new Consulta
             {
                 CitaId = dto.CitaId,
@@ -74,7 +109,13 @@ namespace TelMedAPI.Controllers
                 Diagnostico = dto.Diagnostico,
                 Tratamiento = dto.Tratamiento,
                 Observaciones = dto.Observaciones,
-                MedicamentosJson = dto.MedicamentosJson
+                MedicamentosJson = dto.MedicamentosJson,
+                TieneIncapacidad = dto.TieneIncapacidad,
+                FechaInicioIncapacidad = dto.FechaInicioIncapacidad,
+                FechaFinIncapacidad = dto.FechaFinIncapacidad,
+                DiasIncapacidad = dto.DiasIncapacidad,
+                MotivoIncapacidad = dto.MotivoIncapacidad,
+                ObservacionesIncapacidad = dto.ObservacionesIncapacidad
             };
 
             _context.Consultas.Add(consulta);
@@ -83,6 +124,35 @@ namespace TelMedAPI.Controllers
             cita.Estado = CitaEstados.Finalizada;
 
             await _context.SaveChangesAsync();
+
+            if (consulta.TieneIncapacidad && cita.Paciente != null && !string.IsNullOrWhiteSpace(cita.Paciente.Email))
+            {
+                try
+                {
+                    var document = new CitaReport(cita, consulta);
+                    var pdf = document.GeneratePdf();
+                    var doctorNombre = cita.Doctor == null
+                        ? ""
+                        : $"{cita.Doctor.Nombre} {cita.Doctor.Apellido}".Trim();
+
+                    await _emailService.EnviarCorreoIncapacidad(
+                        cita.Paciente.Email,
+                        cita.Paciente.Nombre,
+                        doctorNombre,
+                        consulta.FechaInicioIncapacidad!.Value,
+                        consulta.FechaFinIncapacidad!.Value,
+                        consulta.DiasIncapacidad ?? (int)(consulta.FechaFinIncapacidad.Value.Date - consulta.FechaInicioIncapacidad.Value.Date).TotalDays + 1,
+                        consulta.MotivoIncapacidad,
+                        consulta.ObservacionesIncapacidad,
+                        pdf,
+                        $"Incapacidad_{consulta.IdConsulta}.pdf"
+                    );
+                }
+                catch
+                {
+                    // El envío de correo no debe bloquear la respuesta principal.
+                }
+            }
 
             return Ok(consulta);
         }

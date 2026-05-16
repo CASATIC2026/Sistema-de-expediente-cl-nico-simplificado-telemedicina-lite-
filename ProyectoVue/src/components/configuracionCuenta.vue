@@ -16,9 +16,13 @@ const emit = defineEmits(['cerrar', 'actualizar'])
 // ── 2. COMPUTED que dependen de props ─────────────────
 const tituloModal = computed(() => {
   const rol = props.rolSesion?.toLowerCase()
-  if (props.modoAdmin)  return 'Información del Paciente'
-  if (rol === 'admin')  return 'Panel de Administrador'
-  if (rol === 'doctor') return 'Mi Perfil Médico'
+  if(props.modoAdmin) {
+    return formulario.value.rol?.toLowerCase() === 'doctor'
+     ? 'Perfil del Profesional'
+     : 'Perfil del Paciente'
+  }
+  if(rol === 'admin')  return 'Panel de Administración'
+  if(rol === 'doctor') return 'Mi Perfil Médico'
   return 'Mi Perfil'
 })
 
@@ -35,7 +39,10 @@ const puedeEditar = computed(() => {
   return ['paciente', 'admin', 'doctor'].includes(props.rolSesion?.toLowerCase())
 })
 
-
+const esDoctor = computed(() =>
+ formulario.value.rol?.toLowerCase() === 'doctor' ||
+ (props.modoAdmin && !!(formulario.value.especialidad || formulario.value.jvpm))
+)
 
 //const esVistaPacientePropia = computed(() => props.rolSesion === 'paciente')
 
@@ -56,17 +63,20 @@ const mostrarNotificacion = (mensaje, tipo = 'exito') => {
 // ── 4. watchEffect: reacciona cuando llegan datos ─────
 watchEffect(() => {
   const d = props.usuarioData
+  console.log('usuarioData recibido:', JSON.stringify(d))
   if (!d || Object.keys(d).length === 0) return
   formulario.value = {
-    nombre:    d.nombre    ?? d.Nombre    ?? '',
-    apellido:  d.apellido  ?? d.Apellido  ?? '',
-    email:     d.email     ?? d.Email     ?? '',
-    dui:       d.dui       ?? d.DUI       ?? 'No disponible',
-    telefono:  d.telefono  ?? d.Telefono  ?? '',
-    direccion: d.direccion ?? d.Direccion ?? '',
-    genero:    d.genero    ?? d.Genero    ?? 'No especificado',
-    rol:       d.rol       ?? d.Rol       ?? '',
-    esGoogle:  d.esGoogle  ?? false
+    nombre:       d.nombre       ?? d.Nombre       ?? '',
+    apellido:     d.apellido     ?? d.Apellido     ?? '',
+    email:        d.email        ?? d.Email        ?? '',
+    dui:          d.dui          ?? d.DUI          ?? 'No disponible',
+    telefono:     d.telefono     ?? d.Telefono     ?? '',
+    direccion:    d.direccion    ?? d.Direccion    ?? '',
+    genero:       d.genero       ?? d.Genero       ?? 'No especificado',
+    rol:          d.rol          ?? d.Rol          ?? '',
+    especialidad: d.especialidad ?? d.Especialidad ?? '',
+    jvpm:         d.jvpm         ?? d.JVPM         ?? '',
+    esGoogle:     d.esGoogle     ?? false
   }
 })
 
@@ -213,6 +223,16 @@ const verPassword = ref({ actual: false, nueva: false, confirmar: false })
               <p class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase">Género</p>
               <p class="text-xs md:text-sm font-bold text-slate-700">{{ formulario.genero || 'No especificado' }}</p>
             </div>
+            <template v-if="esDoctor">
+              <div class="bg-white p-3 md:p-4 space-y-0.5">
+                <p class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase">Especialidad</p>
+                <p class="text-xs md:text-sm font-bold text-slate-700">{{ formulario.especialidad || 'No asignada' }}</p>
+              </div>
+              <div class="bg-white p-3 md:p-4 space-y-0.5">
+                <p class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase">JVPM</p>
+                <p class="text-xs md:text-sm font-bold text-slate-700">{{ formulario.jvpm || 'No asignado' }}</p>
+              </div>
+            </template>
           </div>
         </div>
 

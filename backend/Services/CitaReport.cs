@@ -148,6 +148,28 @@ namespace TelMedAPI.Services
                         });
                     });
 
+                    if (ConsultaData.TieneIncapacidad && ConsultaData.FechaInicioIncapacidad.HasValue && ConsultaData.FechaFinIncapacidad.HasValue)
+                    {
+                        var inicioIncapacidad = ConsultaData.FechaInicioIncapacidad.Value;
+                        var finIncapacidad = ConsultaData.FechaFinIncapacidad.Value;
+                        var diasIncapacidad = ConsultaData.DiasIncapacidad ?? (int)(finIncapacidad.Date - inicioIncapacidad.Date).TotalDays + 1;
+
+                        col.Item().PaddingTop(15);
+                        col.Item().Text("Incapacidad médica").Bold().FontSize(12);
+                        col.Item().PaddingTop(5).Text($"Desde: {inicioIncapacidad:dd/MM/yyyy}");
+                        col.Item().Text($"Hasta: {finIncapacidad:dd/MM/yyyy}");
+                        col.Item().Text($"Días: {diasIncapacidad}");
+                        col.Item().Text($"Motivo: {ConsultaData.MotivoIncapacidad}");
+
+                        if (!string.IsNullOrWhiteSpace(ConsultaData.ObservacionesIncapacidad))
+                        {
+                            col.Item().Text($"Observaciones incapacidad: {ConsultaData.ObservacionesIncapacidad}");
+                        }
+
+                        col.Item().PaddingTop(10);
+                        col.Item().LineHorizontal(1);
+                    }
+
                     col.Item().PaddingTop(10);
                     col.Item().LineHorizontal(1);
 

@@ -4,7 +4,7 @@
 
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch, computed } from 'vue'
 import api from '@/services/api'
 import { useRouter } from 'vue-router'
 import { useVideoStore } from '@/stores/videoStore'
@@ -22,6 +22,12 @@ const evolucion     = ref('')
 const diagnostico   = ref('')
 const tratamiento   = ref('')
 const observaciones = ref('')
+const tieneIncapacidad = ref(false)
+const fechaInicioIncapacidad = ref('')
+const fechaFinIncapacidad = ref('')
+const diasIncapacidad = ref(null)
+const motivoIncapacidad = ref('')
+const observacionesIncapacidad = ref('')
 const guardado      = ref(false)
 const consultaId    = ref(null)
 const cargando      = ref(false)
@@ -37,6 +43,52 @@ const agregarMedicamento = () => {
 const eliminarMedicamento = (index) => {
   medicamentos.value.splice(index, 1)
 }
+
+const buildUtcDateString = (dateValue) => {
+  if (!dateValue) return null
+  const date = new Date(`${dateValue}T00:00:00Z`)
+  return date.toISOString()
+}
+
+const actualizarDiasIncapacidad = () => {
+  if (!fechaInicioIncapacidad.value || !fechaFinIncapacidad.value) {
+    diasIncapacidad.value = null
+    return
+  }
+
+  const inicio = new Date(fechaInicioIncapacidad.value)
+  const fin = new Date(fechaFinIncapacidad.value)
+  if (isNaN(inicio.getTime()) || isNaN(fin.getTime()) || fin < inicio) {
+    diasIncapacidad.value = null
+    return
+  }
+
+  diasIncapacidad.value = Math.floor((fin - inicio) / (1000 * 60 * 60 * 24)) + 1
+}
+
+watch([fechaInicioIncapacidad, fechaFinIncapacidad], actualizarDiasIncapacidad)
+
+const diasIncapacidadInvalido = computed(() => {
+  if (!tieneIncapacidad.value) return false
+  if (!fechaInicioIncapacidad.value || !fechaFinIncapacidad.value) return false
+  if (!diasIncapacidad.value) return true
+  return diasIncapacidad.value <= 0
+})
+
+const fechaFinIncapacidadInvalida = computed(() => {
+  if (!tieneIncapacidad.value) return false
+  if (!fechaInicioIncapacidad.value || !fechaFinIncapacidad.value) return false
+  return new Date(fechaFinIncapacidad.value) < new Date(fechaInicioIncapacidad.value)
+})
+
+const errorIncapacidad = computed(() => {
+  if (!tieneIncapacidad.value) return ''
+  if (!fechaInicioIncapacidad.value || !fechaFinIncapacidad.value) return 'Debes indicar fecha inicio y fecha fin de la incapacidad.'
+  if (new Date(fechaFinIncapacidad.value) < new Date(fechaInicioIncapacidad.value)) return 'La fecha fin no puede ser anterior a la fecha inicio.'
+  if (!diasIncapacidad.value || diasIncapacidad.value <= 0) return 'Debes ingresar un número válido de días.'
+  if (!motivoIncapacidad.value.trim()) return 'Debes indicar el motivo de la incapacidad.'
+  return ''
+})
 
 // Validación de campos
 const formularioValido = () => {
@@ -54,7 +106,15 @@ const formularioValido = () => {
     m.duracion.trim()
   )
 
-  return camposTextoValidos && hayMedicamentoValido
+  const incapacidadValida = !tieneIncapacidad.value || (
+    fechaInicioIncapacidad.value &&
+    fechaFinIncapacidad.value &&
+    motivoIncapacidad.value.trim() &&
+    new Date(fechaFinIncapacidad.value) >= new Date(fechaInicioIncapacidad.value) &&
+    diasIncapacidad.value > 0
+  )
+
+  return camposTextoValidos && hayMedicamentoValido && incapacidadValida
 }
 
 // ─── GUARDAR CONSULTA ─────────────────────────────────────────────
@@ -66,7 +126,11 @@ const guardarConsulta = async () => {
 
   // VALIDACIÓN
   if (!formularioValido()) {
-    alert("⚠️ Debes completar TODOS los campos y agregar al menos un medicamento válido")
+    if (errorIncapacidad.value) {
+      alert(`⚠️ ${errorIncapacidad.value}`)
+    } else {
+      alert("⚠️ Debes completar TODOS los campos y agregar al menos un medicamento válido")
+    }
     return
   }
 
@@ -80,7 +144,13 @@ const guardarConsulta = async () => {
       diagnostico:      diagnostico.value,
       tratamiento:      tratamiento.value,
       observaciones:    observaciones.value,
-      medicamentosJson: JSON.stringify(medicamentos.value)
+      medicamentosJson: JSON.stringify(medicamentos.value),
+      tieneIncapacidad: tieneIncapacidad.value,
+      fechaInicioIncapacidad: tieneIncapacidad.value ? buildUtcDateString(fechaInicioIncapacidad.value) : null,
+      fechaFinIncapacidad:   tieneIncapacidad.value ? buildUtcDateString(fechaFinIncapacidad.value) : null,
+      diasIncapacidad:       tieneIncapacidad.value ? diasIncapacidad.value : null,
+      motivoIncapacidad:     tieneIncapacidad.value ? motivoIncapacidad.value : '',
+      observacionesIncapacidad: tieneIncapacidad.value ? observacionesIncapacidad.value : ''
     }
 
     const res = await api.post('/consultas', payload)
@@ -152,6 +222,86 @@ const descargarPdf = async () => {
       <textarea v-model="tratamiento"   class="w-full border p-2 rounded" placeholder="Tratamiento"></textarea>
       <textarea v-model="observaciones" class="w-full border p-2 rounded" placeholder="Observaciones"></textarea>
 
+      <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-4">
+        <label class="flex items-center gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            v-model="tieneIncapacidad"
+            class="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+          />
+          <span class="font-semibold">Generar incapacidad médica</span>
+        </label>
+
+        <div v-if="tieneIncapacidad" class="mt-4 space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <label class="block text-sm font-medium text-slate-700">
+              Fecha inicio
+              <input
+                type="date"
+                v-model="fechaInicioIncapacidad"
+                class="mt-1 w-full border rounded p-2"
+              />
+            </label>
+            <label class="block text-sm font-medium text-slate-700">
+              Fecha fin
+              <input
+                type="date"
+                v-model="fechaFinIncapacidad"
+                :class="[
+                  'mt-1 w-full border rounded p-2',
+                  fechaFinIncapacidadInvalida ? 'border-red-500 ring-1 ring-red-200' : 'border-slate-300'
+                ]"
+              />
+            </label>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <label class="block text-sm font-medium text-slate-700">
+              Días de incapacidad
+              <input
+                type="number"
+                v-model.number="diasIncapacidad"
+                min="1"
+                :class="[
+                  'mt-1 w-full border rounded p-2',
+                  diasIncapacidadInvalido ? 'border-red-500 ring-1 ring-red-200' : 'border-slate-300'
+                ]"
+                placeholder="Automático o ajustable"
+              />
+              <p class="text-xs text-slate-500 mt-1">
+                Se calcula automáticamente desde las fechas, pero puedes ajustarlo si es necesario.
+              </p>
+              <p v-if="diasIncapacidadInvalido" class="text-xs text-red-600 mt-1">
+                Ingresa un número válido de días (mayor a 0).
+              </p>
+            </label>
+            <label class="block text-sm font-medium text-slate-700">
+              Motivo
+              <input
+                type="text"
+                v-model="motivoIncapacidad"
+                class="mt-1 w-full border rounded p-2"
+                placeholder="Motivo de la incapacidad"
+              />
+            </label>
+          </div>
+
+          <label class="block text-sm font-medium text-slate-700">
+            Observaciones de incapacidad
+            <textarea
+              v-model="observacionesIncapacidad"
+              class="mt-1 w-full border rounded p-2"
+              rows="3"
+              placeholder="Opcional"
+            ></textarea>
+          </label>
+
+          <p class="text-sm text-slate-500">
+            La incapacidad se adjuntará al mismo PDF y, si el paciente tiene correo, también se le enviará una copia.
+          </p>
+        </div>
+      </div>
+
       <div>
         <h3 class="font-semibold mb-2">Medicamentos</h3>
 
@@ -174,12 +324,19 @@ const descargarPdf = async () => {
         </button>
       </div>
 
+      <div v-if="errorIncapacidad" class="rounded-lg border border-red-200 bg-red-50 p-3 mb-3 text-sm text-red-700">
+        {{ errorIncapacidad }}
+      </div>
+
       <button
         @click="guardarConsulta"
         :disabled="cargando"
-        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg w-full disabled:opacity-50"
+        :class="[
+          'text-white px-4 py-2 rounded-lg w-full disabled:opacity-50 transition-colors',
+          errorIncapacidad ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'
+        ]"
       >
-        {{ cargando ? 'Guardando...' : 'Guardar diagnóstico' }}
+        {{ cargando ? 'Guardando...' : (errorIncapacidad ? 'Revisa los errores' : 'Guardar diagnóstico') }}
       </button>
 
     </template>

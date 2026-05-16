@@ -133,8 +133,7 @@ public class AuthController : ControllerBase
                     message = "Token no válido o usuario no encontrado."
                 });
 
-            if (user.EmailVerificationExpiresAt == null ||
-                user.EmailVerificationExpiresAt < DateTime.UtcNow)
+            if (user.EmailVerificationExpiresAt < DateTime.UtcNow)
                 return BadRequest(new
                 {
                     message = "El enlace de verificación ha expirado."
@@ -153,114 +152,98 @@ public class AuthController : ControllerBase
         }
 
 
-            // =========================================================
-            // COMPLETAR PERFIL (Para usuarios de Google)
-            // =========================================================
-            [Authorize]
-            [HttpPost("completar-perfil")]
-            public async Task<IActionResult> CompletarPerfil([FromBody] RegisterDTO model)
+    // =========================================================
+    // COMPLETAR PERFIL (Para usuarios de Google)
+    // =========================================================
+    [Authorize]
+    [HttpPost("completar-perfil")]
+    public async Task<IActionResult> CompletarPerfil([FromBody] RegisterDTO model)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var email = User.FindFirst(ClaimTypes.Email)?.Value;
+        var user = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == email);
+
+        if (user == null)
+            return NotFound("Usuario no encontrado");
+
+        // Solo usuarios de Google
+        if (user.GoogleId == null)
+        {
+            return BadRequest(new { message = "Este endpoint es solo para usuarios de Google." });
+        }
+
+        // Contraseña opcional (solo si no tiene)
+        if (!string.IsNullOrEmpty(model.Password))
+        {
+            if (user.PasswordHash != null)
             {
-                if (!ModelState.IsValid)
-                    return BadRequest(ModelState);
-
-                var email = User.FindFirst(ClaimTypes.Email)?.Value;
-                var user = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == email);
-
-                if (user == null)
-                    return NotFound("Usuario no encontrado");
-
-                // Solo usuarios de Google
-                if (user.GoogleId == null)
-                {
-                    return BadRequest(new { message = "Este endpoint es solo para usuarios de Google." });
-                }
-
-                // Contraseña opcional (solo si no tiene)
-                if (!string.IsNullOrEmpty(model.Password))
-                {
-                    if (user.PasswordHash != null)
-                    {
-                        return BadRequest(new { message = "Ya tienes una contraseña definida." });
-                    }
-
-                    user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password);
-                }
-
-                // Actualización de campos
-                user.Nombre = model.Nombre;
-                user.Apellido = model.Apellido;
-                user.Genero = model.Genero;
-                user.FechaNacimiento = model.FechaNacimiento;
-                user.Direccion = model.Direccion;
-                user.Telefono = model.Telefono;
-                user.DUI = model.DUI;
-
-                await _context.SaveChangesAsync();
-
-                var token = GenerarToken(user);
-
-                return Ok(new {
-                    token = token,
-                    rol = user.Rol.ToLower(),
-                    perfilCompleto = true,
-                    message = "Perfil actualizado correctamente."
-                });
+                return BadRequest(new { message = "Ya tienes una contraseña definida." });
             }
 
-            // =========================================================
-            // LOGIN TRADICIONAL
-            // =========================================================
-            [HttpPost("login")]
-            public async Task<IActionResult> Login([FromBody] LoginDTO login)
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password);
+        }
+
+        // Actualización de campos
+        user.Nombre = model.Nombre;
+        user.Apellido = model.Apellido;
+        user.Genero = model.Genero;
+        user.FechaNacimiento = model.FechaNacimiento;
+        user.Direccion = model.Direccion;
+        user.Telefono = model.Telefono;
+        user.DUI = model.DUI;
+
+        await _context.SaveChangesAsync();
+
+        var token = GenerarToken(user);
+
+        return Ok(new {
+            token = token,
+            rol = user.Rol.ToLower(),
+            perfilCompleto = true,
+            message = "Perfil actualizado correctamente."
+        });
+    }
+
+    // =========================================================
+    // LOGIN TRADICIONAL
+    // =========================================================
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginDTO login)
+    {
+        var emailNormalizado = login.Email.Trim().ToLower();
+
+        var user = await _context.Usuarios
+            .FirstOrDefaultAsync(u => u.Email == emailNormalizado);
+
+        if (user == null) return Unauthorized("Credenciales inválidas.");
+
+        if (user.GoogleId != null)
+            return BadRequest("Este usuario utiliza inicio de sesión con Google.");
+
+        if (!user.EmailVerified)
+        {
+            return BadRequest(new
             {
-                if (string.IsNullOrWhiteSpace(login.Email) ||
-                    string.IsNullOrWhiteSpace(login.Password))
-                {
-                    return BadRequest(new
-                    {
-                        message = "Correo y contraseña son obligatorios."
-                    });
-                }
+                message = "Debes verificar tu correo antes de iniciar sesión."
+            });
+        }
 
-                var emailNormalizado = login.Email.Trim().ToLower();
+        if (user.PasswordHash == null || !BCrypt.Net.BCrypt.Verify(login.Password, user.PasswordHash))
+            return Unauthorized("Credenciales inválidas.");
 
-                var user = await _context.Usuarios
-                    .FirstOrDefaultAsync(u => u.Email == emailNormalizado);
+        var token = GenerarToken(user);
 
-                if (user == null) return Unauthorized("Credenciales inválidas.");
-
-                if (user.GoogleId != null)
-                    return BadRequest("Este usuario utiliza inicio de sesión con Google.");
-
-                if (!user.EmailVerified)
-                {
-                    return BadRequest(new
-                    {
-                        message = "Debes verificar tu correo antes de iniciar sesión."
-                    });
-                }
-                if (!user.Activo || user.Eliminado)
-                    {
-                        return Unauthorized(new
-                        {
-                            message = "Tu cuenta está inactiva o eliminada."
-                        });
-                    }
-
-                if (user.PasswordHash == null || !BCrypt.Net.BCrypt.Verify(login.Password, user.PasswordHash))
-                    return Unauthorized("Credenciales inválidas.");
-
-                var token = GenerarToken(user);
-
-                return Ok(new
-                {
-                    token,
-                    id = user.Id,
-                    rol = user.Rol.ToLower(),
-                    perfilCompleto = PerfilCompleto(user),
-                    requiereCambioPassword = user.DebeCambiarPassword
-                });
-            }
+        return Ok(new
+        {
+            token,
+            id = user.Id,
+            rol = user.Rol.ToLower(),
+            perfilCompleto = PerfilCompleto(user),
+            requiereCambioPassword = user.DebeCambiarPassword
+        });
+    }
 
    // =========================================================
     // GOOGLE LOGIN
@@ -276,58 +259,36 @@ public class AuthController : ControllerBase
             // Valida el token incluyendo la audiencia (ClientId)
             var settings = new GoogleJsonWebSignature.ValidationSettings()
             {
-<<<<<<< HEAD
-=======
-<<<<<<< Updated upstream
-                var payload = await GoogleJsonWebSignature.ValidateAsync(dto.IdToken);
-                var user = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == payload.Email);
-=======
->>>>>>> backend
                 Audience = new List<string> { clientId },
             };
 
             var payload = await GoogleJsonWebSignature.ValidateAsync(dto.idToken, settings);
-            
-<<<<<<< HEAD
-            // ... resto de tu lógica de búsqueda/creación de usuario ...
-            var user = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == payload.Email);
-=======
             var emailGoogle = payload.Email.Trim().ToLower();
 
             var user = await _context.Usuarios
+            {
                 .FirstOrDefaultAsync(u => u.Email == emailGoogle);
->>>>>>> Stashed changes
->>>>>>> backend
 
                 if (user == null)
                 {
-                    user = new Usuario
-                    {
-                        Nombre = payload.GivenName ?? payload.Name,
-                        Apellido = payload.FamilyName ?? "",
-                        Email = emailGoogle,
-                        GoogleId = payload.Subject,
-                        FotoUrl = payload.Picture,
-                        Rol = Roles.Paciente,
-                        DebeCambiarPassword = false,
-                        EmailVerified = true
-                    };
-                    _context.Usuarios.Add(user);
-                }
-                else if (user.GoogleId == null)
-                {
-                    user.GoogleId = payload.Subject;
-                }
-                if (!user.Activo || user.Eliminado)
-                    {
-                        return Unauthorized(new
-                        {
-                            message = "Tu cuenta está inactiva o eliminada."
-                        });
-                    }
+                    Nombre = payload.GivenName ?? payload.Name,
+                    Apellido = payload.FamilyName ?? "",
+                    Email = payload.Email,
+                    GoogleId = payload.Subject,
+                    FotoUrl = payload.Picture,
+                    Rol = Roles.Paciente,
+                    DebeCambiarPassword = false,
+                    EmailVerified = true
+                };
+                _context.Usuarios.Add(user);
+            }
+            else if (user.GoogleId == null)
+            {
+                user.GoogleId = payload.Subject;
+            }
 
-                await _context.SaveChangesAsync();
-                var token = GenerarToken(user);
+            await _context.SaveChangesAsync();
+            var token = GenerarToken(user);
 
             return Ok(new {
                 token,
@@ -337,12 +298,14 @@ public class AuthController : ControllerBase
                 requiereCambioPassword = user.DebeCambiarPassword
             });
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            return BadRequest("Token de Google inválido.");
+            Console.WriteLine($"Error detallado de Google Auth: {ex.Message}");
+            return BadRequest(new { message = "Token de Google inválido.", detail = ex.Message });
         }
-    }
-
+    } 
+     
+    
     // =========================================================
     // RECUPERACIÓN DE CONTRASEÑA
     // =========================================================
@@ -363,7 +326,7 @@ public class AuthController : ControllerBase
             .FirstOrDefaultAsync(u => u.Email == emailNormalizado);
 
         // Siempre responder lo mismo por seguridad
-        if (user.GoogleId != null)
+        if (user == null)
         {
             return Ok(new
             {
@@ -431,14 +394,6 @@ public class AuthController : ControllerBase
             });
         }
 
-        if (string.IsNullOrWhiteSpace(model.NewPassword))
-        {
-            return BadRequest(new
-            {
-                message = "La nueva contraseña es obligatoria."
-            });
-        }
-
         user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.NewPassword);
 
         user.PasswordResetToken = null;
@@ -470,8 +425,7 @@ public class AuthController : ControllerBase
         if (user.GoogleId != null)
             return BadRequest(new { message = "Las cuentas de Google no pueden cambiar contraseña aquí." });
 
-        if (string.IsNullOrWhiteSpace(user.PasswordHash) ||
-            !BCrypt.Net.BCrypt.Verify(dto.PasswordActual, user.PasswordHash))
+        if (!BCrypt.Net.BCrypt.Verify(dto.PasswordActual, user.PasswordHash))
             return BadRequest(new { message = "La contraseña actual es incorrecta." });
 
         user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.PasswordNueva);
@@ -519,8 +473,6 @@ public class AuthController : ControllerBase
         var descriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
-            Issuer = _config["Jwt:Issuer"],
-            Audience = _config["Jwt:Audience"],
             Expires = DateTime.UtcNow.AddHours(2),
             SigningCredentials = new SigningCredentials(
                 new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -556,14 +508,6 @@ public class AuthController : ControllerBase
     if (!string.IsNullOrEmpty(model.DUI) && await _context.Usuarios.AnyAsync(u => u.DUI == model.DUI))
         return BadRequest(new { message = "El DUI ya está registrado." });
 
-    if (string.IsNullOrWhiteSpace(model.Password))
-        {
-            return BadRequest(new
-            {
-                message = "La contraseña es obligatoria para el doctor."
-            });
-        }
-
     var doctor = new Usuario
     {
         Nombre              = model.Nombre,
@@ -576,10 +520,13 @@ public class AuthController : ControllerBase
         DUI                 = model.DUI,
         Rol                 = Roles.Doctor,
         DebeCambiarPassword = true,
-        EmailVerified       = true                 
+        EmailVerified       = true,
+        JVPM                = model.JVPM,
+        Especialidad        = model.Especialidad                 
     };
 
-    doctor.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password);
+    if (!string.IsNullOrEmpty(model.Password))
+        doctor.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password);
 
     try
     {

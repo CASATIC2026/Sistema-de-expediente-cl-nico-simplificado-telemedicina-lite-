@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TelMedAPI.Data;
@@ -11,9 +12,11 @@ using TelMedAPI.Data;
 namespace TelMedAPI.Migrations
 {
     [DbContext(typeof(TelMedAPIContext))]
-    partial class TelMedAPIContextModelSnapshot : ModelSnapshot
+    [Migration("20260515152918_AddIncapacidadToConsulta")]
+    partial class AddIncapacidadToConsulta
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -294,9 +297,6 @@ namespace TelMedAPI.Migrations
                     b.Property<bool>("EmailVerified")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("Especialidad")
-                        .HasColumnType("text");
-
                     b.Property<DateOnly>("FechaNacimiento")
                         .HasColumnType("date");
 
@@ -308,9 +308,6 @@ namespace TelMedAPI.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("GoogleId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("JVPM")
                         .HasColumnType("text");
 
                     b.Property<string>("Nombre")

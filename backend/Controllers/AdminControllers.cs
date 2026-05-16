@@ -64,18 +64,7 @@ namespace TelMedAPI.Controllers
             return Ok(doctores);
         }
 
-        [HttpPost("doctores")]
-        public async Task<IActionResult> CrearDoctor([FromBody] Usuario doctor)
-        {
-            doctor.Rol = Roles.Doctor;
-            doctor.PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456");
-            doctor.DebeCambiarPassword = true;
-
-            _context.Usuarios.Add(doctor);
-            await _context.SaveChangesAsync();
-
-            return Ok(doctor);
-        }
+        
 
         [HttpDelete("doctores/{id}")]
         public async Task<IActionResult> EliminarDoctor(int id)

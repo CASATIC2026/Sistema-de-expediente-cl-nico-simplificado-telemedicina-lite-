@@ -70,6 +70,10 @@ namespace TelMedAPI.DTOs
         )]
         public string Telefono { get; set; }
 
+
+        public string? JVPM { get; set; }
+        public string? Especialidad { get; set; }
+
         // =========================================================
         // DUI (Formato: 00000000-0)
         // =========================================================
