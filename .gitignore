@@ -5,6 +5,7 @@
 **/obj/
 **/*.user
 **/*.suo
+temp_build_output/
 
 # Configuraciones sensibles
 appsettings.Development.json
