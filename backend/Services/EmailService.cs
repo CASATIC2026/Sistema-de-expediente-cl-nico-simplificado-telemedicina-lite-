@@ -174,5 +174,45 @@ namespace TelMedAPI.Services
                 "me"
             ).ExecuteAsync();
         }
+
+
+        // =========================================================
+        // RECORDATORIO DE CITA
+        // =========================================================
+        public async Task EnviarNotificacionRecordatorioCita(
+            string destino,
+            string nombrePaciente,
+            string nombreDoctor,
+            DateTimeOffset fechaCita,
+            string motivo,
+            string tipoConsulta,
+            string? linkReunion)
+        {
+            var fechaFormateada = fechaCita.ToLocalTime().ToString("dddd dd 'de' MMMM 'de' yyyy 'a las' hh:mm tt");
+
+            var html = $@"
+                <div style='font-family: Arial, sans-serif;'>
+                    <h2>Recordatorio de cita - TelMed Lite™</h2>
+                    <p>Hola <strong>{nombrePaciente}</strong>, te recordamos que tienes una cita próxima:</p>
+                    <ul>
+                        <li><strong>Doctor:</strong> {nombreDoctor}</li>
+                        <li><strong>Fecha:</strong> {fechaFormateada}</li>
+                        <li><strong>Motivo:</strong> {motivo}</li>
+                        <li><strong>Tipo:</strong> {tipoConsulta}</li>
+                        {(string.IsNullOrEmpty(linkReunion) ? "" : $"<li><strong>Link:</strong> <a href='{linkReunion}'>{linkReunion}</a></li>")}
+                    </ul>
+                    <p style='margin-top:20px;'>
+                        Este correo ha sido enviado automáticamente, por favor no respondas a este mensaje.
+                        <br />
+                        TelMed & Health Lite™ System
+                    </p>
+                </div>";
+
+            await EnviarCorreo(
+                destino,
+                "Recordatorio de cita - TelMed Lite™",
+                html
+            );
+        }
     }
 }

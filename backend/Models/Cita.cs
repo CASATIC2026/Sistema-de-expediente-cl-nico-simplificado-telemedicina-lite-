@@ -46,5 +46,8 @@ namespace TelMedAPI.Models
 
         // RELACIÓN CON CONSULTA (1 a 1)
         public Consulta? Consulta { get; set; }
+
+        [Column("notificacion_recordatorio_enviada")]
+        public bool NotificacionRecordatorioEnviada { get; set; } = false;
     }
 }

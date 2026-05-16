@@ -18,11 +18,13 @@ public class AuthController : ControllerBase
 {
     private readonly TelMedAPIContext _context;
     private readonly string _key;
+    private readonly IConfiguration _config;
     private readonly EmailService _emailService;
 
     public AuthController(TelMedAPIContext context, IConfiguration config, EmailService emailService)
     {
         _context = context;
+        _config = config;
         _key = config["Jwt:Key"] 
             ?? throw new ArgumentNullException("Jwt:Key no configurado en appsettings.json");
         _emailService = emailService;
@@ -264,7 +266,7 @@ public class AuthController : ControllerBase
         // GOOGLE LOGIN
         // =========================================================
         [HttpPost("google")]
-            public async Task<IActionResult> GoogleLogin([FromBody] GoogleDTO dto)
+        public async Task<IActionResult> GoogleLogin([FromBody] GoogleDTO dto)
             {
                 try
                 {
@@ -274,7 +276,7 @@ public class AuthController : ControllerBase
                         Audience = new List<string> { clientId },
                     };
 
-                    var payload = await GoogleJsonWebSignature.ValidateAsync(dto.idToken, settings);
+                    var payload = await GoogleJsonWebSignature.ValidateAsync(dto.IdToken, settings);
                     var emailGoogle = payload.Email.Trim().ToLower();
 
                     var user = await _context.Usuarios
@@ -325,7 +327,7 @@ public class AuthController : ControllerBase
                     return BadRequest(new { message = "Token de Google inválido.", detail = ex.Message });
                 }
             }
-        }
+        
 
     // =========================================================
     // RECUPERACIÓN DE CONTRASEÑA
