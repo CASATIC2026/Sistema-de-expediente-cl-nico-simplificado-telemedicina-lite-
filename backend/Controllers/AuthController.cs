@@ -264,45 +264,43 @@ public class AuthController : ControllerBase
         // GOOGLE LOGIN
         // =========================================================
         [HttpPost("google")]
-        public async Task<IActionResult> GoogleLogin([FromBody] GoogleDTO dto)
-        {
-            try 
+            public async Task<IActionResult> GoogleLogin([FromBody] GoogleDTO dto)
             {
-<<<<<<< Updated upstream
-                var payload = await GoogleJsonWebSignature.ValidateAsync(dto.IdToken);
-                var user = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == payload.Email);
-=======
-                Audience = new List<string> { clientId },
-            };
-
-            var payload = await GoogleJsonWebSignature.ValidateAsync(dto.idToken, settings);
-            
-            var emailGoogle = payload.Email.Trim().ToLower();
-
-            var user = await _context.Usuarios
-                .FirstOrDefaultAsync(u => u.Email == emailGoogle);
->>>>>>> Stashed changes
-
-                if (user == null)
+                try
                 {
-                    user = new Usuario
+                    var clientId = _config["Google:ClientId"];
+                    var settings = new GoogleJsonWebSignature.ValidationSettings()
                     {
-                        Nombre = payload.GivenName ?? payload.Name,
-                        Apellido = payload.FamilyName ?? "",
-                        Email = emailGoogle,
-                        GoogleId = payload.Subject,
-                        FotoUrl = payload.Picture,
-                        Rol = Roles.Paciente,
-                        DebeCambiarPassword = false,
-                        EmailVerified = true
+                        Audience = new List<string> { clientId },
                     };
-                    _context.Usuarios.Add(user);
-                }
-                else if (user.GoogleId == null)
-                {
-                    user.GoogleId = payload.Subject;
-                }
-                if (!user.Activo || user.Eliminado)
+
+                    var payload = await GoogleJsonWebSignature.ValidateAsync(dto.idToken, settings);
+                    var emailGoogle = payload.Email.Trim().ToLower();
+
+                    var user = await _context.Usuarios
+                        .FirstOrDefaultAsync(u => u.Email == emailGoogle);
+
+                    if (user == null)
+                    {
+                        user = new Usuario
+                        {
+                            Nombre = payload.GivenName ?? payload.Name,
+                            Apellido = payload.FamilyName ?? "",
+                            Email = emailGoogle,
+                            GoogleId = payload.Subject,
+                            FotoUrl = payload.Picture,
+                            Rol = Roles.Paciente,
+                            DebeCambiarPassword = false,
+                            EmailVerified = true
+                        };
+                        _context.Usuarios.Add(user);
+                    }
+                    else if (user.GoogleId == null)
+                    {
+                        user.GoogleId = payload.Subject;
+                    }
+
+                    if (!user.Activo || user.Eliminado)
                     {
                         return Unauthorized(new
                         {
@@ -310,20 +308,22 @@ public class AuthController : ControllerBase
                         });
                     }
 
-                await _context.SaveChangesAsync();
-                var token = GenerarToken(user);
+                    await _context.SaveChangesAsync();
+                    var token = GenerarToken(user);
 
-                return Ok(new {
-                    token,
-                    id = user.Id,
-                    rol = user.Rol.ToLower(),
-                    perfilCompleto = PerfilCompleto(user),
-                    requiereCambioPassword = user.DebeCambiarPassword
-                });
-            }
-            catch (Exception)
-            {
-                return BadRequest("Token de Google inválido.");
+                    return Ok(new {
+                        token,
+                        id = user.Id,
+                        rol = user.Rol.ToLower(),
+                        perfilCompleto = PerfilCompleto(user),
+                        requiereCambioPassword = user.DebeCambiarPassword
+                    });
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error detallado de Google Auth: {ex.Message}");
+                    return BadRequest(new { message = "Token de Google inválido.", detail = ex.Message });
+                }
             }
         }
 
