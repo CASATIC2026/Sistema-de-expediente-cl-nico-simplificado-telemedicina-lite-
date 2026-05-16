@@ -174,13 +174,8 @@ const eliminarPaciente = (id) => {
                     <!-- INFO -->
                     <button
                       @click="abrirInformacion(paciente)"
-<<<<<<< Updated upstream
-                      class="h-11 px-5 bg-cyan-700 border-2 border-slate-100 text-white rounded-2xl text-xs font-black hover:border-blue-500 hover:text-blue-600 transition-all"
-                    >INFO</button>
-=======
                       class="h-11 px-5 bg-cyan-700 border-2 border-slate-100 text-white rounded-2xl text-xs font-black hover:bg-cyan-500 transition-all shadow-md"
                     >INFORMACIÓN</button>
->>>>>>> Stashed changes
 
                     <!-- HISTORIAL -->
                     <button
