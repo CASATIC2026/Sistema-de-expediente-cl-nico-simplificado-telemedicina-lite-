@@ -33,6 +33,24 @@ namespace TelMedAPI.Models
         [Column("observaciones")]
         public string Observaciones { get; set; } = string.Empty;
 
+        [Column("tiene_incapacidad")]
+        public bool TieneIncapacidad { get; set; }
+
+        [Column("fecha_inicio_incapacidad")]
+        public DateTime? FechaInicioIncapacidad { get; set; }
+
+        [Column("fecha_fin_incapacidad")]
+        public DateTime? FechaFinIncapacidad { get; set; }
+
+        [Column("dias_incapacidad")]
+        public int? DiasIncapacidad { get; set; }
+
+        [Column("motivo_incapacidad")]
+        public string MotivoIncapacidad { get; set; } = string.Empty;
+
+        [Column("observaciones_incapacidad")]
+        public string ObservacionesIncapacidad { get; set; } = string.Empty;
+
         // guardamos medicamentos como JSON
         [Column("medicamentos_json")]
         public string MedicamentosJson { get; set; } = string.Empty;

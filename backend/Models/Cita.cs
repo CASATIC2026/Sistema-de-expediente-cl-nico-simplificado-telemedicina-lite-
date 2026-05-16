@@ -44,6 +44,9 @@ namespace TelMedAPI.Models
         [Column("link_reunion")]
         public string? LinkReunion { get; set; }
 
+        [Column("notificacion_recordatorio_enviada")]
+        public bool NotificacionRecordatorioEnviada { get; set; } = false;
+
         // RELACIÓN CON CONSULTA (1 a 1)
         public Consulta? Consulta { get; set; }
     }

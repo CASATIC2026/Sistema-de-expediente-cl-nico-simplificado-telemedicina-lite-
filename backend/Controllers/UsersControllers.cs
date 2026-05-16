@@ -47,7 +47,9 @@ namespace TelMedAPI.Controllers
                     u.Direccion,
                     u.Genero,
                     dui = u.DUI,
-                    esGoogle = u.GoogleId != null
+                    esGoogle = u.GoogleId != null,
+                    u.Especialidad,
+                    u.JVPM
                 })
                 .FirstOrDefaultAsync();
 
@@ -78,6 +80,12 @@ namespace TelMedAPI.Controllers
             user.Apellido = model.Apellido;
             user.Direccion = model.Direccion;
             user.Telefono = model.Telefono;
+
+            if (user.Rol == Roles.Doctor)
+            {
+                user.JVPM = string.IsNullOrWhiteSpace(model.JVPM) ? user.JVPM : model.JVPM;
+                user.Especialidad = string.IsNullOrWhiteSpace(model.Especialidad) ? user.Especialidad : model.Especialidad;
+            }
 
             await _context.SaveChangesAsync();
 
@@ -121,7 +129,9 @@ namespace TelMedAPI.Controllers
                     Id = u.Id,
                     NombreCompleto = u.Nombre + " " + u.Apellido,
                     Email = u.Email,
-                    Telefono = u.Telefono
+                    Telefono = u.Telefono,
+                    u.Especialidad,
+                    u.JVPM
                 })
                 .ToListAsync();
 
@@ -160,7 +170,10 @@ namespace TelMedAPI.Controllers
                     u.Nombre,
                     u.Apellido,
                     u.Email,
-                    u.Rol
+                    u.Rol,
+                    u.Activo,
+                    u.Especialidad,
+                    u.JVPM
                 })
                 .FirstOrDefaultAsync();
 
@@ -187,7 +200,10 @@ namespace TelMedAPI.Controllers
                     u.Activo,
                     u.FotoUrl,
                     u.Direccion,
-                    u.Genero
+                    u.Genero,
+                    u.Especialidad,
+                    u.JVPM,
+                    u.Rol
                 })
                 .ToListAsync();
             return Ok(doctors);

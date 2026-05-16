@@ -18,11 +18,16 @@ namespace TelMedAPI.Controllers
     {
         private readonly TelMedAPIContext _context;
         private readonly IValidator<CreateCitaDTO> _validator;
+        private readonly EmailService _emailService;
 
-        public CitasController(TelMedAPIContext context, IValidator<CreateCitaDTO> validator)
+        public CitasController(
+            TelMedAPIContext context,
+            IValidator<CreateCitaDTO> validator,
+            EmailService emailService)
         {
             _context = context;
             _validator = validator;
+            _emailService = emailService;
         }
 
         // =========================================================
@@ -676,7 +681,10 @@ public async Task<IActionResult> GetSlotsDisponibles(
 
             var rol = User.FindFirst(ClaimTypes.Role)?.Value;
 
-            var cita = await _context.Citas.FindAsync(id);
+            var cita = await _context.Citas
+                .Include(c => c.Paciente)
+                .Include(c => c.Doctor)
+                .FirstOrDefaultAsync(c => c.IdCita == id);
 
             if (cita == null)
                 return NotFound(new { message = "Cita no encontrada." });
@@ -690,8 +698,51 @@ public async Task<IActionResult> GetSlotsDisponibles(
             if (cita.Estado == CitaEstados.Cancelada)
                 return BadRequest(new { message = "Esta cita ya fue cancelada." });
 
+            if (rol == Roles.Paciente)
+            {
+                var tiempoRestante = cita.FechaInicio.UtcDateTime - DateTime.UtcNow;
+                if (tiempoRestante < TimeSpan.FromHours(24))
+                {
+                    return BadRequest(new
+                    {
+                        message = "No puedes cancelar esta cita con menos de 24 horas de anticipación."
+                    });
+                }
+            }
+
             cita.Estado = CitaEstados.Cancelada;
             await _context.SaveChangesAsync();
+
+            try
+            {
+                if (cita.Paciente != null && !string.IsNullOrWhiteSpace(cita.Paciente.Email))
+                {
+                    await _emailService.EnviarNotificacionCancelacionCita(
+                        cita.Paciente.Email,
+                        cita.Paciente.Nombre + " " + cita.Paciente.Apellido,
+                        cita.Doctor != null
+                            ? cita.Doctor.Nombre + " " + cita.Doctor.Apellido
+                            : "Doctor no asignado",
+                        cita.FechaInicio,
+                        cita.Motivo,
+                        cita.TipoConsulta);
+                }
+
+                await _emailService.EnviarNotificacionCancelacionAdmin(
+                    cita.Paciente != null
+                        ? cita.Paciente.Nombre + " " + cita.Paciente.Apellido
+                        : "Paciente desconocido",
+                    cita.Doctor != null
+                        ? cita.Doctor.Nombre + " " + cita.Doctor.Apellido
+                        : "Doctor no asignado",
+                    cita.FechaInicio,
+                    cita.Motivo,
+                    cita.TipoConsulta);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error enviando email de cancelación: {ex.Message}");
+            }
 
             return Ok(new { message = "Cita cancelada correctamente." });
         }

@@ -263,13 +263,13 @@ public class AuthController : ControllerBase
             };
 
             var payload = await GoogleJsonWebSignature.ValidateAsync(dto.idToken, settings);
-            
-            // ... resto de tu lógica de búsqueda/creación de usuario ...
-            var user = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == payload.Email);
+            var emailGoogle = payload.Email.Trim().ToLower();
 
-            if (user == null)
+            var user = await _context.Usuarios
             {
-                user = new Usuario
+                .FirstOrDefaultAsync(u => u.Email == emailGoogle);
+
+                if (user == null)
                 {
                     Nombre = payload.GivenName ?? payload.Name,
                     Apellido = payload.FamilyName ?? "",
@@ -303,7 +303,8 @@ public class AuthController : ControllerBase
             Console.WriteLine($"Error detallado de Google Auth: {ex.Message}");
             return BadRequest(new { message = "Token de Google inválido.", detail = ex.Message });
         }
-    }
+    } 
+     
     
     // =========================================================
     // RECUPERACIÓN DE CONTRASEÑA
@@ -519,7 +520,9 @@ public class AuthController : ControllerBase
         DUI                 = model.DUI,
         Rol                 = Roles.Doctor,
         DebeCambiarPassword = true,
-        EmailVerified       = true                 
+        EmailVerified       = true,
+        JVPM                = model.JVPM,
+        Especialidad        = model.Especialidad                 
     };
 
     if (!string.IsNullOrEmpty(model.Password))

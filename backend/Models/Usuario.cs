@@ -49,6 +49,10 @@ namespace TelMedAPI.Models
         public string? PasswordResetToken { get; set; }
         public DateTime? PasswordResetExpiresAt { get; set; }
 
+        // Campos específicos de doctor
+        public string? JVPM { get; set; }
+        public string? Especialidad { get; set; }
+
         // Relaciones
         public ICollection<Cita>? CitasComoPaciente { get; set; }
         public ICollection<Cita>? CitasComoDoctor { get; set; }

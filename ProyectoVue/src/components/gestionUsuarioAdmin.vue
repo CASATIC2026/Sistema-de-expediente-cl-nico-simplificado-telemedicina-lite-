@@ -179,7 +179,7 @@ const eliminarPaciente =async (paciente) => {
                     <!-- INFO -->
                     <button
                       @click="abrirInformacion(paciente)"
-                      class="h-11 px-5 bg-cyan-700 border-2 border-slate-100 text-white rounded-2xl text-xs font-black hover:bg-500 transition-all shadow-md"
+                      class="h-11 px-5 bg-cyan-700 border-2 border-slate-100 text-white rounded-2xl text-xs font-black hover:bg-cyan-500 transition-all shadow-md"
                     >INFORMACIÓN</button>
 
                     <!-- HISTORIAL -->

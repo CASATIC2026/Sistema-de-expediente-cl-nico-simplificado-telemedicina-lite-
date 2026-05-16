@@ -18,22 +18,45 @@ const citas = ref([])
 const citaSeleccionada = ref(null) 
 
 // ===============================
+// CALCULAR TIEMPO RESTANTE PARA CANCELAR
+const calcularTiempoRestante = (fechaCita) => {
+  const ahora = new Date()
+  const cita = new Date(fechaCita)
+  const diferencia = cita - ahora
+  const horasRestantes = Math.floor(diferencia / (1000 * 60 * 60))
+  const minutosRestantes = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60))
+  
+  return {
+    totalHoras: horasRestantes,
+    minutos: minutosRestantes,
+    puedeCancelar: horasRestantes >= 24,
+    texto: horasRestantes >= 24 
+      ? '✓ Puedes cancelar' 
+      : `⏱ ${horasRestantes}h ${minutosRestantes}m para cancelar`
+  }
+}
+
+// ===============================
 // CARGAR DESDE BACKEND
 onMounted(async () => {
   try {
     const data = await getCitas()
-    citas.value = data.map(c => ({
-      id: c.idCita,
-      nombre: c.pacienteNombreCompleto,
-      doctor: c.doctorNombreCompleto || "Doctor asignado",
-      fecha: new Date(c.start).toLocaleDateString(),
-      hora: new Date(c.start).toLocaleTimeString('es-SV', {hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'America/El_Salvador'}),
-      estado: c.estado, // Pendiente, Cancelada, Finalizada
-      linkReunion: c.linkReunion,
-      tipoConsulta: c.tipoConsulta,
-      dui: c.duiPaciente || '',
-      telefono: c.telefonoPaciente || ''
-    }))
+    citas.value = data.map(c => {
+      const fechaObj = new Date(c.start)
+      return {
+        id: c.idCita,
+        nombre: c.pacienteNombreCompleto,
+        doctor: c.doctorNombreCompleto || "Doctor asignado",
+        fecha: fechaObj.toLocaleDateString(),
+        fechaCompleta: c.start,
+        hora: fechaObj.toLocaleTimeString('es-SV', {hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'America/El_Salvador'}),
+        estado: c.estado,
+        linkReunion: c.linkReunion,
+        tipoConsulta: c.tipoConsulta,
+        dui: c.duiPaciente || '',
+        telefono: c.telefonoPaciente || ''
+      }
+    })
   } catch (e) {
     console.error("Error cargando citas:", e)
   }
@@ -88,15 +111,24 @@ const fechaUltimaConsultaFinalizada = computed(() => {
 
 // ===============================
 // ACCIONES
-const ejecutarCancelar = async (id) => {
-  if (!confirm("¿Seguro que desea anular esta cita?")) return
+const ejecutarCancelar = async (cita) => {
+  const tiempoRestante = calcularTiempoRestante(cita.fechaCompleta)
+  
+  // Validar 24 horas
+  if (!tiempoRestante.puedeCancelar) {
+    alert(`❌ No puedes cancelar con menos de 24 horas de anticipación.\n\nTe faltan: ${tiempoRestante.totalHoras}h ${tiempoRestante.minutos}m`)
+    return
+  }
+  
+  if (!confirm("¿Seguro que desea anular esta cita? 🗑️")) return
   try {
-    await cancelarCitaAPI(id)
-    const cita = citas.value.find(c => c.id === id)
-    if (cita) cita.estado = 'Cancelada'
+    await cancelarCitaAPI(cita.id)
+    const citaEnLista = citas.value.find(c => c.id === cita.id)
+    if (citaEnLista) citaEnLista.estado = 'Cancelada'
+    alert("✅ Cita cancelada correctamente")
   } catch (e) {
     console.error(e)
-    alert("Error al cancelar")
+    alert(`❌ Error: ${e.response?.data?.message || "No se pudo cancelar la cita"}`)
   }
 }
 
@@ -246,14 +278,24 @@ const accederHistorialActivo = (id = null) => {
                   🟢 UNIRSE AHORA
                 </a>
 
+                <!-- BOTÓN DE CANCELAR CON VALIDACIÓN DE 24H -->
                 <button 
-                  v-if="cita.estado === 'Pendiente'"
-                  @click="ejecutarCancelar(cita.id)"
-                  class="p-2.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-all"
-                  title="Cancelar Cita"
+                  v-if="cita.estado === 'Pendiente' && (props.esAdmin || calcularTiempoRestante(cita.fechaCompleta).puedeCancelar)"
+                  @click="ejecutarCancelar(cita)"
+                  class="px-4 py-2.5 rounded-full text-xs font-black text-center bg-red-600 text-white hover:bg-red-700 transition-all shadow-md shadow-red-200"
+                  title="Cancelar cita"
                 >
-                  ✕
+                  ✕ CANCELAR
                 </button>
+
+                <!-- MENSAJE DE TIEMPO INSUFICIENTE (SOLO PACIENTES) -->
+                <div 
+                  v-if="cita.estado === 'Pendiente' && !props.esAdmin && !calcularTiempoRestante(cita.fechaCompleta).puedeCancelar"
+                  class="w-full lg:w-auto px-3 py-2 rounded-full text-[10px] md:text-xs font-bold bg-orange-50 border border-orange-200 text-orange-700 flex items-center justify-center lg:justify-start gap-2"
+                >
+                  <span class="text-lg">⏱</span>
+                  <span class="text-center lg:text-left">{{ calcularTiempoRestante(cita.fechaCompleta).totalHoras }}h {{ calcularTiempoRestante(cita.fechaCompleta).minutos }}m para iniciar</span>
+                </div>
               </template>
 
               <template v-if="cita.estado === 'Finalizada'">

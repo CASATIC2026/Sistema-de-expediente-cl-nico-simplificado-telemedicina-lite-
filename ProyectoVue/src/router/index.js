@@ -30,17 +30,19 @@ import SalaTelmed from '@/viewsDoctor/SalaTelmed.vue'
 // ===============================
 const getRolFromToken = () => {
   const token = localStorage.getItem('token')
-  if (!token) return ''
+  if (!token) return null
   try {
     const payload = JSON.parse(atob(token.split('.')[1]))
-    return (
+    const rol = (
       payload.role ||
       payload.rol ||
       payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] ||
       ''
     ).toLowerCase()
-  } catch {
-    return ''
+    return rol || null
+  } catch (error) {
+    console.error('Error extrayendo rol del token:', error)
+    return null
   }
 }
 
@@ -49,8 +51,13 @@ const tokenExpirado = () => {
   if (!token) return true
   try {
     const payload = JSON.parse(atob(token.split('.')[1]))
-    return payload.exp * 1000 < Date.now()
-  } catch {
+    const expirado = payload.exp * 1000 < Date.now()
+    if (expirado) {
+      console.warn('Token expirado')
+    }
+    return expirado
+  } catch (error) {
+    console.error('Error validando expiración del token:', error)
     return true
   }
 }
@@ -61,7 +68,14 @@ const redireccionPorRol = (rol) => {
     paciente: '/app/dashboardPaciente',
     admin:    '/app/dashboardAdmin'
   }
-  return dashboards[rol] || '/'
+  const destino = dashboards[rol] || '/'
+  return destino
+}
+
+const tienePermisoParaRuta = (rol, rutasPermitidas) => {
+  if (!rutasPermitidas || rutasPermitidas.length === 0) return true
+  if (!rol) return false
+  return rutasPermitidas.includes(rol)
 }
 
 // ===============================
@@ -99,7 +113,7 @@ const routes = [
       { path: 'Agenda',            name: 'Agenda',            component: Agenda,            meta: { roles: ['doctor'] } },
       { path: 'Pacientes',         name: 'Pacientes',         component: Pacientes,         meta: { roles: ['doctor', 'admin'] } },
       { path: 'Consultas',         name: 'Consultas',         component: Consultas,         meta: { roles: ['doctor', 'admin'] } },
-      { path: 'Consultas/:id',     name: 'Consulta',          component: Consultas, props: true, meta: { roles: ['doctor'] } },
+      { path: 'Consultas/:id',     name: 'Consulta',          component: Consultas, props: true, meta: { roles: ['doctor', 'admin'] } },
       { path: 'Historial',         name: 'Historial',         component: Historial,         meta: { roles: ['doctor', 'admin'] } },
       { path: 'SalaTelmed',        name: 'SalaTelmed',        component: SalaTelmed,        meta: { roles: ['doctor', 'admin', 'paciente'] } }
     ]
@@ -121,61 +135,77 @@ const router = createRouter({
 })
 
 
-// GUARD GLOBAL
-
-router.beforeEach((to) => {
+// GUARD GLOBAL - SEGURIDAD DE RUTAS
+router.beforeEach((to, from, next) => {
   const videoStore     = useVideoStore()
   const token          = localStorage.getItem('token')
   const rol            = getRolFromToken()
   const perfilCompleto = localStorage.getItem('perfilCompleto') === 'true'
   const requiereCambio = localStorage.getItem('requiereCambioPassword') === 'true'
 
-  // BLOQUEO POR VIDEOLLAMADA
- if (videoStore.isActive) {
-  // permitir solo la misma consulta activa
-  if (
-    to.name === 'Consulta' &&
-    String(to.params.id) === String(videoStore.citaId)
-  ) {
-    return true
+  // 1. BLOQUEO POR VIDEOLLAMADA ACTIVA
+  if (videoStore.isActive) {
+    if (
+      to.name === 'Consulta' &&
+      String(to.params.id) === String(videoStore.citaId)
+    ) {
+      return next()
+    }
+    // Bloquear cualquier otra navegación durante videollamada
+    return next(false)
   }
 
-  return false
-}
-
-  // 1. Token expirado
+  // 2. VALIDAR TOKEN EXPIRADO
   if (token && tokenExpirado()) {
     logoutPro()
-    return '/'
+    return next('/')
   }
 
-  // 2. Ya logueado → evitar landing
-  if (to.path === '/' && token) {
-    return redireccionPorRol(rol)
+  // 3. USUARIO YA LOGUEADO INTENTA ACCEDER AL LANDING
+  if (to.path === '/' && token && rol) {
+    return next(redireccionPorRol(rol))
   }
 
-  // 3. Pública
-  if (!to.meta.requiresAuth) return true
+  // 4. RUTA PÚBLICA - SIN AUTENTICACIÓN REQUERIDA
+  if (!to.meta.requiresAuth) {
+    return next()
+  }
 
-  // 4. Sin token
-  if (!token) return '/'
+  // 5. RUTA REQUIERE AUTENTICACIÓN PERO NO HAY TOKEN
+  if (!token) {
+    return next('/')
+  }
 
-  // 5. Cambio contraseña
+  // 6. SIN ROL - LOGOUT POR SEGURIDAD
+  if (!rol) {
+    logoutPro()
+    return next('/')
+  }
+
+  // 7. REQUIERE CAMBIO DE CONTRASEÑA - PRIORIDAD
   if (requiereCambio && to.path !== '/change-password') {
-    return '/change-password'
+    return next('/change-password')
   }
 
-  // 6. Completar perfil
+  // 8. COMPLETAR PERFIL - PRIORIDAD (excepto cambio de contraseña)
   if (!perfilCompleto && to.name !== 'completarPerfil' && to.path !== '/change-password') {
-    return '/completar-perfil'
+    return next('/completar-perfil')
   }
 
-  // 7. Rol
-  if (to.meta.roles && !to.meta.roles.includes(rol)) {
-    return redireccionPorRol(rol)
+  // 9. VALIDAR ROLES - ES LA VALIDACIÓN PRINCIPAL
+  if (to.meta.roles && to.meta.roles.length > 0) {
+    const tienePermiso = tienePermisoParaRuta(rol, to.meta.roles)
+    
+    if (!tienePermiso) {
+      console.warn(`Acceso denegado: rol '${rol}' no autorizado para ruta '${to.path}'`)
+      // Redirigir al dashboard del rol sin permitir acceso
+      return next(redireccionPorRol(rol))
+    }
   }
 
-  return true
+  // 10. VALIDACIÓN EXITOSA
+  return next()
 })
+
 
 export default router

@@ -31,7 +31,9 @@ const nuevoDoctor = ref({
   dui: '',
   genero: '',
   direccion: '',
-  fechaNacimiento: ''
+  fechaNacimiento: '',
+  jvpm: '',
+  especialidad: ''
 })
 const guardandoDoctor = ref(false)
 const errorFormulario = ref('')
@@ -117,13 +119,16 @@ const guardarNuevoDoctor = async () => {
       DUI:             nuevoDoctor.value.dui,
       Genero:          nuevoDoctor.value.genero,
       Direccion:       nuevoDoctor.value.direccion,
-      FechaNacimiento: nuevoDoctor.value.fechaNacimiento
+      FechaNacimiento: nuevoDoctor.value.fechaNacimiento,
+      JVPM:            nuevoDoctor.value.jvpm,
+      Especialidad:    nuevoDoctor.value.especialidad
     })
     alert('Doctor registrado correctamente ✅')
     mostrarFormularioNuevo.value = false
     nuevoDoctor.value = {
       nombre: '', apellido: '', email: '', password: '',
-      telefono: '', dui: '', genero: '', direccion: '', fechaNacimiento: ''
+      telefono: '', dui: '', genero: '', direccion: '', fechaNacimiento: '',
+      jvpm: '', especialidad: ''
     }
     await cargarDoctores()
   } catch (e) {
@@ -339,6 +344,17 @@ const guardarNuevoDoctor = async () => {
                   <option value="Femenino">Femenino</option>
                 </select>
              </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="text-[10px] font-black text-slate-400 uppercase mb-1 block">JVPM</label>
+              <input v-model="nuevoDoctor.jvpm" type="text" class="w-full px-4 py-3 bg-slate-50 border-2 border-transparent focus:border-blue-500 rounded-xl md:rounded-2xl outline-none font-bold text-slate-700 text-sm" />
+            </div>
+            <div>
+              <label class="text-[10px] font-black text-slate-400 uppercase mb-1 block">Especialidad</label>
+              <input v-model="nuevoDoctor.especialidad" type="text" class="w-full px-4 py-3 bg-slate-50 border-2 border-transparent focus:border-blue-500 rounded-xl md:rounded-2xl outline-none font-bold text-slate-700 text-sm" />
+            </div>
           </div>
 
           <div>
