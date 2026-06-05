@@ -15,11 +15,11 @@ services:
 
   frontend:
     build:
-      context: ./ProyectoVue
+      context: ./Frontend
       dockerfile: Dockerfile
       args:
       - VITE_API_URL=http://localhost:8080/api
-    container_name: ProyectoVue
+    container_name: Frontend
     ports:
       - "80:80"
     depends_on:
