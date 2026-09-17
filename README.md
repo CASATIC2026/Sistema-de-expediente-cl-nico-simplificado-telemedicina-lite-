@@ -21,7 +21,7 @@ TELEMEDICINALITE integra funcionalidades clave como:
 11. Gestión de Pacientes y Doctores.
 
 Requisitos previos:
-- Frontend: Vue, JavaScript, Html, CSS, Tailwind, Bootstrap.
+- Frontend: Vue, JavaScript, Html, CSS, Tailwind.
 - Backend: C#, Neon.T, PostgreSQL.
 - QA, GitHub.
 
