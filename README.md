@@ -23,7 +23,7 @@ TELEMEDICINALITE integra funcionalidades clave como:
 Requisitos previos:
 - Frontend: Vue, JavaScript, Html, CSS, Tailwind, Bootstrap.
 - Backend: C#, Neon.T, PostgreSQL.
-- DevOps & QA: CI/CD (GitHub Actions).
+- QA, GitHub.
 
 Autores:
 1. Jacqueline Azucena Benito Cruz.
